@@ -27,6 +27,12 @@ class Settings(BaseSettings):
     SCHED_SOLVER: str = "heuristic"
     QR_SECRET: str = "festos-dev-qr-verification-secret"
     VITE_API_URL: str = "http://localhost:8000"
+
+    # Feature Flags (Task 5: optional module toggles)
+    ENABLE_PREMORTEM: bool = True
+    ENABLE_COMMANDS: bool = True
+    ENABLE_FORECASTING: bool = True
+
     CORS_ORIGINS: List[str] = Field(
         default_factory=lambda: ["http://localhost:5173", "http://127.0.0.1:5173"]
     )

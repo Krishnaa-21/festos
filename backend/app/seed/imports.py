@@ -37,10 +37,7 @@ def seed_imports(session: Session) -> None:
     seed_all_assumptions(session)
     session.commit()
 
-    # 2. Locate data/raw directory
-    raw_dir = Path("/home/krishna/festos/data/raw")
-    if not raw_dir.exists():
-        raw_dir = Path(__file__).resolve().parent.parent.parent.parent / "data" / "raw"
+    raw_dir = Path(__file__).resolve().parents[3] / "data" / "raw"
 
     if not raw_dir.exists():
         logger.warning(f"Raw data directory not found at {raw_dir}")

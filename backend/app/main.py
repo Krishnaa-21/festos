@@ -98,7 +98,12 @@ def get_meta():
         "version": "0.1.0",
         "now": now().isoformat(),
         "modules": modules,
-        "auth_disabled": settings.AUTH_DISABLED
+        "auth_disabled": settings.AUTH_DISABLED,
+        "feature_flags": {
+            "premortem": settings.ENABLE_PREMORTEM,
+            "commands": settings.ENABLE_COMMANDS,
+            "forecasting": settings.ENABLE_FORECASTING,
+        },
     }
 
 # -------------------------------------------------------------
