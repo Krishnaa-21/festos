@@ -157,3 +157,42 @@ Format:
   - Baseline `ASSUMED` schedule generated during seeding with 312 provisional teams covering all 1,810 registrations without team IDs.
 - **Action Required**:
   - Run `make reset` to drop/recreate tables and ingest the raw data pack, then seed venue availability windows and the baseline assumed schedule.
+
+### 2026-10-31: P1/10-inventory (Ledger-Backed Inventory, Equipment Allocation, and Transactional Merchandise Issuance)
+- **Author**: P1 Lead
+- **Branch**: `p1/10-inventory`
+- **Endpoints Added**:
+  - `GET /api/v1/logistics/items`: List inventory items with projected stock buckets (`on_hand`, `reserved`, `in_transit`, `damaged`, `under_repair`, `awaiting_return`, `available`).
+  - `GET /api/v1/logistics/items/{id}`: Single item profile with breakdown across locations.
+  - `GET /api/v1/logistics/locations`: List inventory locations.
+  - `GET /api/v1/logistics/movements`: Immutable double-entry ledger movements history.
+  - `POST /api/v1/logistics/movements`: Append-only movement recording via ChangeService (`RECEIVE`, `RESERVE`, `RELEASE`, `TRANSFER_OUT`, `TRANSFER_IN`, `ISSUE`, `RETURN`, `DAMAGE`, `SEND_REPAIR`, `REPAIR_DONE`, `ADJUST`).
+  - `GET /api/v1/logistics/transfers`: Active and past inter-venue/location transfers.
+  - `POST /api/v1/logistics/transfers`: Initiates transfer with ETA (stock in `TRANSFER_OUT` counts at neither endpoint).
+  - `POST /api/v1/logistics/transfers/{id}/complete`: Explicit transfer completion step writing `TRANSFER_IN` to destination.
+  - `GET /api/v1/logistics/equipment/find`: Searches equipment units for venue session windows; evaluates on-site units and transfer feasibility based on `travel_time` + 15m transfer buffer.
+  - `GET /api/v1/logistics/equipment/{id}/failure-analysis`: Returns dependent sessions, alternative units, and transfer feasibility.
+  - `POST /api/v1/logistics/stocktake`: Stocktake discrepancy reconciliation with mandatory reason.
+  - `GET /api/v1/logistics/ledger/balance`: Mathematical consistency check proving movements balance across the festival.
+  - `GET /api/v1/logistics/reconciliation-flags`: Surfaces reconciliation flags (the 'camera' 31 units under repair case and 'tables' needs check condition).
+  - `GET /api/v1/logistics/reports/inventory-plan`: Exports `inventory_plan.csv`.
+  - `GET /api/v1/logistics/reports/equipment-gap`: Exports `equipment_gap.csv`.
+  - `GET /api/v1/merchandise/catalog`: Catalog items with size-wise stock buckets.
+  - `GET /api/v1/merchandise/policy`: Entitlement policy (1 per confirmed participant for per-head items: T-shirt, ID card, lanyard, tote; winner medals are not per-head) and size demand/shortage analysis.
+  - `POST /api/v1/merchandise/issue`: Transactional, idempotent merchandise issuance to canonical participant; atomic claim insert + ISSUE ledger movement; returns 409 `ALREADY_ISSUED` on repeat attempt with original timestamp, counter, and staff member.
+  - `POST /api/v1/merchandise/void`: Void claim with mandatory reason and Director review; returns item to `awaiting_return`.
+  - `GET /api/v1/merchandise/qr/{participant_id}`: Signed HMAC token using `QR_SECRET`, SVG generation, and checklist.
+  - `POST /api/v1/merchandise/scan`: Validates QR token and returns canonical participant entitlements (masked for volunteers).
+  - `POST /api/v1/merchandise/sync`: Offline batch synchronization keyed idempotently by `client_op_id`.
+- **Public Functions Added**:
+  - `services/logistics/public.py`: `summary`, `risks` (camera repair deficit, tables unverified, overdue transfers), `dependents`, `inventory_plan_csv`, `equipment_gap_csv`.
+  - `services/merchandise/public.py`: `summary`, `risks` (size shortages, missing sizes requiring collection), `dependents`.
+  - `engines/equipment_allocation.py`: Refined `LedgerEquipmentAvailabilityAdapter` implementing `EquipmentAvailabilityPort` for Prompt 7 conflict detector.
+  - Registered participant 360 dynamic section `'merchandise'`.
+- **Breaking Changes / Schema Migrations**:
+  - Added `inventory_item`, `inventory_location`, `inventory_movement`, `inventory_transfer`, `merch_claim`, `entitlement_policy` tables.
+  - `inventory_movement` enforces double-entry invariant: quantities are strictly positive; physical inventory is never overwritten.
+  - Unique DB constraint on `merch_claim` for `(canonical_participant_id, item_id)` ensures strict single-claim semantics.
+  - Order 40 seeder ingests `inventory_logistics.csv` and `inventory_merch.csv`.
+- **Action Required**:
+  - Run database seeders to populate initial logistics and merchandise inventory.
