@@ -7,6 +7,7 @@ from typing import Dict, Generator, Optional
 from sqlalchemy import event
 from sqlmodel import Session, SQLModel, create_engine
 
+import app.models  # noqa: F401  # ensure all SQLModel tables are registered
 from app.core.config import settings
 
 # Engine cache
@@ -54,6 +55,7 @@ def get_engine(database_url: Optional[str] = None):
     url = database_url or settings.DATABASE_URL
     if url not in _engines:
         _engines[url] = _build_engine(url)
+        SQLModel.metadata.create_all(_engines[url])
     return _engines[url]
 
 @contextmanager
