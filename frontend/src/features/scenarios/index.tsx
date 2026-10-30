@@ -15,3 +15,4 @@ export const scenariosFeature: FeatureDefinition = {
 };
 
 export default scenariosFeature;
+

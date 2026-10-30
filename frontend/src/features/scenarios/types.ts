@@ -48,3 +48,4 @@ export interface SimulationScenario {
   }>;
   selectedPlanId?: string;
 }
+

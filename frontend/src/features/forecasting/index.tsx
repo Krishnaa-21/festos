@@ -15,3 +15,4 @@ export const forecastingFeature: FeatureDefinition = {
 };
 
 export default forecastingFeature;
+

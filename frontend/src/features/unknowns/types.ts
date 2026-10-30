@@ -59,3 +59,4 @@ export interface WhyNotParticipantExplanation {
   }>;
   availableOptions: string[];
 }
+

@@ -15,3 +15,4 @@ export const decisionsFeature: FeatureDefinition = {
 };
 
 export default decisionsFeature;
+

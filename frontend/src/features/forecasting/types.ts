@@ -32,3 +32,4 @@ export interface ForecastDataset {
   points: ForecastTimeSeriesPoint[];
   relatedAssumptionKeys: string[];
 }
+

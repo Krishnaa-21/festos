@@ -850,3 +850,4 @@ test.describe("FestOS Operational Insight & Command Acceptance Flows (Prompt 18)
     await expect(page.locator("text=DISCARDED")).toBeVisible();
   });
 });
+
