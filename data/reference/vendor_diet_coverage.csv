@@ -1,0 +1,8 @@
+diet,people_in_file,vendors_declaring,vendors_with_valid_cert_all_fest,valid_vendor_capacity,status
+Vegetarian,439,14,6,1590,ok
+Non-vegetarian,414,5,2,444,ok
+Halal,411,7,4,1077,ok
+Jain,380,1,0,0,GAP: no compliant vendor
+Gluten-free,387,1,0,0,GAP: no compliant vendor
+Nut allergy,411,0,0,0,GAP: no compliant vendor
+(blank = UNKNOWN),394,,,,UNKNOWN: not treated as no restriction; confirm at check-in

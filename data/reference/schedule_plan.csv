@@ -1,0 +1,173 @@
+event_id,event,round,heat,venue_id,venue,start,end,entrants,entrant_basis,volunteers_needed,equipment
+E08,Treasure Hunt,single,E1,V01,Main Stage,2026-10-30 08:15:00,2026-10-30 09:00:00,23,registered (assigned),2,projector; 2 extension cords
+E29,Treasure Trivia,prelims,E1,V02,LT-1,2026-10-30 08:15:00,2026-10-30 09:00:00,31,registered (assigned),11,2 mics; 1 speaker
+E16,Short Film,single,E1,V03,LT-2,2026-10-30 08:15:00,2026-10-30 09:45:00,15,registered (assigned),7,barricades; tables
+E15,Photography Walk,prelims,E1,V04,Amphitheatre,2026-10-30 08:15:00,2026-10-30 10:15:00,20,registered (assigned),12,barricades; tables
+E04,Biz Quiz,single,E1,V05,Quadrangle,2026-10-30 08:15:00,2026-10-30 10:15:00,2,registered (assigned),10,no special equipment
+E24,Futsal,single,E1,V06,Hostel Lawn,2026-10-30 08:15:00,2026-10-30 09:45:00,4,registered (assigned),4,barricades; tables
+E06,Street Play,prelims,E1,V07,Seminar Hall,2026-10-30 08:15:00,2026-10-30 09:00:00,17,registered (assigned),2,barricades; tables
+E03,Case Clash,prelims,E1,V08,Sports Complex,2026-10-30 08:15:00,2026-10-30 10:15:00,3,registered (assigned),10,projector; 2 extension cords
+E26,Badminton,prelims,E1,V09,Library Hall,2026-10-30 08:15:00,2026-10-30 10:15:00,20,registered (assigned),2,barricades; tables
+E31,Grand Finale,prelims,E1,V01,Main Stage,2026-10-30 09:30:00,2026-10-30 11:30:00,39,registered (assigned),3,no special equipment
+E22,Open Mic,prelims,E1,V02,LT-1,2026-10-30 09:30:00,2026-10-30 11:30:00,24,registered (assigned),9,projector; 2 extension cords
+E06,Street Play,prelims,E2,V07,Seminar Hall,2026-10-30 09:30:00,2026-10-30 10:15:00,1,registered (assigned),2,barricades; tables
+E29,Treasure Trivia,prelims,E2,V03,LT-2,2026-10-30 10:15:00,2026-10-30 11:00:00,2,registered (assigned),11,2 mics; 1 speaker
+E07,Nukkad Natak,prelims,E1,V06,Hostel Lawn,2026-10-30 10:15:00,2026-10-30 11:00:00,23,registered (assigned),2,camera; tripod
+E29,Treasure Trivia,prelims,E3,V04,Amphitheatre,2026-10-30 10:45:00,2026-10-30 11:30:00,1,registered (assigned),11,2 mics; 1 speaker
+E07,Nukkad Natak,prelims,E2,V05,Quadrangle,2026-10-30 10:45:00,2026-10-30 11:30:00,1,registered (assigned),2,camera; tripod
+E06,Street Play,prelims,E3,V07,Seminar Hall,2026-10-30 10:45:00,2026-10-30 11:30:00,1,registered (assigned),2,barricades; tables
+E17,Ad-Mad,prelims,E1,V08,Sports Complex,2026-10-30 10:45:00,2026-10-30 12:45:00,23,registered (assigned),3,no special equipment
+E26,Badminton,prelims,E2,V09,Library Hall,2026-10-30 10:45:00,2026-10-30 12:45:00,1,registered (assigned),2,barricades; tables
+E14,Stand-up,prelims,E1,V03,LT-2,2026-10-30 11:30:00,2026-10-30 13:30:00,34,registered (assigned),4,projector; 2 extension cords
+E02,Pitch Perfect,prelims,E1,V06,Hostel Lawn,2026-10-30 11:30:00,2026-10-30 12:15:00,27,registered (assigned),11,no special equipment
+E28,Robo Race,single,E1,V01,Main Stage,2026-10-30 12:00:00,2026-10-30 14:00:00,45,registered (assigned),2,no special equipment
+E14,Stand-up,prelims,E2,V02,LT-1,2026-10-30 12:00:00,2026-10-30 14:00:00,1,registered (assigned),4,projector; 2 extension cords
+E22,Open Mic,prelims,E2,V04,Amphitheatre,2026-10-30 12:00:00,2026-10-30 14:00:00,2,registered (assigned),9,projector; 2 extension cords
+E07,Nukkad Natak,prelims,E3,V05,Quadrangle,2026-10-30 12:00:00,2026-10-30 12:45:00,4,registered (assigned),2,camera; tripod
+E23,Chess,prelims,E1,V07,Seminar Hall,2026-10-30 12:00:00,2026-10-30 14:00:00,26,registered (assigned),5,camera; tripod
+E02,Pitch Perfect,prelims,E2,V06,Hostel Lawn,2026-10-30 12:45:00,2026-10-30 13:30:00,1,registered (assigned),11,no special equipment
+E18,Stock Wars,prelims,E1,V05,Quadrangle,2026-10-30 13:15:00,2026-10-30 14:45:00,33,registered (assigned),6,no special equipment
+E20,Dance Face-off,single,E1,V08,Sports Complex,2026-10-30 13:15:00,2026-10-30 14:15:00,28,registered (assigned),10,no special equipment
+E16,Short Film,single,E2,V09,Library Hall,2026-10-30 13:15:00,2026-10-30 14:45:00,8,registered (assigned),7,barricades; tables
+E19,IPL Auction,prelims,E1,V03,LT-2,2026-10-30 14:00:00,2026-10-30 15:00:00,30,registered (assigned),10,2 mics; 1 speaker
+E13,Poetry Slam,prelims,E1,V06,Hostel Lawn,2026-10-30 14:00:00,2026-10-30 16:00:00,44,registered (assigned),11,projector; 2 extension cords
+E15,Photography Walk,prelims,E2,V01,Main Stage,2026-10-30 14:30:00,2026-10-30 16:30:00,3,registered (assigned),12,barricades; tables
+E19,IPL Auction,prelims,E2,V02,LT-1,2026-10-30 14:30:00,2026-10-30 15:30:00,2,registered (assigned),10,2 mics; 1 speaker
+E14,Stand-up,prelims,E3,V04,Amphitheatre,2026-10-30 14:30:00,2026-10-30 16:30:00,1,registered (assigned),4,projector; 2 extension cords
+E23,Chess,prelims,E2,V07,Seminar Hall,2026-10-30 14:30:00,2026-10-30 16:30:00,1,registered (assigned),5,camera; tripod
+E20,Dance Face-off,single,E2,V08,Sports Complex,2026-10-30 14:45:00,2026-10-30 15:45:00,4,registered (assigned),10,no special equipment
+E18,Stock Wars,prelims,E2,V05,Quadrangle,2026-10-30 15:15:00,2026-10-30 16:45:00,5,registered (assigned),6,no special equipment
+E30,Startup Showcase,prelims,E1,V09,Library Hall,2026-10-30 15:15:00,2026-10-30 17:15:00,25,registered (assigned),11,barricades; tables
+E20,Dance Face-off,single,E3,V03,LT-2,2026-10-30 15:30:00,2026-10-30 16:30:00,1,registered (assigned),10,no special equipment
+E05,Battle of Bands,prelims,E1,V02,LT-1,2026-10-30 16:00:00,2026-10-30 18:00:00,49,registered (assigned),12,barricades; tables
+E04,Biz Quiz,single,E2,V08,Sports Complex,2026-10-30 16:15:00,2026-10-30 18:15:00,35,registered (assigned),10,no special equipment
+E13,Poetry Slam,prelims,E2,V06,Hostel Lawn,2026-10-30 16:30:00,2026-10-30 18:30:00,3,registered (assigned),11,projector; 2 extension cords
+E22,Open Mic,prelims,E3,V01,Main Stage,2026-10-30 17:00:00,2026-10-30 19:00:00,7,registered (assigned),9,projector; 2 extension cords
+E21,Fashion Show,prelims,E1,V03,LT-2,2026-10-30 17:00:00,2026-10-30 18:00:00,113,registered (assigned),7,barricades; tables
+E24,Futsal,single,E2,V04,Amphitheatre,2026-10-30 17:00:00,2026-10-30 18:30:00,21,registered (assigned),4,barricades; tables
+E03,Case Clash,prelims,E2,V07,Seminar Hall,2026-10-30 17:00:00,2026-10-30 19:00:00,32,registered (assigned),10,projector; 2 extension cords
+E17,Ad-Mad,prelims,E2,V09,Library Hall,2026-10-30 17:45:00,2026-10-30 19:45:00,9,registered (assigned),3,no special equipment
+E09,Code Relay,prelims,E1,V02,LT-1,2026-10-30 18:30:00,2026-10-30 20:30:00,108,registered (assigned),2,barricades; tables
+E02,Pitch Perfect,prelims,E3,V08,Sports Complex,2026-10-30 18:45:00,2026-10-30 19:30:00,10,registered (assigned),11,no special equipment
+E20,Dance Face-off,single,E4,V03,LT-2,2026-10-30 19:00:00,2026-10-30 20:00:00,1,registered (assigned),10,no special equipment
+E21,Fashion Show,prelims,E2,V04,Amphitheatre,2026-10-30 19:00:00,2026-10-30 20:00:00,26,registered (assigned),7,barricades; tables
+E13,Poetry Slam,prelims,E3,V06,Hostel Lawn,2026-10-30 19:00:00,2026-10-30 21:00:00,4,registered (assigned),11,projector; 2 extension cords
+E09,Code Relay,prelims,E2,V01,Main Stage,2026-10-30 19:30:00,2026-10-30 21:30:00,17,registered (assigned),2,barricades; tables
+E05,Battle of Bands,prelims,E2,V07,Seminar Hall,2026-10-30 19:30:00,2026-10-30 21:30:00,8,registered (assigned),12,barricades; tables
+E11,Debate,prelims,E1,V08,Sports Complex,2026-10-30 20:00:00,2026-10-30 21:00:00,100,registered (assigned),5,barricades; tables
+E10,Design Sprint,prelims,E1,V09,Library Hall,2026-10-30 20:15:00,2026-10-30 21:00:00,36,registered (assigned),3,camera; tripod
+E11,Debate,prelims,E2,V03,LT-2,2026-10-30 20:30:00,2026-10-30 21:30:00,6,registered (assigned),5,barricades; tables
+E25,Basketball,prelims,E1,V04,Amphitheatre,2026-10-30 20:30:00,2026-10-30 21:30:00,118,registered (assigned),4,no special equipment
+E10,Design Sprint,prelims,E2,V02,LT-1,2026-10-30 21:00:00,2026-10-30 21:45:00,2,registered (assigned),3,camera; tripod
+E08,Treasure Hunt,single,M1,V01,Main Stage,2026-10-31 08:15:00,2026-10-31 09:00:00,60,registered (assigned),2,projector; 2 extension cords
+E30,Startup Showcase,prelims,M1,V02,LT-1,2026-10-31 08:15:00,2026-10-31 10:15:00,130,registered (assigned),11,barricades; tables
+E16,Short Film,single,M1,V03,LT-2,2026-10-31 08:15:00,2026-10-31 09:45:00,133,registered (assigned),7,barricades; tables
+E15,Photography Walk,prelims,M1,V04,Amphitheatre,2026-10-31 08:15:00,2026-10-31 10:15:00,115,registered (assigned),12,barricades; tables
+E04,Biz Quiz,single,M1,V05,Quadrangle,2026-10-31 08:15:00,2026-10-31 10:15:00,18,registered (assigned),10,no special equipment
+E24,Futsal,single,M1,V06,Hostel Lawn,2026-10-31 08:15:00,2026-10-31 09:45:00,100,registered (assigned),4,barricades; tables
+E26,Badminton,prelims,M2,V07,Seminar Hall,2026-10-31 08:15:00,2026-10-31 10:15:00,19,registered (assigned),2,barricades; tables
+E03,Case Clash,prelims,M1,V08,Sports Complex,2026-10-31 08:15:00,2026-10-31 10:15:00,100,registered (assigned),10,projector; 2 extension cords
+E26,Badminton,prelims,M1,V09,Library Hall,2026-10-31 08:15:00,2026-10-31 10:15:00,60,registered (assigned),2,barricades; tables
+E08,Treasure Hunt,single,M2,V01,Main Stage,2026-10-31 09:30:00,2026-10-31 10:15:00,60,registered (assigned),2,projector; 2 extension cords
+E16,Short Film,single,M2,V03,LT-2,2026-10-31 10:15:00,2026-10-31 11:45:00,3,registered (assigned),7,barricades; tables
+E24,Futsal,single,M2,V06,Hostel Lawn,2026-10-31 10:15:00,2026-10-31 11:45:00,1,registered (assigned),4,barricades; tables
+E08,Treasure Hunt,single,M3,V01,Main Stage,2026-10-31 10:45:00,2026-10-31 11:30:00,22,registered (assigned),2,projector; 2 extension cords
+E30,Startup Showcase,prelims,M2,V02,LT-1,2026-10-31 10:45:00,2026-10-31 12:45:00,13,registered (assigned),11,barricades; tables
+E15,Photography Walk,prelims,M2,V04,Amphitheatre,2026-10-31 10:45:00,2026-10-31 12:45:00,18,registered (assigned),12,barricades; tables
+E04,Biz Quiz,single,M2,V05,Quadrangle,2026-10-31 10:45:00,2026-10-31 12:45:00,6,registered (assigned),10,no special equipment
+E06,Street Play,prelims,M1,V07,Seminar Hall,2026-10-31 10:45:00,2026-10-31 11:30:00,60,registered (assigned),2,barricades; tables
+E03,Case Clash,prelims,M2,V08,Sports Complex,2026-10-31 10:45:00,2026-10-31 12:45:00,21,registered (assigned),10,projector; 2 extension cords
+E26,Badminton,prelims,M3,V09,Library Hall,2026-10-31 10:45:00,2026-10-31 12:45:00,60,registered (assigned),2,barricades; tables
+E31,Grand Finale,prelims,M1,V01,Main Stage,2026-10-31 12:00:00,2026-10-31 14:00:00,60,registered (assigned),3,no special equipment
+E06,Street Play,prelims,M2,V07,Seminar Hall,2026-10-31 12:00:00,2026-10-31 12:45:00,60,registered (assigned),2,barricades; tables
+E16,Short Film,single,M3,V03,LT-2,2026-10-31 12:15:00,2026-10-31 13:45:00,6,registered (assigned),7,barricades; tables
+E07,Nukkad Natak,prelims,M1,V06,Hostel Lawn,2026-10-31 12:15:00,2026-10-31 13:00:00,100,registered (assigned),2,camera; tripod
+E29,Treasure Trivia,prelims,M1,V02,LT-1,2026-10-31 13:15:00,2026-10-31 14:00:00,6,registered (assigned),11,2 mics; 1 speaker
+E15,Photography Walk,prelims,M3,V04,Amphitheatre,2026-10-31 13:15:00,2026-10-31 15:15:00,1,registered (assigned),12,barricades; tables
+E24,Futsal,single,M3,V05,Quadrangle,2026-10-31 13:15:00,2026-10-31 14:45:00,32,registered (assigned),4,barricades; tables
+E23,Chess,prelims,M1,V07,Seminar Hall,2026-10-31 13:15:00,2026-10-31 15:15:00,60,registered (assigned),5,camera; tripod
+E03,Case Clash,prelims,M3,V08,Sports Complex,2026-10-31 13:15:00,2026-10-31 15:15:00,2,registered (assigned),10,projector; 2 extension cords
+E06,Street Play,prelims,M3,V09,Library Hall,2026-10-31 13:15:00,2026-10-31 14:00:00,9,registered (assigned),2,barricades; tables
+E07,Nukkad Natak,prelims,M2,V06,Hostel Lawn,2026-10-31 13:30:00,2026-10-31 14:15:00,5,registered (assigned),2,camera; tripod
+E22,Open Mic,prelims,M1,V03,LT-2,2026-10-31 14:15:00,2026-10-31 16:15:00,126,registered (assigned),9,projector; 2 extension cords
+E31,Grand Finale,prelims,M2,V01,Main Stage,2026-10-31 14:30:00,2026-10-31 16:30:00,55,registered (assigned),3,no special equipment
+E14,Stand-up,prelims,M1,V02,LT-1,2026-10-31 14:30:00,2026-10-31 16:30:00,112,registered (assigned),4,projector; 2 extension cords
+E23,Chess,prelims,M2,V09,Library Hall,2026-10-31 14:30:00,2026-10-31 16:30:00,49,registered (assigned),5,camera; tripod
+E02,Pitch Perfect,prelims,M1,V06,Hostel Lawn,2026-10-31 14:45:00,2026-10-31 15:30:00,15,registered (assigned),11,no special equipment
+E07,Nukkad Natak,prelims,M3,V05,Quadrangle,2026-10-31 15:15:00,2026-10-31 16:00:00,15,registered (assigned),2,camera; tripod
+E29,Treasure Trivia,prelims,M2,V04,Amphitheatre,2026-10-31 15:45:00,2026-10-31 16:30:00,123,registered (assigned),11,2 mics; 1 speaker
+E17,Ad-Mad,prelims,M1,V07,Seminar Hall,2026-10-31 15:45:00,2026-10-31 17:45:00,56,registered (assigned),3,no special equipment
+E20,Dance Face-off,single,M1,V08,Sports Complex,2026-10-31 15:45:00,2026-10-31 16:45:00,100,registered (assigned),10,no special equipment
+E18,Stock Wars,prelims,M1,V06,Hostel Lawn,2026-10-31 16:00:00,2026-10-31 17:30:00,77,registered (assigned),6,no special equipment
+E02,Pitch Perfect,prelims,M2,V05,Quadrangle,2026-10-31 16:30:00,2026-10-31 17:15:00,89,registered (assigned),11,no special equipment
+E22,Open Mic,prelims,M2,V03,LT-2,2026-10-31 16:45:00,2026-10-31 18:45:00,10,registered (assigned),9,projector; 2 extension cords
+E28,Robo Race,single,M1,V01,Main Stage,2026-10-31 17:00:00,2026-10-31 19:00:00,60,registered (assigned),2,no special equipment
+E19,IPL Auction,prelims,M1,V02,LT-1,2026-10-31 17:00:00,2026-10-31 18:00:00,115,registered (assigned),10,2 mics; 1 speaker
+E14,Stand-up,prelims,M2,V04,Amphitheatre,2026-10-31 17:00:00,2026-10-31 19:00:00,14,registered (assigned),4,projector; 2 extension cords
+E23,Chess,prelims,M3,V09,Library Hall,2026-10-31 17:00:00,2026-10-31 19:00:00,1,registered (assigned),5,camera; tripod
+E20,Dance Face-off,single,M2,V08,Sports Complex,2026-10-31 17:15:00,2026-10-31 18:15:00,33,registered (assigned),10,no special equipment
+E02,Pitch Perfect,prelims,M3,V05,Quadrangle,2026-10-31 17:45:00,2026-10-31 18:30:00,5,registered (assigned),11,no special equipment
+E18,Stock Wars,prelims,M2,V06,Hostel Lawn,2026-10-31 18:00:00,2026-10-31 19:30:00,20,registered (assigned),6,no special equipment
+E17,Ad-Mad,prelims,M2,V07,Seminar Hall,2026-10-31 18:15:00,2026-10-31 20:15:00,13,registered (assigned),3,no special equipment
+E05,Battle of Bands,prelims,M1,V02,LT-1,2026-10-31 18:30:00,2026-10-31 20:30:00,97,registered (assigned),12,barricades; tables
+E20,Dance Face-off,single,M3,V08,Sports Complex,2026-10-31 18:45:00,2026-10-31 19:45:00,1,registered (assigned),10,no special equipment
+E13,Poetry Slam,prelims,M1,V05,Quadrangle,2026-10-31 19:00:00,2026-10-31 21:00:00,90,registered (assigned),11,projector; 2 extension cords
+E14,Stand-up,prelims,M3,V03,LT-2,2026-10-31 19:15:00,2026-10-31 21:15:00,2,registered (assigned),4,projector; 2 extension cords
+E28,Robo Race,single,M2,V01,Main Stage,2026-10-31 19:30:00,2026-10-31 21:30:00,42,registered (assigned),2,no special equipment
+E04,Biz Quiz,single,M3,V04,Amphitheatre,2026-10-31 19:30:00,2026-10-31 21:30:00,96,registered (assigned),10,no special equipment
+E17,Ad-Mad,prelims,M3,V09,Library Hall,2026-10-31 19:30:00,2026-10-31 21:30:00,60,registered (assigned),3,no special equipment
+E18,Stock Wars,prelims,M3,V06,Hostel Lawn,2026-10-31 20:00:00,2026-10-31 21:30:00,10,registered (assigned),6,no special equipment
+E24,Futsal,single,M4,V08,Sports Complex,2026-10-31 20:15:00,2026-10-31 21:45:00,3,registered (assigned),4,barricades; tables
+E19,IPL Auction,prelims,M2,V07,Seminar Hall,2026-10-31 20:45:00,2026-10-31 21:45:00,5,registered (assigned),10,2 mics; 1 speaker
+E10,Design Sprint,prelims,M1,V02,LT-1,2026-10-31 21:00:00,2026-10-31 21:45:00,101,registered (assigned),3,camera; tripod
+E08,Treasure Hunt,single,L1,V01,Main Stage,2026-11-01 08:15:00,2026-11-01 09:00:00,26,registered (assigned),2,projector; 2 extension cords
+E30,Startup Showcase,prelims,L1,V02,LT-1,2026-11-01 08:15:00,2026-11-01 10:15:00,19,registered (assigned),11,barricades; tables
+E16,Short Film,single,L1,V03,LT-2,2026-11-01 08:15:00,2026-11-01 09:45:00,22,registered (assigned),7,barricades; tables
+E15,Photography Walk,prelims,L1,V04,Amphitheatre,2026-11-01 08:15:00,2026-11-01 10:15:00,22,registered (assigned),12,barricades; tables
+E04,Biz Quiz,single,L1,V05,Quadrangle,2026-11-01 08:15:00,2026-11-01 10:15:00,10,registered (assigned),10,no special equipment
+E24,Futsal,single,L1,V06,Hostel Lawn,2026-11-01 08:15:00,2026-11-01 09:45:00,10,registered (assigned),4,barricades; tables
+E06,Street Play,prelims,L1,V07,Seminar Hall,2026-11-01 08:15:00,2026-11-01 09:00:00,25,registered (assigned),2,barricades; tables
+E03,Case Clash,prelims,L1,V08,Sports Complex,2026-11-01 08:15:00,2026-11-01 10:15:00,20,registered (assigned),10,projector; 2 extension cords
+E26,Badminton,prelims,L1,V09,Library Hall,2026-11-01 08:15:00,2026-11-01 10:15:00,26,registered (assigned),2,barricades; tables
+E31,Grand Finale,prelims,L1,V01,Main Stage,2026-11-01 09:30:00,2026-11-01 11:30:00,25,registered (assigned),3,no special equipment
+E23,Chess,prelims,L1,V07,Seminar Hall,2026-11-01 09:30:00,2026-11-01 11:30:00,10,registered (assigned),5,camera; tripod
+E16,Short Film,single,L2,V03,LT-2,2026-11-01 10:15:00,2026-11-01 11:45:00,1,registered (assigned),7,barricades; tables
+E24,Futsal,single,L2,V06,Hostel Lawn,2026-11-01 10:15:00,2026-11-01 11:45:00,2,registered (assigned),4,barricades; tables
+E30,Startup Showcase,prelims,L2,V02,LT-1,2026-11-01 10:45:00,2026-11-01 12:45:00,3,registered (assigned),11,barricades; tables
+E15,Photography Walk,prelims,L2,V04,Amphitheatre,2026-11-01 10:45:00,2026-11-01 12:45:00,5,registered (assigned),12,barricades; tables
+E04,Biz Quiz,single,L2,V05,Quadrangle,2026-11-01 10:45:00,2026-11-01 12:45:00,11,registered (assigned),10,no special equipment
+E03,Case Clash,prelims,L2,V08,Sports Complex,2026-11-01 10:45:00,2026-11-01 12:45:00,9,registered (assigned),10,projector; 2 extension cords
+E26,Badminton,prelims,L2,V09,Library Hall,2026-11-01 10:45:00,2026-11-01 12:45:00,3,registered (assigned),2,barricades; tables
+E28,Robo Race,single,L1,V01,Main Stage,2026-11-01 12:00:00,2026-11-01 14:00:00,25,registered (assigned),2,no special equipment
+E23,Chess,prelims,L2,V07,Seminar Hall,2026-11-01 12:00:00,2026-11-01 14:00:00,1,registered (assigned),5,camera; tripod
+E16,Short Film,single,L3,V03,LT-2,2026-11-01 12:15:00,2026-11-01 13:45:00,4,registered (assigned),7,barricades; tables
+E24,Futsal,single,L3,V06,Hostel Lawn,2026-11-01 12:15:00,2026-11-01 13:45:00,1,registered (assigned),4,barricades; tables
+E10,Design Sprint,prelims,L1,V02,LT-1,2026-11-01 13:15:00,2026-11-01 14:00:00,22,registered (assigned),3,camera; tripod
+E29,Treasure Trivia,prelims,L1,V04,Amphitheatre,2026-11-01 13:15:00,2026-11-01 14:00:00,26,registered (assigned),11,2 mics; 1 speaker
+E07,Nukkad Natak,prelims,L1,V05,Quadrangle,2026-11-01 13:15:00,2026-11-01 14:00:00,26,registered (assigned),2,camera; tripod
+E02,Pitch Perfect,prelims,L1,V08,Sports Complex,2026-11-01 13:15:00,2026-11-01 14:00:00,18,registered (assigned),11,no special equipment
+E06,Street Play,prelims,L2,V09,Library Hall,2026-11-01 13:15:00,2026-11-01 14:00:00,1,registered (assigned),2,barricades; tables
+E30,Startup Showcase,semis,1,V03,LT-2,2026-11-01 14:15:00,2026-11-01 16:15:00,97,ASSUMED qualifiers (unknown until results),11,barricades; tables
+E07,Nukkad Natak,semis,1,V06,Hostel Lawn,2026-11-01 14:15:00,2026-11-01 15:00:00,87,ASSUMED qualifiers (unknown until results),2,camera; tripod
+E31,Grand Finale,semis,1,V01,Main Stage,2026-11-01 14:30:00,2026-11-01 16:30:00,60,ASSUMED qualifiers (unknown until results),3,no special equipment
+E29,Treasure Trivia,semis,1,V02,LT-1,2026-11-01 14:30:00,2026-11-01 15:15:00,96,ASSUMED qualifiers (unknown until results),11,2 mics; 1 speaker
+E15,Photography Walk,semis,1,V04,Amphitheatre,2026-11-01 14:30:00,2026-11-01 16:30:00,95,ASSUMED qualifiers (unknown until results),12,barricades; tables
+E02,Pitch Perfect,semis,1,V05,Quadrangle,2026-11-01 14:30:00,2026-11-01 15:15:00,85,ASSUMED qualifiers (unknown until results),11,no special equipment
+E26,Badminton,semis,2,V07,Seminar Hall,2026-11-01 14:30:00,2026-11-01 16:30:00,36,ASSUMED qualifiers (unknown until results),2,barricades; tables
+E03,Case Clash,semis,1,V08,Sports Complex,2026-11-01 14:30:00,2026-11-01 16:30:00,96,ASSUMED qualifiers (unknown until results),10,projector; 2 extension cords
+E26,Badminton,semis,1,V09,Library Hall,2026-11-01 14:30:00,2026-11-01 16:30:00,60,ASSUMED qualifiers (unknown until results),2,barricades; tables
+E18,Stock Wars,semis,1,V06,Hostel Lawn,2026-11-01 15:30:00,2026-11-01 17:00:00,84,ASSUMED qualifiers (unknown until results),6,no special equipment
+E22,Open Mic,semis,1,V02,LT-1,2026-11-01 15:45:00,2026-11-01 17:45:00,95,ASSUMED qualifiers (unknown until results),9,projector; 2 extension cords
+E13,Poetry Slam,semis,1,V05,Quadrangle,2026-11-01 15:45:00,2026-11-01 17:45:00,84,ASSUMED qualifiers (unknown until results),11,projector; 2 extension cords
+E14,Stand-up,semis,1,V03,LT-2,2026-11-01 16:45:00,2026-11-01 18:45:00,94,ASSUMED qualifiers (unknown until results),4,projector; 2 extension cords
+E31,Grand Finale,semis,2,V01,Main Stage,2026-11-01 17:00:00,2026-11-01 19:00:00,30,ASSUMED qualifiers (unknown until results),3,no special equipment
+E21,Fashion Show,semis,1,V04,Amphitheatre,2026-11-01 17:00:00,2026-11-01 18:00:00,91,ASSUMED qualifiers (unknown until results),7,barricades; tables
+E06,Street Play,semis,2,V07,Seminar Hall,2026-11-01 17:00:00,2026-11-01 17:45:00,27,ASSUMED qualifiers (unknown until results),2,barricades; tables
+E17,Ad-Mad,semis,1,V08,Sports Complex,2026-11-01 17:00:00,2026-11-01 19:00:00,93,ASSUMED qualifiers (unknown until results),3,no special equipment
+E06,Street Play,semis,1,V09,Library Hall,2026-11-01 17:00:00,2026-11-01 17:45:00,60,ASSUMED qualifiers (unknown until results),2,barricades; tables
+E07,Nukkad Natak,finals,1,V06,Hostel Lawn,2026-11-01 17:30:00,2026-11-01 18:15:00,18,ASSUMED qualifiers (unknown until results),2,camera; tripod
+E19,IPL Auction,semis,1,V02,LT-1,2026-11-01 18:15:00,2026-11-01 19:15:00,93,ASSUMED qualifiers (unknown until results),10,2 mics; 1 speaker
+E02,Pitch Perfect,finals,1,V05,Quadrangle,2026-11-01 18:15:00,2026-11-01 19:00:00,17,ASSUMED qualifiers (unknown until results),11,no special equipment
+E10,Design Sprint,semis,1,V07,Seminar Hall,2026-11-01 18:15:00,2026-11-01 19:00:00,60,ASSUMED qualifiers (unknown until results),3,camera; tripod
+E10,Design Sprint,semis,2,V09,Library Hall,2026-11-01 18:15:00,2026-11-01 19:00:00,27,ASSUMED qualifiers (unknown until results),3,camera; tripod
+E25,Basketball,semis,1,V04,Amphitheatre,2026-11-01 18:30:00,2026-11-01 19:30:00,89,ASSUMED qualifiers (unknown until results),4,no special equipment

@@ -1,0 +1,9 @@
+item,peak_concurrent_need,good,needs_check,under_repair,status
+barricade,6,50,20,35,OK
+camera,3,0,0,31,SHORT even with needs-check units
+extension cord,6,63,0,24,OK
+mic,4,81,0,27,OK
+projector,3,35,9,4,OK
+speaker,2,9,16,30,OK
+table,6,8,42,25,OK
+tripod,3,18,58,0,OK

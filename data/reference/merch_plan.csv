@@ -1,0 +1,11 @@
+item,size,qty,reserved,issuable,demand_raw,shortfall,note
+T-shirt,S,449,14,435,563,128,demand = one per participant-record
+T-shirt,M,115,6,109,572,463,demand = one per participant-record
+T-shirt,L,234,15,219,596,377,demand = one per participant-record
+T-shirt,XL,713,29,684,569,0,demand = one per participant-record
+T-shirt,XXL,136,25,111,536,425,demand = one per participant-record
+ID card,NA,1367,22,1345,2836,1491,demand = one per participant-record
+lanyard,NA,2150,1,2149,2836,687,demand = one per participant-record
+tote,NA,829,12,817,2836,2019,demand = one per participant-record
+winner medal,NA,2269,16,2253,0,0,demand depends on winners: not a per-head item
+special badge,NA,905,23,882,2836,1954,demand = one per participant-record

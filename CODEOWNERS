@@ -1,0 +1,127 @@
+# FestOS CODEOWNERS
+# Rule: Never edit a file you do not own except by PR with its owner as reviewer (label: cross-owner)
+
+# Default root & infrastructure
+* @p1
+
+# Root configs & ops
+/Makefile @p1
+/docker-compose.yml @p1
+/.env.example @p1
+/.github/ @p1
+/scripts/ @p1
+
+# Core ownership
+/backend/app/core/config.py @p1
+/backend/app/core/db.py @p1
+/backend/app/core/errors.py @p1
+/backend/app/core/clock.py @p1
+/backend/app/core/scoring.py @p1
+/backend/app/core/bus.py @p1
+/backend/app/core/registry.py @p1
+/backend/app/core/idempotency.py @p1
+/backend/app/core/change_service.py @p1
+
+/backend/app/core/audit.py @p3
+/backend/app/core/security.py @p3
+/backend/app/core/rbac.py @p3
+/backend/app/core/masking.py @p3
+/backend/app/core/deps.py @p3
+
+# Schemas
+/backend/app/schemas/common.py @p1
+
+# Models
+/backend/app/models/participants.py @p1
+/backend/app/models/events.py @p1
+/backend/app/models/inventory.py @p1
+/backend/app/models/staff.py @p1
+/backend/app/models/transport.py @p1
+/backend/app/models/change.py @p1
+
+/backend/app/models/accommodation.py @p2
+/backend/app/models/vendors.py @p2
+/backend/app/models/ops.py @p2
+
+/backend/app/models/audit.py @p3
+
+# Seeders
+/backend/app/seed/registry.py @p1
+/backend/app/seed/users.py @p3
+
+# P1 Modules (Services, API, Tests, Features)
+/backend/app/services/participants/ @p1
+/backend/app/services/contingents/ @p1
+/backend/app/services/reconciliation/ @p1
+/backend/app/services/events/ @p1
+/backend/app/services/venues/ @p1
+/backend/app/services/schedule/ @p1
+/backend/app/services/logistics/ @p1
+/backend/app/services/merchandise/ @p1
+/backend/app/services/staff/ @p1
+/backend/app/services/transport/ @p1
+/backend/app/services/dashboard/ @p1
+/backend/app/services/decisions/ @p1
+/backend/app/services/scenarios/ @p1
+/backend/app/services/commands/ @p1
+/backend/app/services/reports/ @p1
+
+/backend/tests/participants/ @p1
+/backend/tests/contingents/ @p1
+/backend/tests/reconciliation/ @p1
+/backend/tests/events/ @p1
+/backend/tests/venues/ @p1
+/backend/tests/schedule/ @p1
+/backend/tests/logistics/ @p1
+/backend/tests/merchandise/ @p1
+/backend/tests/staff/ @p1
+/backend/tests/transport/ @p1
+/backend/tests/dashboard/ @p1
+/backend/tests/decisions/ @p1
+/backend/tests/scenarios/ @p1
+/backend/tests/commands/ @p1
+/backend/tests/reports/ @p1
+
+# P2 Modules (Services, API, Tests, Features)
+/backend/app/services/imports/ @p2
+/backend/app/services/assumptions/ @p2
+/backend/app/services/accommodation/ @p2
+/backend/app/services/checkin/ @p2
+/backend/app/services/vendors/ @p2
+/backend/app/services/food/ @p2
+/backend/app/services/finance/ @p2
+/backend/app/services/notifications/ @p2
+/backend/app/services/incidents/ @p2
+/backend/app/services/impact/ @p2
+/backend/app/services/unknowns/ @p2
+/backend/app/services/premortem/ @p2
+/backend/app/services/forecasting/ @p2
+
+/backend/tests/imports/ @p2
+/backend/tests/assumptions/ @p2
+/backend/tests/accommodation/ @p2
+/backend/tests/checkin/ @p2
+/backend/tests/vendors/ @p2
+/backend/tests/food/ @p2
+/backend/tests/finance/ @p2
+/backend/tests/notifications/ @p2
+/backend/tests/incidents/ @p2
+/backend/tests/impact/ @p2
+/backend/tests/unknowns/ @p2
+/backend/tests/premortem/ @p2
+/backend/tests/forecasting/ @p2
+
+# P3 Modules (Services, API, Tests, Features)
+/backend/app/services/auth/ @p3
+/backend/app/services/audit/ @p3
+/backend/app/services/approvals/ @p3
+/backend/app/services/overrides/ @p3
+
+/backend/tests/auth/ @p3
+/backend/tests/audit/ @p3
+/backend/tests/approvals/ @p3
+/backend/tests/overrides/ @p3
+
+# Frontend (P1 initial scaffold, P3 owns ongoing frontend and e2e)
+/frontend/ @p3
+/frontend/e2e/ @p3
