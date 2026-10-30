@@ -21,6 +21,7 @@ import {
   Skeleton,
 } from "../../components/ui";
 import { api } from "../../api/client";
+import { ParticipantAccommodationTab } from "../accommodation";
 
 export interface Participant360Data {
   participant: {
@@ -576,42 +577,7 @@ export const Participant360Drawer: React.FC<Participant360DrawerProps> = ({
 
             {/* TAB 3: Accommodation */}
             {activeTab === "accommodation" && (
-              <div className="space-y-4 text-xs">
-                <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="font-semibold text-white">Bed Assignment Status</span>
-                    <Badge variant="outline" className="border-indigo-500/30 text-indigo-300">
-                      {data.sections?.accommodation?.status || "PENDING"}
-                    </Badge>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3 text-xs">
-                    <div>
-                      <span className="text-slate-400 text-[11px] block">Allocated Room</span>
-                      <span className="text-white font-medium">
-                        {data.sections?.accommodation?.room || "Not yet assigned (Plan pending)"}
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-slate-400 text-[11px] block">Active Optimization Plan</span>
-                      <span className="text-slate-300 font-medium">
-                        {data.sections?.accommodation?.plan_kind || "Plan A (Default)"}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-2">
-                  <span className="font-semibold text-white block">Accessibility & Safety Flags</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-slate-400">Ground Floor Required:</span>
-                    <Badge triState={data.accessibility.requires_ground_floor ? "YES" : "NO"} size="sm" />
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-slate-400">Accessible Transit:</span>
-                    <Badge triState={data.accessibility.requires_accessible_transit ? "YES" : "NO"} size="sm" />
-                  </div>
-                </div>
-              </div>
+              <ParticipantAccommodationTab participantId={participantId} data={data} />
             )}
 
             {/* TAB 4: Merchandise */}

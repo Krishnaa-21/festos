@@ -1,0 +1,55 @@
+file: participants.csv
+entity: participant
+target_table: participant
+id_prefix: par_
+primary_key: id
+columns:
+  participant_id:
+    canonical: source_row_id
+    synonyms: [id, pid, participant_id, reg_no]
+  name:
+    canonical: name
+    synonyms: [name, full_name, participant_name]
+    required: true
+  college:
+    canonical: college
+    synonyms: [college, institution, university, institute]
+  contingent_id:
+    canonical: contingent_id
+    synonyms: [contingent_id, contingent, cid]
+    required: true
+
+  gender_as_given:
+    canonical: gender
+    synonyms: [gender_as_given, gender, sex]
+    normalizer: gender
+  age:
+    canonical: age
+    synonyms: [age]
+    type: integer
+  contact:
+    canonical: phone
+    synonyms: [contact, phone, mobile, phone_number, contact_number]
+  accessibility_needs:
+    canonical: accessibility_needs
+    synonyms: [accessibility_needs, accessibility, special_needs]
+    normalizer: accessibility
+  dietary_needs:
+    canonical: diet
+    synonyms: [dietary_needs, diet, food_preference, meals]
+    normalizer: diet
+  arrival_datetime:
+    canonical: arrival_at
+    synonyms: [arrival_datetime, arrival, arrival_time, eta]
+    type: datetime
+  departure_datetime:
+    canonical: departure_at
+    synonyms: [departure_datetime, departure, departure_time, etd]
+    type: datetime
+  accommodation_requested:
+    canonical: accommodation_requested
+    synonyms: [accommodation_requested, accommodation, housing_needed, hostel_needed]
+    normalizer: tri
+  tshirt_size:
+    canonical: tshirt_size
+    synonyms: [tshirt_size, size, t_shirt_size, tee_size]

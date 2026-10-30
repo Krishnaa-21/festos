@@ -31,6 +31,31 @@ Format:
   - Run `make setup` or `pip install -r backend/requirements.txt`
   - Run `python -m app.seed load`
 
+### 2026-10-30: P2/02-import (Raw Data Pack Ingestion & Quality Engine)
+- **Author**: P2 Lead
+- **Branch**: `p2/02-import`
+- **Endpoints Added**:
+  - `POST /api/v1/imports` (Multipart upload with tolerant CSV parser and dry-run)
+  - `GET /api/v1/imports` (Paginated import batch history)
+  - `GET /api/v1/imports/{id}` (Batch detail and status)
+  - `GET /api/v1/imports/{id}/issues` (Quarantine rows with reason codes)
+  - `POST /api/v1/imports/{id}/promote` (Atomic transfer to canonical tables via ChangeService)
+  - `GET /api/v1/data-quality` (Full data quality report, reconciliation summary, JSON/CSV export)
+  - `GET /api/v1/assumptions` (List assumptions with typed parsing and filter)
+  - `GET /api/v1/assumptions/{key}` (Get single assumption)
+  - `PUT /api/v1/assumptions/{key}` (Audited update via ChangeService)
+  - `GET /api/v1/assumptions/{key}/history` (Assumption audit history)
+  - `GET /api/v1/assumptions/{key}/dependents` (Preview dependent modules)
+- **Public Functions Added**:
+  - `services/imports/public.py`: `summary`, `risks` (unresolved quarantine, UNKNOWN gender/diet bottlenecks), `dependents`
+  - `services/assumptions/public.py`: `summary`, `risks` (cleaning buffer tight, minor threshold lax, placeholder assumptions), `dependents`
+  - `services/assumptions/service.py`: `get_assumption(key)` with in-memory caching and ChangeService-driven invalidation
+- **Breaking Changes / Schema Migrations**:
+  - Added operational models `ImportBatchMetadata` and `StagedRecord` in `app.models.ops`.
+  - Raw rows are preserved byte-for-byte in `raw_record`; invalid intervals routed to `quarantine_row`.
+  - Re-imports are idempotent based on SHA-256 batch content hash.
+- **Action Required**:
+  - Run `make reset` or `python -m app.seed reset` (runs seeder order 10, importing and promoting all 11 raw CSVs).
 ### 2026-10-30: P3/03-security-ui (Security, RBAC, Masking, Audit Hardening, Approvals, & Ops-Centre UI)
 - **Author**: P3 Lead
 - **Branch**: `p3/03-security-ui`
@@ -158,6 +183,38 @@ Format:
 - **Action Required**:
   - Run `make reset` to drop/recreate tables and ingest the raw data pack, then seed venue availability windows and the baseline assumed schedule.
 
+### 2026-10-30: P3/09-ui-accom (Accommodation Workspace, Shortage Diagnosis, Occupancy Matrix, Decision Flow, & Check-in Desk)
+- **Author**: P3 Lead
+- **Branch**: `p3/09-ui-accom`
+- **Endpoints Contracted & MSW Mocked**:
+  - `GET /api/v1/accommodation/plans` (Plan A, B, C comparison, budget-unset indicator)
+  - `POST /api/v1/accommodation/generate-plan` (Parameters, cleaning buffer, weights solver)
+  - `GET /api/v1/accommodation/shortages` (Unplaced participants grouped by bottleneck)
+  - `GET /api/v1/accommodation/why-not/:id` (Explainable root cause diagnosis, counterfactual change, quick verify)
+  - `GET /api/v1/accommodation/occupancy` (Hostel blocks, floors, beds, external properties with UNVERIFIED badges)
+  - `POST /api/v1/accommodation/check-constraints` (Live pre-flight constraint validation)
+  - `POST /api/v1/accommodation/assign` (Bed assignment with ConfirmWithReason, WhyCard generation, and 409 concurrency conflict support)
+  - `POST /api/v1/accommodation/commit-live` (Promote candidate plan to LIVE operational status)
+  - `GET /api/v1/checkin/board` (Arrival board, pending, arrived, checked-in, late curfew breaches)
+  - `GET /api/v1/checkin/participant/:id` (Participant scan lookup, room readiness, alerts, UNKNOWN prompts)
+  - `POST /api/v1/checkin/verify-arrival` (Idempotent wristband key release)
+  - `POST /api/v1/checkin/checkout` (Check out, 180m room cleaning countdown buffer trigger)
+- **Frontend Components & Features Created**:
+  - `frontend/src/features/accommodation/`:
+    - `AccommodationWorkspace.tsx`: Plan generator, compare table, Recharts trade-off chart, budget banner, approval status tracker.
+    - `ShortageView.tsx`: Grouped unplaced list with Why-not? diagnosis panel.
+    - `OccupancyMap.tsx`: Interactive blocks, floors, beds with non-colour-only text badges, contingent overlays, split highlights, leader proximity badges, external properties with UNVERIFIED badges.
+    - `DecisionFlowModal.tsx`: Live constraint-checked assign/move dialog, locking hard overrides to `FESTIVAL_DIRECTOR`, `ConfirmWithReason`, `WhyCard` on assignment, override register link, and 409 conflict recovery.
+    - `ParticipantAccommodationTab.tsx`: Exported additive tab component mounted in `Participant360Drawer.tsx`.
+    - `types.ts` & `index.tsx`: Domain types & route registration under `/accommodation`.
+  - `frontend/src/features/checkin/`:
+    - `CheckInDesk.tsx`: Large search/scan field with `/` shortcut, one-handed tablet layout, room readiness (180m buffer), accessibility & diet alert chips, 1-tap UNKNOWN verify prompts, live arrival board, check-out with cleaning status.
+    - `index.tsx`: Route registration under `/checkin`.
+- **Tests Added**:
+  - Vitest: `frontend/src/test/accommodation_ui.test.tsx` (13 test suites covering plan compare, trade-off chart, shortage diagnosis, occupancy matrix, live constraint checks, director override gate, 409 recovery, check-in desk, and participant 360 tab).
+  - Playwright: `frontend/e2e/accommodation.spec.ts` (E2E flows: generate plans, compare, explain unplaced, assign with reason, hit 409 and recover, search/scan and check in).
+- **Action Required**:
+  - Run `npm test` and `npm run typecheck` to verify client suite.
 ### 2026-10-31: P1/10-inventory (Ledger-Backed Inventory, Equipment Allocation, and Transactional Merchandise Issuance)
 - **Author**: P1 Lead
 - **Branch**: `p1/10-inventory`

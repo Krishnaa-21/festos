@@ -1,0 +1,28 @@
+file: contingents.csv
+entity: contingent
+target_table: contingent
+id_prefix: ctg_
+primary_key: id
+columns:
+  contingent_id:
+    canonical: id
+    synonyms: [contingent_id, cid, code]
+    required: true
+  college:
+    canonical: name
+    synonyms: [college, contingent_name, institute, university]
+    required: true
+
+  leader:
+    canonical: leader
+    synonyms: [leader, contingent_leader, head]
+  escort:
+    canonical: escort
+    synonyms: [escort, faculty_escort, guardian]
+  strength_declared:
+    canonical: strength_declared
+    synonyms: [strength_declared, declared_strength, headcount, expected_count]
+    type: integer
+  preferences:
+    canonical: preferences
+    synonyms: [preferences, accommodation_preferences, notes]

@@ -1,0 +1,21 @@
+file: core_team.csv
+entity: staff
+target_table: staff
+id_prefix: stf_
+primary_key: id
+columns:
+  member_id:
+    canonical: id
+    synonyms: [member_id, staff_id, stf_id, id]
+  name:
+    canonical: name
+    synonyms: [name, staff_name, full_name]
+  role:
+    canonical: role
+    synonyms: [role, department, designation]
+  shift:
+    canonical: shift
+    synonyms: [shift, shift_timing, hours]
+  phone:
+    canonical: phone
+    synonyms: [phone, contact, mobile, phone_number]

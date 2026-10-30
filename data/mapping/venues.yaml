@@ -1,0 +1,22 @@
+file: venues.csv
+entity: venue
+target_table: venue
+id_prefix: ven_
+primary_key: id
+columns:
+  venue_id:
+    canonical: id
+    synonyms: [venue_id, vid, code]
+  venue_name:
+    canonical: name
+    synonyms: [venue_name, name, room_name]
+  capacity:
+    canonical: capacity
+    synonyms: [capacity, seating, max_capacity]
+    type: integer
+  availability_windows:
+    canonical: availability_windows
+    synonyms: [availability_windows, windows, open_hours]
+  indoor_outdoor:
+    canonical: indoor_outdoor
+    synonyms: [indoor_outdoor, venue_type, location_type]
