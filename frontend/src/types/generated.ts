@@ -185,6 +185,27 @@ export interface paths {
      */
     get: operations["get_contingent_operational_status_api_v1_contingents__id__status_get"];
   };
+  "/api/v1/dashboard/metrics": {
+    /**
+     * Get Metrics
+     * @description Aggregates every module's public.summary() into festival-wide KPI metrics with short-TTL cache and role filtering.
+     */
+    get: operations["get_metrics_api_v1_dashboard_metrics_get"];
+  };
+  "/api/v1/dashboard/attention": {
+    /**
+     * Get Attention Queue
+     * @description Returns deduplicated, prioritized attention queue ranked strictly by Severity x Urgency x People Affected using core.scoring.
+     */
+    get: operations["get_attention_queue_api_v1_dashboard_attention_get"];
+  };
+  "/api/v1/dashboard/heatmap": {
+    /**
+     * Get Risk Heatmap
+     * @description Returns 2D Severity x Time-to-Impact risk heatmap cells with people affected, criticality, uncertainty, and top contributors.
+     */
+    get: operations["get_risk_heatmap_api_v1_dashboard_heatmap_get"];
+  };
   "/api/v1/data-quality": {
     /**
      * Get Data Quality
@@ -194,6 +215,32 @@ export interface paths {
      * - List of detected anomalies and validation issues across all files
      */
     get: operations["get_data_quality_api_v1_data_quality_get"];
+  };
+  "/api/v1/decisions": {
+    /**
+     * List Decisions
+     * @description Lists recorded decision cards with filters by module, approver, and date range.
+     */
+    get: operations["list_decisions_api_v1_decisions_get"];
+    /**
+     * Create Decision
+     * @description Creates and persists a new decision card.
+     */
+    post: operations["create_decision_api_v1_decisions_post"];
+  };
+  "/api/v1/decisions/{id}": {
+    /**
+     * Get Decision
+     * @description Returns complete details of a specific decision card.
+     */
+    get: operations["get_decision_api_v1_decisions__id__get"];
+  };
+  "/api/v1/decisions/{id}/why": {
+    /**
+     * Get Why Explanation
+     * @description One-click explainability breakdown for a decision.
+     */
+    get: operations["get_why_explanation_api_v1_decisions__id__why_get"];
   };
   "/api/v1/events": {
     /** Get All Events */
@@ -539,6 +586,60 @@ export interface paths {
      */
     get: operations["get_operational_edge_case_flags_api_v1_reconciliation_flags_get"];
   };
+  "/api/v1/scenarios": {
+    /**
+     * List Scenarios
+     * @description Lists active, committed, and discarded simulation scenarios.
+     */
+    get: operations["list_scenarios_api_v1_scenarios_get"];
+    /**
+     * Create Scenario
+     * @description Forks the live production database into an isolated sandbox environment.
+     */
+    post: operations["create_scenario_api_v1_scenarios_post"];
+  };
+  "/api/v1/scenarios/{id}": {
+    /**
+     * Get Scenario
+     * @description Returns scenario details, metadata, and recorded actions.
+     */
+    get: operations["get_scenario_api_v1_scenarios__id__get"];
+  };
+  "/api/v1/scenarios/{id}/actions": {
+    /**
+     * Execute Scenario Action
+     * @description Executes a ChangeService mutation inside the isolated scenario sandbox.
+     */
+    post: operations["execute_scenario_action_api_v1_scenarios__id__actions_post"];
+  };
+  "/api/v1/scenarios/{id}/compare": {
+    /**
+     * Compare Scenario
+     * @description Computes metrics diff comparing live production state versus the simulated sandbox state.
+     */
+    get: operations["compare_scenario_api_v1_scenarios__id__compare_get"];
+  };
+  "/api/v1/scenarios/{id}/commit": {
+    /**
+     * Commit Scenario
+     * @description Replays all recorded sandbox changes onto the live production database.
+     */
+    post: operations["commit_scenario_api_v1_scenarios__id__commit_post"];
+  };
+  "/api/v1/scenarios/{id}/discard": {
+    /**
+     * Discard Scenario
+     * @description Discards a scenario and deletes its sandbox storage.
+     */
+    post: operations["discard_scenario_api_v1_scenarios__id__discard_post"];
+  };
+  "/api/v1/scenarios/{id}/simulate-incident": {
+    /**
+     * Simulate Incident
+     * @description Incident simulation adapter allowing Prompt 14 drills to test crises in a sandbox.
+     */
+    post: operations["simulate_incident_api_v1_scenarios__id__simulate_incident_post"];
+  };
   "/api/v1/schedule/generate": {
     /** Post Generate Schedule */
     post: operations["post_generate_schedule_api_v1_schedule_generate_post"];
@@ -843,6 +944,104 @@ export interface components {
         [key: string]: unknown;
       };
     };
+    /** AssumptionDependentsResponse */
+    AssumptionDependentsResponse: {
+      /** Key */
+      key: string;
+      /** Dependent Modules */
+      dependent_modules?: string[];
+      /** Description */
+      description: string;
+    };
+    /** AssumptionHistoryItem */
+    AssumptionHistoryItem: {
+      /** Change Set Id */
+      change_set_id: string;
+      /**
+       * Action
+       * @default assumptions.update
+       */
+      action?: string;
+      /** Actor Id */
+      actor_id: string;
+      /** Actor Role */
+      actor_role: string;
+      /** Previous Value */
+      previous_value?: string | null;
+      /** New Value */
+      new_value: string;
+      /** Reason */
+      reason?: string | null;
+      /**
+       * Applied At
+       * Format: date-time
+       */
+      applied_at: string;
+    };
+    /** AssumptionHistoryResponse */
+    AssumptionHistoryResponse: {
+      /** Key */
+      key: string;
+      /** History */
+      history?: components["schemas"]["AssumptionHistoryItem"][];
+    };
+    /** AssumptionItem */
+    AssumptionItem: {
+      /** Id */
+      id: string;
+      /** Key */
+      key: string;
+      /** Value */
+      value: string;
+      /** Typed Value */
+      typed_value: unknown;
+      /** Type */
+      type: string;
+      /** Owner */
+      owner: string;
+      /** Source */
+      source: string;
+      /** Reason */
+      reason: string;
+      /** Impact If Changed */
+      impact_if_changed: string;
+      /**
+       * Updated At
+       * Format: date-time
+       */
+      updated_at: string;
+    };
+    /** AssumptionUpdateRequest */
+    AssumptionUpdateRequest: {
+      /** Key */
+      key?: string | null;
+      /** Value */
+      value: string;
+      /**
+       * Reason
+       * @default Operational baseline adjustment
+       */
+      reason?: string | null;
+      /** Expected Version */
+      expected_version?: number | null;
+      /**
+       * Dry Run
+       * @default false
+       */
+      dry_run?: boolean;
+    };
+    /** Body_upload_import_file_api_v1_imports_post */
+    Body_upload_import_file_api_v1_imports_post: {
+      /** File */
+      file: string;
+      /** Sheet Name */
+      sheet_name?: string | null;
+      /**
+       * Dry Run
+       * @default false
+       */
+      dry_run?: boolean;
+    };
     /** BreakGlassRequest */
     BreakGlassRequest: {
       /**
@@ -893,6 +1092,11 @@ export interface components {
       /** Warnings */
       warnings?: string[];
     };
+    /** CommitScenarioBody */
+    CommitScenarioBody: {
+      /** Reason */
+      reason?: string | null;
+    };
     /** CompatibilityUpdateBody */
     CompatibilityUpdateBody: {
       /** Requirement Key */
@@ -931,6 +1135,45 @@ export interface components {
       payload: {
         [key: string]: unknown;
       };
+    };
+    /** CreateDecisionBody */
+    CreateDecisionBody: {
+      /** Module */
+      module: string;
+      /** Decision Type */
+      decision_type: string;
+      /** Title */
+      title: string;
+      /** Summary */
+      summary: string;
+      /** Why */
+      why: string;
+      /** Hard Constraints Satisfied */
+      hard_constraints_satisfied?: string[] | null;
+      /** Soft Constraints Relaxed */
+      soft_constraints_relaxed?: {
+          [key: string]: unknown;
+        }[] | null;
+      /** Alternatives Rejected */
+      alternatives_rejected?: {
+          [key: string]: unknown;
+        }[] | null;
+      /**
+       * Cost Impact Inr
+       * @default 0
+       */
+      cost_impact_inr?: number;
+      /**
+       * People Affected
+       * @default 0
+       */
+      people_affected?: number;
+      /** Override Id */
+      override_id?: string | null;
+      /** Entity Refs */
+      entity_refs?: {
+          [key: string]: unknown;
+        }[] | null;
     };
     /** CreateExampleRequest */
     CreateExampleRequest: {
@@ -1011,6 +1254,29 @@ export interface components {
         [key: string]: unknown;
       };
     };
+    /** CreateScenarioBody */
+    CreateScenarioBody: {
+      /** Name */
+      name: string;
+      /** Description */
+      description?: string | null;
+    };
+    /** CreateTransferBody */
+    CreateTransferBody: {
+      /** Expected Version */
+      expected_version?: number | null;
+      /** Reason */
+      reason?: string | null;
+      /**
+       * Dry Run
+       * @default false
+       */
+      dry_run?: boolean;
+      /** Payload */
+      payload: {
+        [key: string]: unknown;
+      };
+    };
     /** DataQualityIssueItem */
     DataQualityIssueItem: {
       /** File */
@@ -1024,12 +1290,12 @@ export interface components {
       /** Message */
       message: string;
       /**
-       * Dry Run
-       * @default false
+       * Count
+       * @default 1
        */
-      dry_run?: boolean;
-      /** Payload */
-      payload: {
+      count?: number;
+      /** Details */
+      details?: {
         [key: string]: unknown;
       };
     };
@@ -1628,6 +1894,21 @@ export interface components {
       /** Auto Issue Items */
       auto_issue_items?: string[] | null;
     };
+    /** ScenarioActionBody */
+    ScenarioActionBody: {
+      /** Action */
+      action: string;
+      /** Entity Type */
+      entity_type: string;
+      /** Entity Id */
+      entity_id: string;
+      /** Payload */
+      payload: {
+        [key: string]: unknown;
+      };
+      /** Reason */
+      reason?: string | null;
+    };
     /** ScheduleGenerateBody */
     ScheduleGenerateBody: {
       /**
@@ -1693,6 +1974,20 @@ export interface components {
      * @enum {integer}
      */
     Severity: 1 | 2 | 3 | 4;
+    /** SimulateIncidentBody */
+    SimulateIncidentBody: {
+      /** Incident Type */
+      incident_type: string;
+      /** Target Id */
+      target_id: string;
+      /**
+       * Severity
+       * @default 4
+       */
+      severity?: number;
+      /** Details */
+      details?: string | null;
+    };
     /** StocktakeAdjustBody */
     StocktakeAdjustBody: {
       /** Expected Version */
@@ -2626,6 +2921,93 @@ export interface operations {
     };
   };
   /**
+   * Get Metrics
+   * @description Aggregates every module's public.summary() into festival-wide KPI metrics with short-TTL cache and role filtering.
+   */
+  get_metrics_api_v1_dashboard_metrics_get: {
+    parameters: {
+      query?: {
+        /** @description Bypass cache and force recalculation */
+        bypass_cache?: boolean;
+      };
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Attention Queue
+   * @description Returns deduplicated, prioritized attention queue ranked strictly by Severity x Urgency x People Affected using core.scoring.
+   */
+  get_attention_queue_api_v1_dashboard_attention_get: {
+    parameters: {
+      query?: {
+        /** @description Maximum number of items to return */
+        limit?: number;
+        /** @description Filter by minimum severity level */
+        min_severity?: number | null;
+        /** @description Filter by module slug */
+        module?: string | null;
+      };
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Risk Heatmap
+   * @description Returns 2D Severity x Time-to-Impact risk heatmap cells with people affected, criticality, uncertainty, and top contributors.
+   */
+  get_risk_heatmap_api_v1_dashboard_heatmap_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
    * Get Data Quality
    * @description Retrieves comprehensive data quality report:
    * - Reconciliation shell summary (2,836 raw vs 2,400 narrative vs 2,842 declared)
@@ -2647,6 +3029,125 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["Envelope_DataQualityReport_"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * List Decisions
+   * @description Lists recorded decision cards with filters by module, approver, and date range.
+   */
+  list_decisions_api_v1_decisions_get: {
+    parameters: {
+      query?: {
+        module?: string | null;
+        approver?: string | null;
+        from_date?: string | null;
+        to_date?: string | null;
+        page?: number;
+        page_size?: number;
+      };
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Create Decision
+   * @description Creates and persists a new decision card.
+   */
+  create_decision_api_v1_decisions_post: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CreateDecisionBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Decision
+   * @description Returns complete details of a specific decision card.
+   */
+  get_decision_api_v1_decisions__id__get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Why Explanation
+   * @description One-click explainability breakdown for a decision.
+   */
+  get_why_explanation_api_v1_decisions__id__why_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
         };
       };
       /** @description Validation Error */
@@ -4215,6 +4716,247 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+    };
+  };
+  /**
+   * List Scenarios
+   * @description Lists active, committed, and discarded simulation scenarios.
+   */
+  list_scenarios_api_v1_scenarios_get: {
+    parameters: {
+      query?: {
+        status?: string | null;
+      };
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Create Scenario
+   * @description Forks the live production database into an isolated sandbox environment.
+   */
+  create_scenario_api_v1_scenarios_post: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CreateScenarioBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Scenario
+   * @description Returns scenario details, metadata, and recorded actions.
+   */
+  get_scenario_api_v1_scenarios__id__get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Execute Scenario Action
+   * @description Executes a ChangeService mutation inside the isolated scenario sandbox.
+   */
+  execute_scenario_action_api_v1_scenarios__id__actions_post: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+      path: {
+        id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ScenarioActionBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Compare Scenario
+   * @description Computes metrics diff comparing live production state versus the simulated sandbox state.
+   */
+  compare_scenario_api_v1_scenarios__id__compare_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Commit Scenario
+   * @description Replays all recorded sandbox changes onto the live production database.
+   */
+  commit_scenario_api_v1_scenarios__id__commit_post: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+      path: {
+        id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CommitScenarioBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Discard Scenario
+   * @description Discards a scenario and deletes its sandbox storage.
+   */
+  discard_scenario_api_v1_scenarios__id__discard_post: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Simulate Incident
+   * @description Incident simulation adapter allowing Prompt 14 drills to test crises in a sandbox.
+   */
+  simulate_incident_api_v1_scenarios__id__simulate_incident_post: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+      path: {
+        id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SimulateIncidentBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
         };
       };
     };
