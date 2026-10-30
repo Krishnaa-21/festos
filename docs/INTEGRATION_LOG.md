@@ -114,5 +114,46 @@ Format:
   - Added `reason`, `reverted_at`, `reverted_by` to `MergeRecord`.
   - Added `data` field to `ChangeResult` in `core.change_service`.
   - Seed order 15 ingests `contingents.csv`, `participants.csv`, `events.csv`, `registrations.csv`, and runs pure deduplication engine persisting 312 candidates.
+### 2026-10-30: P1/07-scheduling (Scheduler, Conflict Detector, Team Reconciliation, and Version Management)
+- **Author**: P1 Lead
+- **Branch**: `p1/07-scheduling`
+- **Endpoints Added**:
+  - `GET /api/v1/events`: List events with filtering.
+  - `POST /api/v1/events`: Create event profile via ChangeService.
+  - `GET /api/v1/events/{id}`: Event profile with requirements and rounds.
+  - `PATCH /api/v1/events/{id}`: Update event profile via ChangeService.
+  - `POST /api/v1/events/{id}/cancel`: Cancel event and cascade to active sessions.
+  - `POST /api/v1/events/{id}/merge`: Merge event and repoint registrations.
+  - `POST /api/v1/events/{id}/extend-duration`: Extend duration and cascade session end times.
+  - `GET /api/v1/events/{id}/registrations`: Event registrations view.
+  - `GET /api/v1/events/teams/provisional`: Provisional teams view reconciling 1,810 team registrations without team IDs.
+  - `GET /api/v1/events/judges`: Judge registry and explicit UNASSIGNED slot gap analysis.
+  - `POST /api/v1/events/judges`: Manual judge registration with competitor/contingent conflict detection.
+  - `GET /api/v1/venues`: List venues with capacity and tags.
+  - `POST /api/v1/venues`: Create venue via ChangeService.
+  - `GET /api/v1/venues/{id}`: Venue profile with operating windows and feature tags.
+  - `PATCH /api/v1/venues/{id}`: Update venue via ChangeService.
+  - `GET /api/v1/venues/matrix/travel-times`: Travel time matrix with per-pair overrides.
+  - `GET /api/v1/venues/matrix/compatibility`: ASSUMED venue-event compatibility mapping.
+  - `POST /api/v1/schedule/generate`: Pure scheduler session generator with arrival waves (E, M, L), fairness proposals, and prototype benchmark comparison.
+  - `GET /api/v1/schedule/versions`: Schedule versions with status, solver, and count metrics.
+  - `POST /api/v1/schedule/versions/{id}/restore`: Restores full schedule version snapshot (requires FESTIVAL_DIRECTOR approval).
+  - `GET /api/v1/schedule/sessions`: Event sessions list with volunteer & equipment requirements.
+  - `POST /api/v1/schedule/sessions/{id}/move`: Move session with 60m downstream round cascade.
+  - `POST /api/v1/schedule/sessions/{id}/change-venue`: Reassign venue with capacity violation check.
+  - `GET /api/v1/schedule/conflicts`: Sweep-line conflict detector covering all 10 types.
+  - `GET /api/v1/schedule/conflicts/{id}/resolutions`: Candidate time/venue moves ranked by conflicts resolved, new conflicts created, and people affected.
+  - `POST /api/v1/schedule/conflicts/{id}/apply-resolution`: Apply selected ranked resolution.
+  - `GET /api/v1/schedule/unscheduled`: Unscheduled participants report with reasons and alternatives.
+  - `GET /api/v1/schedule/timeline`: Venue Gantt timeline data.
+- **Public Functions Added**:
+  - `services/events/public.py`: `summary`, `risks` (zero registration events), `dependents`
+  - `services/venues/public.py`: `summary`, `risks` (unreachable venues), `dependents`
+  - `services/schedule/public.py`: `summary`, `risks` (blocking conflicts in next 4h, unscheduled entrants, judge gaps), `dependents`, and report generators (`schedule_plan_csv`, `conflicts_report_csv`, `unscheduled_entrants_csv`, `resource_load_timeline_csv`)
+- **Breaking Changes / Schema Migrations**:
+  - Added `judges_needed` to `Event`.
+  - Added `setup_time_min`, `teardown_time_min`, `feature_tags` to `Venue`.
+  - Added `EventSession`, `ScheduleVersion`, `Conflict`, `Judge`, `ProvisionalTeam` models.
+  - Baseline `ASSUMED` schedule generated during seeding with 312 provisional teams covering all 1,810 registrations without team IDs.
 - **Action Required**:
-  - Run `make reset` to drop/recreate tables and ingest the raw data pack.
+  - Run `make reset` to drop/recreate tables and ingest the raw data pack, then seed venue availability windows and the baseline assumed schedule.

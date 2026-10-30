@@ -146,6 +146,44 @@ export interface paths {
      */
     get: operations["get_contingent_operational_status_api_v1_contingents__id__status_get"];
   };
+  "/api/v1/events": {
+    /** Get All Events */
+    get: operations["get_all_events_api_v1_events_get"];
+    /** Create Event */
+    post: operations["create_event_api_v1_events_post"];
+  };
+  "/api/v1/events/teams/provisional": {
+    /** Get Provisional Team Reconciliation */
+    get: operations["get_provisional_team_reconciliation_api_v1_events_teams_provisional_get"];
+  };
+  "/api/v1/events/judges": {
+    /** Get Judges */
+    get: operations["get_judges_api_v1_events_judges_get"];
+    /** Create Judge */
+    post: operations["create_judge_api_v1_events_judges_post"];
+  };
+  "/api/v1/events/{event_id}": {
+    /** Get Event */
+    get: operations["get_event_api_v1_events__event_id__get"];
+    /** Update Event */
+    put: operations["update_event_api_v1_events__event_id__put"];
+  };
+  "/api/v1/events/{event_id}/registrations": {
+    /** Get Registrations */
+    get: operations["get_registrations_api_v1_events__event_id__registrations_get"];
+  };
+  "/api/v1/events/{event_id}/cancel": {
+    /** Cancel Event */
+    post: operations["cancel_event_api_v1_events__event_id__cancel_post"];
+  };
+  "/api/v1/events/{event_id}/merge": {
+    /** Merge Event */
+    post: operations["merge_event_api_v1_events__event_id__merge_post"];
+  };
+  "/api/v1/events/{event_id}/extend-duration": {
+    /** Extend Event Duration */
+    post: operations["extend_event_duration_api_v1_events__event_id__extend_duration_post"];
+  };
   "/api/v1/overrides": {
     /**
      * List Overrides
@@ -267,6 +305,54 @@ export interface paths {
      */
     get: operations["get_operational_edge_case_flags_api_v1_reconciliation_flags_get"];
   };
+  "/api/v1/schedule/generate": {
+    /** Post Generate Schedule */
+    post: operations["post_generate_schedule_api_v1_schedule_generate_post"];
+  };
+  "/api/v1/schedule/versions": {
+    /** Get Versions */
+    get: operations["get_versions_api_v1_schedule_versions_get"];
+  };
+  "/api/v1/schedule/versions/{version_id}": {
+    /** Get Version */
+    get: operations["get_version_api_v1_schedule_versions__version_id__get"];
+  };
+  "/api/v1/schedule/versions/{version_id}/restore": {
+    /** Restore Version */
+    post: operations["restore_version_api_v1_schedule_versions__version_id__restore_post"];
+  };
+  "/api/v1/schedule/sessions": {
+    /** Get Sessions */
+    get: operations["get_sessions_api_v1_schedule_sessions_get"];
+  };
+  "/api/v1/schedule/sessions/{session_id}/move": {
+    /** Move Session */
+    post: operations["move_session_api_v1_schedule_sessions__session_id__move_post"];
+  };
+  "/api/v1/schedule/sessions/{session_id}/change-venue": {
+    /** Change Session Venue */
+    post: operations["change_session_venue_api_v1_schedule_sessions__session_id__change_venue_post"];
+  };
+  "/api/v1/schedule/conflicts": {
+    /** Get Conflicts */
+    get: operations["get_conflicts_api_v1_schedule_conflicts_get"];
+  };
+  "/api/v1/schedule/conflicts/{conflict_id}/resolutions": {
+    /** Get Resolutions For Conflict */
+    get: operations["get_resolutions_for_conflict_api_v1_schedule_conflicts__conflict_id__resolutions_get"];
+  };
+  "/api/v1/schedule/conflicts/{conflict_id}/apply-resolution": {
+    /** Apply Resolution */
+    post: operations["apply_resolution_api_v1_schedule_conflicts__conflict_id__apply_resolution_post"];
+  };
+  "/api/v1/schedule/unscheduled": {
+    /** Get Unscheduled Entrants Endpoint */
+    get: operations["get_unscheduled_entrants_endpoint_api_v1_schedule_unscheduled_get"];
+  };
+  "/api/v1/schedule/timeline": {
+    /** Get Gantt Timeline */
+    get: operations["get_gantt_timeline_api_v1_schedule_timeline_get"];
+  };
   "/api/v1/unknowns/queue": {
     /**
      * Get Verification Queue
@@ -308,6 +394,30 @@ export interface paths {
      * @description Retrieve chronological field verification history for an entity.
      */
     get: operations["get_verification_history_for_field_api_v1_unknowns_history__entity_type___entity_id___field__get"];
+  };
+  "/api/v1/venues": {
+    /** Get All Venues */
+    get: operations["get_all_venues_api_v1_venues_get"];
+    /** Create Venue */
+    post: operations["create_venue_api_v1_venues_post"];
+  };
+  "/api/v1/venues/travel-times": {
+    /** Get All Travel Times */
+    get: operations["get_all_travel_times_api_v1_venues_travel_times_get"];
+    /** Update Travel Time */
+    put: operations["update_travel_time_api_v1_venues_travel_times_put"];
+  };
+  "/api/v1/venues/compatibility": {
+    /** Get Venue Event Compatibility */
+    get: operations["get_venue_event_compatibility_api_v1_venues_compatibility_get"];
+    /** Set Venue Event Compatibility */
+    put: operations["set_venue_event_compatibility_api_v1_venues_compatibility_put"];
+  };
+  "/api/v1/venues/{venue_id}": {
+    /** Get Venue */
+    get: operations["get_venue_api_v1_venues__venue_id__get"];
+    /** Update Venue */
+    put: operations["update_venue_api_v1_venues__venue_id__put"];
   };
 }
 
@@ -364,6 +474,29 @@ export interface components {
       recommendations?: string[];
       /** Warnings */
       warnings?: string[];
+    };
+    /** CompatibilityUpdateBody */
+    CompatibilityUpdateBody: {
+      /** Requirement Key */
+      requirement_key: string;
+      /** Venue Ids */
+      venue_ids: string[];
+      /** Reason */
+      reason?: string | null;
+    };
+    /** ConflictResolutionApplyBody */
+    ConflictResolutionApplyBody: {
+      /** Action */
+      action: string;
+      /** Payload */
+      payload: {
+        [key: string]: unknown;
+      };
+      /**
+       * Reason
+       * @default Applied ranked resolution
+       */
+      reason?: string | null;
     };
     /** ContingentUpdateBody */
     ContingentUpdateBody: {
@@ -505,6 +638,22 @@ export interface components {
       /** Warnings */
       warnings?: string[];
     };
+    /** EventMutationBody */
+    EventMutationBody: {
+      /** Expected Version */
+      expected_version?: number | null;
+      /** Reason */
+      reason?: string | null;
+      /**
+       * Dry Run
+       * @default false
+       */
+      dry_run?: boolean;
+      /** Payload */
+      payload?: {
+        [key: string]: unknown;
+      };
+    };
     /** GenerateTokenBody */
     GenerateTokenBody: {
       /**
@@ -531,6 +680,21 @@ export interface components {
     HTTPValidationError: {
       /** Detail */
       detail?: components["schemas"]["ValidationError"][];
+    };
+    /** JudgeCreateBody */
+    JudgeCreateBody: {
+      /** Name */
+      name: string;
+      /** Email */
+      email?: string | null;
+      /** Phone */
+      phone?: string | null;
+      /** College Affiliation */
+      college_affiliation?: string | null;
+      /** Expert Events */
+      expert_events?: string[];
+      /** Notes */
+      notes?: string | null;
     };
     /** KeepSeparateBody */
     KeepSeparateBody: {
@@ -630,6 +794,66 @@ export interface components {
       /** Refresh Token */
       refresh_token: string;
     };
+    /** ScheduleGenerateBody */
+    ScheduleGenerateBody: {
+      /**
+       * Plan Name
+       * @default Plan Alpha - ASSUMED
+       */
+      plan_name?: string;
+      /**
+       * Solver
+       * @default greedy
+       */
+      solver?: string;
+      /**
+       * Include Late Wave
+       * @default true
+       */
+      include_late_wave?: boolean;
+      /**
+       * Wildcard Finals
+       * @default false
+       */
+      wildcard_finals?: boolean;
+      /**
+       * Reason
+       * @default Generated schedule plan
+       */
+      reason?: string | null;
+    };
+    /** ScheduleRestoreBody */
+    ScheduleRestoreBody: {
+      /**
+       * Reason
+       * @default Restored schedule version
+       */
+      reason?: string | null;
+    };
+    /** SessionChangeVenueBody */
+    SessionChangeVenueBody: {
+      /** New Venue Id */
+      new_venue_id: string;
+      /**
+       * Reason
+       * @default Changed session venue
+       */
+      reason?: string | null;
+      /** Expected Version */
+      expected_version?: number | null;
+    };
+    /** SessionMoveBody */
+    SessionMoveBody: {
+      /** New Start At */
+      new_start_at: string;
+      /**
+       * Reason
+       * @default Moved session time
+       */
+      reason?: string | null;
+      /** Expected Version */
+      expected_version?: number | null;
+    };
     /**
      * Severity
      * @enum {integer}
@@ -646,6 +870,15 @@ export interface components {
       source?: string;
       /** Comment */
       comment?: string | null;
+    };
+    /** TravelTimeUpdateBody */
+    TravelTimeUpdateBody: {
+      /** From Venue Id */
+      from_venue_id: string;
+      /** To Venue Id */
+      to_venue_id: string;
+      /** Travel Time Min */
+      travel_time_min: number;
     };
     /** UndoMergeBody */
     UndoMergeBody: {
@@ -669,6 +902,22 @@ export interface components {
       input?: unknown;
       /** Context */
       ctx?: Record<string, never>;
+    };
+    /** VenueMutationBody */
+    VenueMutationBody: {
+      /** Expected Version */
+      expected_version?: number | null;
+      /** Reason */
+      reason?: string | null;
+      /**
+       * Dry Run
+       * @default false
+       */
+      dry_run?: boolean;
+      /** Payload */
+      payload?: {
+        [key: string]: unknown;
+      };
     };
     /** VerifyFieldBody */
     VerifyFieldBody: {
@@ -1294,6 +1543,276 @@ export interface operations {
       };
     };
   };
+  /** Get All Events */
+  get_all_events_api_v1_events_get: {
+    parameters: {
+      query?: {
+        page?: number;
+        page_size?: number;
+        solo_team?: string | null;
+        q?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Create Event */
+  create_event_api_v1_events_post: {
+    parameters: {
+      header?: {
+        "Idempotency-Key"?: string | null;
+        "x-actor-role"?: string | null;
+        "x-actor-id"?: string | null;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["EventMutationBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Get Provisional Team Reconciliation */
+  get_provisional_team_reconciliation_api_v1_events_teams_provisional_get: {
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+    };
+  };
+  /** Get Judges */
+  get_judges_api_v1_events_judges_get: {
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+    };
+  };
+  /** Create Judge */
+  create_judge_api_v1_events_judges_post: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["JudgeCreateBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Get Event */
+  get_event_api_v1_events__event_id__get: {
+    parameters: {
+      path: {
+        event_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Update Event */
+  update_event_api_v1_events__event_id__put: {
+    parameters: {
+      header?: {
+        "Idempotency-Key"?: string | null;
+        "x-actor-role"?: string | null;
+        "x-actor-id"?: string | null;
+      };
+      path: {
+        event_id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["EventMutationBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Get Registrations */
+  get_registrations_api_v1_events__event_id__registrations_get: {
+    parameters: {
+      path: {
+        event_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Cancel Event */
+  cancel_event_api_v1_events__event_id__cancel_post: {
+    parameters: {
+      header?: {
+        "Idempotency-Key"?: string | null;
+        "x-actor-role"?: string | null;
+        "x-actor-id"?: string | null;
+      };
+      path: {
+        event_id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["EventMutationBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Merge Event */
+  merge_event_api_v1_events__event_id__merge_post: {
+    parameters: {
+      header?: {
+        "Idempotency-Key"?: string | null;
+        "x-actor-role"?: string | null;
+        "x-actor-id"?: string | null;
+      };
+      path: {
+        event_id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["EventMutationBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Extend Event Duration */
+  extend_event_duration_api_v1_events__event_id__extend_duration_post: {
+    parameters: {
+      header?: {
+        "Idempotency-Key"?: string | null;
+        "x-actor-role"?: string | null;
+        "x-actor-id"?: string | null;
+      };
+      path: {
+        event_id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["EventMutationBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
   /**
    * List Overrides
    * @description Query the override register with filtering and pagination.
@@ -1806,6 +2325,301 @@ export interface operations {
       };
     };
   };
+  /** Post Generate Schedule */
+  post_generate_schedule_api_v1_schedule_generate_post: {
+    parameters: {
+      header?: {
+        "Idempotency-Key"?: string | null;
+        "x-actor-role"?: string | null;
+        "x-actor-id"?: string | null;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ScheduleGenerateBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Get Versions */
+  get_versions_api_v1_schedule_versions_get: {
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+    };
+  };
+  /** Get Version */
+  get_version_api_v1_schedule_versions__version_id__get: {
+    parameters: {
+      path: {
+        version_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Restore Version */
+  restore_version_api_v1_schedule_versions__version_id__restore_post: {
+    parameters: {
+      header?: {
+        "Idempotency-Key"?: string | null;
+        "x-actor-role"?: string | null;
+        "x-actor-id"?: string | null;
+      };
+      path: {
+        version_id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ScheduleRestoreBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Get Sessions */
+  get_sessions_api_v1_schedule_sessions_get: {
+    parameters: {
+      query?: {
+        event_id?: string | null;
+        venue_id?: string | null;
+        round?: string | null;
+        wave?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Move Session */
+  move_session_api_v1_schedule_sessions__session_id__move_post: {
+    parameters: {
+      header?: {
+        "Idempotency-Key"?: string | null;
+        "x-actor-role"?: string | null;
+        "x-actor-id"?: string | null;
+      };
+      path: {
+        session_id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SessionMoveBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Change Session Venue */
+  change_session_venue_api_v1_schedule_sessions__session_id__change_venue_post: {
+    parameters: {
+      header?: {
+        "Idempotency-Key"?: string | null;
+        "x-actor-role"?: string | null;
+        "x-actor-id"?: string | null;
+      };
+      path: {
+        session_id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SessionChangeVenueBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Get Conflicts */
+  get_conflicts_api_v1_schedule_conflicts_get: {
+    parameters: {
+      query?: {
+        conflict_type?: string | null;
+        severity?: number | null;
+        status?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Get Resolutions For Conflict */
+  get_resolutions_for_conflict_api_v1_schedule_conflicts__conflict_id__resolutions_get: {
+    parameters: {
+      path: {
+        conflict_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Apply Resolution */
+  apply_resolution_api_v1_schedule_conflicts__conflict_id__apply_resolution_post: {
+    parameters: {
+      header?: {
+        "Idempotency-Key"?: string | null;
+        "x-actor-role"?: string | null;
+        "x-actor-id"?: string | null;
+      };
+      path: {
+        conflict_id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ConflictResolutionApplyBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Get Unscheduled Entrants Endpoint */
+  get_unscheduled_entrants_endpoint_api_v1_schedule_unscheduled_get: {
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+    };
+  };
+  /** Get Gantt Timeline */
+  get_gantt_timeline_api_v1_schedule_timeline_get: {
+    parameters: {
+      query?: {
+        from?: string | null;
+        to?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
   /**
    * Get Verification Queue
    * @description Retrieve the operational unknown fields queue ranked by Count x Criticality.
@@ -1945,6 +2759,179 @@ export interface operations {
         entity_type: string;
         entity_id: string;
         field: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Get All Venues */
+  get_all_venues_api_v1_venues_get: {
+    parameters: {
+      query?: {
+        page?: number;
+        page_size?: number;
+        indoor_outdoor?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Create Venue */
+  create_venue_api_v1_venues_post: {
+    parameters: {
+      header?: {
+        "Idempotency-Key"?: string | null;
+        "x-actor-role"?: string | null;
+        "x-actor-id"?: string | null;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["VenueMutationBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Get All Travel Times */
+  get_all_travel_times_api_v1_venues_travel_times_get: {
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+    };
+  };
+  /** Update Travel Time */
+  update_travel_time_api_v1_venues_travel_times_put: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["TravelTimeUpdateBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Get Venue Event Compatibility */
+  get_venue_event_compatibility_api_v1_venues_compatibility_get: {
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+    };
+  };
+  /** Set Venue Event Compatibility */
+  set_venue_event_compatibility_api_v1_venues_compatibility_put: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CompatibilityUpdateBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Get Venue */
+  get_venue_api_v1_venues__venue_id__get: {
+    parameters: {
+      path: {
+        venue_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Update Venue */
+  update_venue_api_v1_venues__venue_id__put: {
+    parameters: {
+      header?: {
+        "Idempotency-Key"?: string | null;
+        "x-actor-role"?: string | null;
+        "x-actor-id"?: string | null;
+      };
+      path: {
+        venue_id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["VenueMutationBody"];
       };
     };
     responses: {
