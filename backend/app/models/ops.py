@@ -1,8 +1,9 @@
 # OWNER: P2
 import uuid
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 
+from sqlalchemy import JSON, Column
 from sqlmodel import Field, SQLModel
 
 from app.core.clock import now
@@ -19,6 +20,9 @@ class Venue(SQLModel, table=True):
     availability_windows: Optional[str] = Field(default=None)  # from venues.csv
     indoor_outdoor: Optional[str] = Field(default="indoor")    # 'indoor'|'outdoor'
     accessible: bool = Field(default=True)
+    setup_time_min: int = Field(default=15)
+    teardown_time_min: int = Field(default=15)
+    feature_tags: List[str] = Field(default_factory=list, sa_column=Column(JSON))
     status: str = Field(default="AVAILABLE")
 
     version: int = Field(default=1)
