@@ -10,6 +10,7 @@ export const NAV_GROUPS = [
   "Logistics",
   "Merchandise",
   "Vendors & Food",
+  "Finance",
   "Staff & Shifts",
   "Transportation",
   "Incident Center",

@@ -253,3 +253,39 @@ Format:
   - Order 40 seeder ingests `inventory_logistics.csv` and `inventory_merch.csv`.
 - **Action Required**:
   - Run database seeders to populate initial logistics and merchandise inventory.
+
+### 2026-10-31: P3/12-ui-ops (Operations UI: Events & Venues, Logistics, Merchandise Admin & Counter, Vendors & Food, Finance)
+- **Author**: P3 Lead
+- **Branch**: `p3/12-ui-ops`
+- **API Contracts & Handlers Added**:
+  - `docs/api/food.md`: Dietary coverage matrix (`category x meal_slot x venue`), zero-coverage alerts, certificates expiry timeline, and menu-label mismatch audits.
+  - `docs/api/vendors.md`: Vendor catalog, commercial meal rates, emergency shutdown simulation (`POST /api/v1/vendors/{id}/shutdown-impact`), and shutdown execution with replacement reassignment (`POST /api/v1/vendors/{id}/shutdown`).
+  - `docs/api/finance.md`: Budget gauge with `external_budget_inr = NULL` budget-unset explanation, external accommodation spend breakdown, vendor settlements with billing disputes, merchandise procurement costs, approved emergency disbursements, and budget-override register.
+  - `frontend/src/test/server.ts`: Mock Service Worker handlers for all 5 workspaces covering schedule Gantt timeline, 10 conflict types, ranked resolution evaluations & applications, unscheduled entrants, version diff & restore, fairness decisions, venue feature tags & compatibility, logistics 7-bucket stock, transfers with countdown ETAs, movements ledger, equipment feasibility, stocktake adjustments, reconciliation flags (camera & tables cases), merchandise catalog & policy, transactional issue (200 initial / 409 `ALREADY_ISSUED` on repeat scan), volunteer QR scan with privacy masking, food coverage matrix, vendor compliance, emergency shutdown impact & execution, and finance summary/disputes/overrides.
+- **Frontend Components & Workspaces Built**:
+  - `frontend/src/features/events/`:
+    - `EventsVenuesWorkspace.tsx`: Gantt timeline by venue with `ASSUMED` badge, judge-gap indicators (assigned/required), conflict panel grouped by the 10 conflict types with severity (1-4) and affected people counts, ranked resolution candidates drawer (`#1`, conflicts resolved, new conflicts, attendees affected), `ConfirmWithReason` resolution apply flow, unscheduled entrants table (987 entrants) with failure reasons and alternatives, schedule version list with diff and restore capability, event and venue editors with tag editor and compatibility mapping, and late-wave & wildcard fairness decisions gated by Director approval.
+    - `types.ts` & `index.tsx`: Domain types & route registrations for `/events`, `/venues`, and `/schedule`.
+  - `frontend/src/features/logistics/`:
+    - `LogisticsWorkspace.tsx`: Stock table with all 7 buckets (`on_hand`, `reserved`, `in_transit`, `damaged`, `under_repair`, `awaiting_return`, `available`), location view with active transfers and countdown ETAs (`minutes_remaining`), movement ledger with multi-column filtering, equipment-to-session assignment with transfer feasibility check (`travel_time` + 15m transfer buffer), low-stock and stocktake mismatch alerts with adjustment modal, and reconciliation flags for the camera (31 units under repair) and tables (42 tables needs check) cases.
+    - `types.ts` & `index.tsx`: Domain types & route registration for `/logistics`.
+  - `frontend/src/features/merchandise/`:
+    - `MerchandiseWorkspace.tsx`: Admin catalog, size-wise demand vs stock with entitlement policy note, reservations, issue history with volunteer tracking, QR code generator and printable accreditation sheets; **Volunteer Counter Mode** with webcam `getUserMedia` video scanning, manual ID fallback, strict privacy masking of non-essential personal fields, and huge result panel: Green `ISSUED` vs Red `ALREADY ISSUED` with original timestamp, counter ID, and issuing staff member (`usr_vol_01`).
+    - `types.ts` & `index.tsx`: Domain types & route registration for `/merchandise`.
+  - `frontend/src/features/food/`:
+    - `FoodVendorsWorkspace.tsx`: Dietary coverage matrix heat grid (`category x meal slot x venue`) with zero-coverage cells highlighted with direct action buttons, compliance table with certificate expiry timeline, menu-label mismatch flags, vendor detail with assignments and commercial rates, and Emergency Shutdown modal showing lost capacity, ranked replacements, cost delta, and notification drafts for approval.
+    - `types.ts` & `index.tsx`: Domain types & route registrations for `/food` and `/vendors`.
+  - `frontend/src/features/finance/`:
+    - `FinanceWorkspace.tsx`: Budget gauge explaining budget-unset mode (`external_budget_inr = NULL`), external accommodation spend breakdown by property, vendor settlements with due dates and disputes review modal, merchandise costs, approved emergency spend, and budget-override report.
+    - `types.ts` & `index.tsx`: Domain types & route registration for `/finance`.
+  - `frontend/src/app/registry.ts`: Registered `"Finance"` under `NAV_GROUPS` with Finance Manager and Director access.
+- **UX & Accessibility**:
+  - Virtualized/scroll-safe tables with keyboard navigation support.
+  - No colour-only meaning: all statuses paired with text labels, icons, and badges.
+  - Direct action button on every alert card and banner.
+- **Tests Added & Passing**:
+  - Vitest: `frontend/src/test/ops_ui.test.tsx` (15 comprehensive test suites covering conflict detection, ranked resolution flow, unscheduled entrants, version restore, fairness decisions, demand vs stock, volunteer counter mode, Green `ISSUED` initial scan, Red `ALREADY ISSUED` rescan, dietary coverage heat grid, compliance & mismatches, emergency vendor shutdown, logistics 7 stock buckets & reconciliation flags, and finance budget-unset gauge & billing disputes). 59 of 59 frontend unit tests passing across all suites.
+  - Playwright: `frontend/e2e/ops.spec.ts` (3 end-to-end acceptance journeys: Event Lead resolves clash via conflict panel, Volunteer scans QR twice and sees `ALREADY ISSUED` on rescan, and Food Ops Manager completes vendor shutdown with lost capacity & notifications).
+- **Action Required**:
+  - Run `npm test` and `npm run typecheck` to verify client suite.
+
