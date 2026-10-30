@@ -1,0 +1,15 @@
+file: registrations.csv
+entity: registration
+target_table: registration
+id_prefix: reg_
+primary_key: id
+columns:
+  participant_id:
+    canonical: participant_id
+    synonyms: [participant_id, pid, student_id]
+  event_id:
+    canonical: event_id
+    synonyms: [event_id, eid, event]
+  team_id:
+    canonical: team_id
+    synonyms: [team_id, tid, team]

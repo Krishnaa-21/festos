@@ -487,6 +487,426 @@
         }
       }
     },
+    "/api/v1/assumptions": {
+      "get": {
+        "tags": [
+          "Assumptions"
+        ],
+        "summary": "Get Assumptions",
+        "description": "Lists all system operational assumptions, sources, reasons, and typed values.",
+        "operationId": "get_assumptions_api_v1_assumptions_get",
+        "parameters": [
+          {
+            "name": "owner",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by owner (P1, P2)",
+              "title": "Owner"
+            },
+            "description": "Filter by owner (P1, P2)"
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Search term for key, reason or impact",
+              "title": "Q"
+            },
+            "description": "Search term for key, reason or impact"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_List_AssumptionItem__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Assumptions"
+        ],
+        "summary": "Put Update Assumption",
+        "description": "Mutates an assumption through ChangeService handler assumptions.update.\nAudited, validates typed value, and invalidates in-memory cache.",
+        "operationId": "put_update_assumption_api_v1_assumptions_put",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssumptionUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_ChangeResult_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/assumptions/{key}": {
+      "get": {
+        "tags": [
+          "Assumptions"
+        ],
+        "summary": "Get Assumption By Key",
+        "description": "Fetches details of a specific assumption key.",
+        "operationId": "get_assumption_by_key_api_v1_assumptions__key__get",
+        "parameters": [
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Key"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_AssumptionItem_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Assumptions"
+        ],
+        "summary": "Put Update Assumption By Key",
+        "description": "Mutates a specific assumption through ChangeService handler assumptions.update.",
+        "operationId": "put_update_assumption_by_key_api_v1_assumptions__key__put",
+        "parameters": [
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Key"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssumptionUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_ChangeResult_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/assumptions/{key}/history": {
+      "get": {
+        "tags": [
+          "Assumptions"
+        ],
+        "summary": "Get Assumption Change History",
+        "description": "Fetches audit history and prior values for a specific assumption key.",
+        "operationId": "get_assumption_change_history_api_v1_assumptions__key__history_get",
+        "parameters": [
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Key"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_AssumptionHistoryResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/assumptions/{key}/dependents": {
+      "get": {
+        "tags": [
+          "Assumptions"
+        ],
+        "summary": "Get Assumption Module Dependents",
+        "description": "Previews which system modules and planning engines read this assumption key.",
+        "operationId": "get_assumption_module_dependents_api_v1_assumptions__key__dependents_get",
+        "parameters": [
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Key"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_AssumptionDependentsResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/audit/events": {
       "get": {
         "tags": [
@@ -1430,6 +1850,74 @@
         }
       }
     },
+    "/api/v1/data-quality": {
+      "get": {
+        "tags": [
+          "Data Quality"
+        ],
+        "summary": "Get Data Quality",
+        "description": "Retrieves comprehensive data quality report:\n- Reconciliation shell summary (2,836 raw vs 2,400 narrative vs 2,842 declared)\n- Counts of UNKNOWN per field with operational impact\n- List of detected anomalies and validation issues across all files",
+        "operationId": "get_data_quality_api_v1_data_quality_get",
+        "parameters": [
+          {
+            "name": "format",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Set to 'csv' for exportable data_quality_report.csv",
+              "title": "Format"
+            },
+            "description": "Set to 'csv' for exportable data_quality_report.csv"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_DataQualityReport_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/events": {
       "get": {
         "tags": [
@@ -2080,106 +2568,6 @@
     },
     "/api/v1/events/{event_id}/extend-duration": {
       "post": {
-        "tags": [
-          "Events"
-        ],
-        "summary": "Extend Event Duration",
-        "operationId": "extend_event_duration_api_v1_events__event_id__extend_duration_post",
-        "parameters": [
-          {
-            "name": "event_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Event Id"
-            }
-          },
-          {
-            "name": "Idempotency-Key",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Idempotency-Key"
-            }
-          },
-          {
-            "name": "x-actor-role",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "default": "EVENT_LEAD",
-              "title": "X-Actor-Role"
-            }
-          },
-          {
-            "name": "x-actor-id",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "default": "usr_event_lead",
-              "title": "X-Actor-Id"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/EventMutationBody"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/v1/logistics/items": {
       "get": {
         "tags": [
@@ -3630,6 +4018,502 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/overrides": {
+      "get": {
+        "tags": [
+          "Events"
+        ],
+        "summary": "Extend Event Duration",
+        "operationId": "extend_event_duration_api_v1_events__event_id__extend_duration_post",
+        "parameters": [
+          {
+            "name": "event_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Event Id"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          },
+          {
+            "name": "x-actor-role",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "EVENT_LEAD",
+              "title": "X-Actor-Role"
+            }
+          },
+          {
+            "name": "x-actor-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "usr_event_lead",
+              "title": "X-Actor-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EventMutationBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/imports": {
+      "post": {
+        "tags": [
+          "Imports"
+        ],
+        "summary": "Upload Import File",
+        "description": "Uploads and ingests a raw CSV file into raw_record, staging, and quarantine.",
+        "operationId": "upload_import_file_api_v1_imports_post",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_import_file_api_v1_imports_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_ImportBatchResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Imports"
+        ],
+        "summary": "Get Import History",
+        "description": "Lists import batch history with pagination and status filtering.",
+        "operationId": "get_import_history_api_v1_imports_get",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "title": "Page"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Page Size"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Page_ImportBatchItem__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/imports/{id}": {
+      "get": {
+        "tags": [
+          "Imports"
+        ],
+        "summary": "Get Import Batch Details",
+        "description": "Fetches details for a specific import batch.",
+        "operationId": "get_import_batch_details_api_v1_imports__id__get",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_ImportBatchItem_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/imports/{id}/issues": {
+      "get": {
+        "tags": [
+          "Imports"
+        ],
+        "summary": "Get Import Batch Issues",
+        "description": "Retrieves quarantined rows and validation reasons for an import batch.",
+        "operationId": "get_import_batch_issues_api_v1_imports__id__issues_get",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "title": "Page"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Page Size"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Page_QuarantineIssueItem__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/imports/{id}/promote": {
+      "post": {
+        "tags": [
+          "Imports"
+        ],
+        "summary": "Post Promote Import Batch",
+        "description": "Promotes staged records to canonical tables through ChangeService handler imports.promote.",
+        "operationId": "post_promote_import_batch_api_v1_imports__id__promote_post",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImportPromoteRequest",
+                "default": {
+                  "expected_version": 1,
+                  "reason": "Promoting verified import batch to canonical database",
+                  "dry_run": false,
+                  "payload": {}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_ChangeResult_"
                 }
               }
             }
@@ -6793,6 +7677,252 @@
   },
   "components": {
     "schemas": {
+      "AssumptionDependentsResponse": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "dependent_modules": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Dependent Modules"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "description"
+        ],
+        "title": "AssumptionDependentsResponse"
+      },
+      "AssumptionHistoryItem": {
+        "properties": {
+          "change_set_id": {
+            "type": "string",
+            "title": "Change Set Id"
+          },
+          "action": {
+            "type": "string",
+            "title": "Action",
+            "default": "assumptions.update"
+          },
+          "actor_id": {
+            "type": "string",
+            "title": "Actor Id"
+          },
+          "actor_role": {
+            "type": "string",
+            "title": "Actor Role"
+          },
+          "previous_value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Previous Value"
+          },
+          "new_value": {
+            "type": "string",
+            "title": "New Value"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "applied_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Applied At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "change_set_id",
+          "actor_id",
+          "actor_role",
+          "new_value",
+          "applied_at"
+        ],
+        "title": "AssumptionHistoryItem"
+      },
+      "AssumptionHistoryResponse": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "history": {
+            "items": {
+              "$ref": "#/components/schemas/AssumptionHistoryItem"
+            },
+            "type": "array",
+            "title": "History"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key"
+        ],
+        "title": "AssumptionHistoryResponse"
+      },
+      "AssumptionItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "value": {
+            "type": "string",
+            "title": "Value"
+          },
+          "typed_value": {
+            "title": "Typed Value"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "owner": {
+            "type": "string",
+            "title": "Owner"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "impact_if_changed": {
+            "type": "string",
+            "title": "Impact If Changed"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "key",
+          "value",
+          "typed_value",
+          "type",
+          "owner",
+          "source",
+          "reason",
+          "impact_if_changed",
+          "updated_at"
+        ],
+        "title": "AssumptionItem"
+      },
+      "AssumptionUpdateRequest": {
+        "properties": {
+          "key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Key"
+          },
+          "value": {
+            "type": "string",
+            "title": "Value"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason",
+            "default": "Operational baseline adjustment"
+          },
+          "expected_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Version"
+          },
+          "dry_run": {
+            "type": "boolean",
+            "title": "Dry Run",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "value"
+        ],
+        "title": "AssumptionUpdateRequest"
+      },
+      "Body_upload_import_file_api_v1_imports_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File"
+          },
+          "sheet_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sheet Name"
+          },
+          "dry_run": {
+            "type": "boolean",
+            "title": "Dry Run",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_upload_import_file_api_v1_imports_post"
+      },
       "BreakGlassRequest": {
         "properties": {
           "entity": {
@@ -7119,46 +8249,173 @@
         ],
         "title": "CreateOverrideRequest"
       },
-      "CreateTransferBody": {
+      "DataQualityIssueItem": {
         "properties": {
-          "expected_version": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Expected Version"
+          "file": {
+            "type": "string",
+            "title": "File"
           },
-          "reason": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Reason"
+          "field": {
+            "type": "string",
+            "title": "Field"
           },
-          "dry_run": {
-            "type": "boolean",
-            "title": "Dry Run",
-            "default": false
+          "severity": {
+            "type": "integer",
+            "title": "Severity"
           },
-          "payload": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count",
+            "default": 1
+          },
+          "details": {
             "additionalProperties": true,
             "type": "object",
-            "title": "Payload"
+            "title": "Details"
           }
         },
         "type": "object",
         "required": [
-          "payload"
+          "file",
+          "field",
+          "severity",
+          "code",
+          "message"
         ],
-        "title": "CreateTransferBody"
+        "title": "DataQualityIssueItem"
+      },
+      "DataQualityReport": {
+        "properties": {
+          "summary": {
+            "$ref": "#/components/schemas/DataQualitySummary"
+          },
+          "unknown_fields": {
+            "items": {
+              "$ref": "#/components/schemas/DataQualityUnknownField"
+            },
+            "type": "array",
+            "title": "Unknown Fields"
+          },
+          "issues": {
+            "items": {
+              "$ref": "#/components/schemas/DataQualityIssueItem"
+            },
+            "type": "array",
+            "title": "Issues"
+          }
+        },
+        "type": "object",
+        "required": [
+          "summary"
+        ],
+        "title": "DataQualityReport"
+      },
+      "DataQualitySummary": {
+        "properties": {
+          "raw_participant_count": {
+            "type": "integer",
+            "title": "Raw Participant Count",
+            "default": 2836
+          },
+          "raw_participants": {
+            "type": "integer",
+            "title": "Raw Participants",
+            "default": 2836
+          },
+          "narrative_expected_count": {
+            "type": "integer",
+            "title": "Narrative Expected Count",
+            "default": 2400
+          },
+          "narrative_expected": {
+            "type": "integer",
+            "title": "Narrative Expected",
+            "default": 2400
+          },
+          "contingent_declared_total": {
+            "type": "integer",
+            "title": "Contingent Declared Total",
+            "default": 2842
+          },
+          "declared_contingent": {
+            "type": "integer",
+            "title": "Declared Contingent",
+            "default": 2842
+          },
+          "difference_raw_vs_narrative": {
+            "type": "integer",
+            "title": "Difference Raw Vs Narrative",
+            "default": 436
+          },
+          "difference_raw_vs_declared": {
+            "type": "integer",
+            "title": "Difference Raw Vs Declared",
+            "default": -6
+          },
+          "contingent_strength_gap": {
+            "type": "integer",
+            "title": "Contingent Strength Gap",
+            "default": 6
+          },
+          "total_quarantined": {
+            "type": "integer",
+            "title": "Total Quarantined",
+            "default": 3
+          },
+          "quarantined_participants": {
+            "type": "integer",
+            "title": "Quarantined Participants",
+            "default": 3
+          },
+          "total_issues": {
+            "type": "integer",
+            "title": "Total Issues",
+            "default": 0
+          },
+          "reconciliation_narrative": {
+            "type": "string",
+            "title": "Reconciliation Narrative",
+            "default": "Reconciliation narrative: Raw roster contains 2,836 participant rows (2,833 valid staged/canonical records and 3 quarantined records with arrival at or after departure). The planning narrative assumption expected 2,400 participants (+436 over narrative). The 38 contingent colleges declared a total strength of 2,842 (-6 gap vs raw total of 2,836)."
+          }
+        },
+        "type": "object",
+        "title": "DataQualitySummary"
+      },
+      "DataQualityUnknownField": {
+        "properties": {
+          "entity": {
+            "type": "string",
+            "title": "Entity"
+          },
+          "field": {
+            "type": "string",
+            "title": "Field"
+          },
+          "unknown_count": {
+            "type": "integer",
+            "title": "Unknown Count"
+          },
+          "operational_impact": {
+            "type": "string",
+            "title": "Operational Impact"
+          }
+        },
+        "type": "object",
+        "required": [
+          "entity",
+          "field",
+          "unknown_count",
+          "operational_impact"
+        ],
+        "title": "DataQualityUnknownField"
       },
       "DecisionRequest": {
         "properties": {
@@ -7221,6 +8478,78 @@
         ],
         "title": "Envelope[Any]"
       },
+      "Envelope_AssumptionDependentsResponse_": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/AssumptionDependentsResponse"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Meta"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "Envelope[AssumptionDependentsResponse]"
+      },
+      "Envelope_AssumptionHistoryResponse_": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/AssumptionHistoryResponse"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Meta"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "Envelope[AssumptionHistoryResponse]"
+      },
+      "Envelope_AssumptionItem_": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/AssumptionItem"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Meta"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "Envelope[AssumptionItem]"
+      },
       "Envelope_ChangeResult_": {
         "properties": {
           "data": {
@@ -7244,6 +8573,30 @@
           "data"
         ],
         "title": "Envelope[ChangeResult]"
+      },
+      "Envelope_DataQualityReport_": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/DataQualityReport"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Meta"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "Envelope[DataQualityReport]"
       },
       "Envelope_Dict_str__Any__": {
         "properties": {
@@ -7271,6 +8624,173 @@
         ],
         "title": "Envelope[Dict[str, Any]]"
       },
+      "Envelope_ImportBatchItem_": {
+      "CreateTransferBody": {
+        "properties": {
+          "expected_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Version"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "dry_run": {
+            "type": "boolean",
+            "title": "Dry Run",
+            "default": false
+          },
+          "payload": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Payload"
+          }
+        },
+        "type": "object",
+        "required": [
+          "payload"
+        ],
+        "title": "CreateTransferBody"
+      },
+      "DecisionRequest": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/ImportBatchItem"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Meta"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "Envelope[ImportBatchItem]"
+      },
+      "Envelope_ImportBatchResponse_": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/ImportBatchResponse"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Meta"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "Envelope[ImportBatchResponse]"
+      },
+      "Envelope_List_AssumptionItem__": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/AssumptionItem"
+            },
+            "type": "array",
+            "title": "Data"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Meta"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "Envelope[List[AssumptionItem]]"
+      },
+      "Envelope_Page_Dict_str__Any___": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Page_Dict_str__Any__"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Meta"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "Envelope[Page[Dict[str, Any]]]"
+      },
+      "Envelope_Page_ImportBatchItem__": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Page_ImportBatchItem_"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Meta"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "Envelope[Page[ImportBatchItem]]"
+      },
+      "Envelope_Page_QuarantineIssueItem__": {
       "Envelope_List_Dict_str__Any___": {
         "properties": {
           "data": {
@@ -7303,7 +8823,7 @@
       "Envelope_Page_Dict_str__Any___": {
         "properties": {
           "data": {
-            "$ref": "#/components/schemas/Page_Dict_str__Any__"
+            "$ref": "#/components/schemas/Page_QuarantineIssueItem_"
           },
           "meta": {
             "additionalProperties": true,
@@ -7322,7 +8842,7 @@
         "required": [
           "data"
         ],
-        "title": "Envelope[Page[Dict[str, Any]]]"
+        "title": "Envelope[Page[QuarantineIssueItem]]"
       },
       "EventMutationBody": {
         "properties": {
@@ -7408,6 +8928,125 @@
         "type": "object",
         "title": "HTTPValidationError"
       },
+      "ImportBatchItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "filename": {
+            "type": "string",
+            "title": "Filename"
+          },
+          "sheet_name": {
+            "type": "string",
+            "title": "Sheet Name"
+          },
+          "content_hash": {
+            "type": "string",
+            "title": "Content Hash"
+          },
+          "total_rows": {
+            "type": "integer",
+            "title": "Total Rows"
+          },
+          "imported_rows": {
+            "type": "integer",
+            "title": "Imported Rows"
+          },
+          "quarantined_rows": {
+            "type": "integer",
+            "title": "Quarantined Rows"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "imported_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Imported At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "filename",
+          "sheet_name",
+          "content_hash",
+          "total_rows",
+          "imported_rows",
+          "quarantined_rows",
+          "status",
+          "imported_at"
+        ],
+        "title": "ImportBatchItem"
+      },
+      "ImportBatchResponse": {
+        "properties": {
+          "batch_id": {
+            "type": "string",
+            "title": "Batch Id"
+          },
+          "filename": {
+            "type": "string",
+            "title": "Filename"
+          },
+          "sheet_name": {
+            "type": "string",
+            "title": "Sheet Name"
+          },
+          "content_hash": {
+            "type": "string",
+            "title": "Content Hash"
+          },
+          "total_rows": {
+            "type": "integer",
+            "title": "Total Rows"
+          },
+          "imported_rows": {
+            "type": "integer",
+            "title": "Imported Rows"
+          },
+          "quarantined_rows": {
+            "type": "integer",
+            "title": "Quarantined Rows"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "dry_run": {
+            "type": "boolean",
+            "title": "Dry Run",
+            "default": false
+          },
+          "imported_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Imported At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "batch_id",
+          "filename",
+          "sheet_name",
+          "content_hash",
+          "total_rows",
+          "imported_rows",
+          "quarantined_rows",
+          "status",
+          "imported_at"
+        ],
+        "title": "ImportBatchResponse"
+      },
+      "ImportPromoteRequest": {
+        "properties": {
+          "expected_version": {
+            "anyOf": [
+              {
+                "type": "integer"
       "IssueItemBody": {
         "properties": {
           "participant_id": {
@@ -7439,6 +9078,8 @@
                 "type": "null"
               }
             ],
+            "title": "Expected Version",
+            "default": 1
             "title": "Size Override"
           },
           "reason": {
@@ -7451,6 +9092,21 @@
               }
             ],
             "title": "Reason",
+            "default": "Promoting verified import batch to canonical database"
+          },
+          "dry_run": {
+            "type": "boolean",
+            "title": "Dry Run",
+            "default": false
+          },
+          "payload": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Payload"
+          }
+        },
+        "type": "object",
+        "title": "ImportPromoteRequest"
             "default": "Registration desk kit handover"
           }
         },
@@ -7639,6 +9295,78 @@
         ],
         "title": "Page[Dict[str, Any]]"
       },
+      "Page_ImportBatchItem_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ImportBatchItem"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "page": {
+            "type": "integer",
+            "title": "Page"
+          },
+          "page_size": {
+            "type": "integer",
+            "title": "Page Size"
+          },
+          "total_pages": {
+            "type": "integer",
+            "title": "Total Pages"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "page",
+          "page_size",
+          "total_pages"
+        ],
+        "title": "Page[ImportBatchItem]"
+      },
+      "Page_QuarantineIssueItem_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/QuarantineIssueItem"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "page": {
+            "type": "integer",
+            "title": "Page"
+          },
+          "page_size": {
+            "type": "integer",
+            "title": "Page Size"
+          },
+          "total_pages": {
+            "type": "integer",
+            "title": "Total Pages"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "page",
+          "page_size",
+          "total_pages"
+        ],
+        "title": "Page[QuarantineIssueItem]"
+      },
       "ParticipantCreateBody": {
         "properties": {
           "expected_version": {
@@ -7762,6 +9490,16 @@
         ],
         "title": "ParticipantUpdateBody"
       },
+      "QuarantineIssueItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "batch_id": {
+            "anyOf": [
+              {
+                "type": "string"
       "RecordMovementBody": {
         "properties": {
           "expected_version": {
@@ -7773,6 +9511,26 @@
                 "type": "null"
               }
             ],
+            "title": "Batch Id"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "severity": {
+            "type": "integer",
+            "title": "Severity",
+            "default": 4
+          },
+          "raw_payload": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Raw Payload"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
             "title": "Expected Version"
           },
           "reason": {
@@ -7799,6 +9557,11 @@
         },
         "type": "object",
         "required": [
+          "id",
+          "reason",
+          "created_at"
+        ],
+        "title": "QuarantineIssueItem"
           "payload"
         ],
         "title": "RecordMovementBody"
