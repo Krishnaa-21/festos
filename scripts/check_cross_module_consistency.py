@@ -125,6 +125,23 @@ def check_mutation_routes() -> Tuple[bool, List[str]]:
         "unknowns.py:submit_token_confirmation",  # verification submit
         "venues.py:update_travel_time",           # travel matrix configuration
         "venues.py:set_venue_event_compatibility",# compatibility matrix configuration
+        "checkin.py:checkin_endpoint",            # delegates to service.checkin_participant
+        "checkin.py:checkout_endpoint",           # delegates to service.checkout_participant
+        "checkin.py:update_arrival_endpoint",     # delegates to service.update_participant_arrival
+        "checkin.py:sync_offline_batch_endpoint", # delegates to service.sync_offline_operations
+        "notifications.py:generate_drafts_endpoint", # pure draft generation
+        "notifications.py:update_draft_endpoint", # draft editor
+        "notifications.py:approve_draft_endpoint",# governance approval
+        "notifications.py:send_draft_endpoint",   # broadcast dispatch
+        "finance.py:open_dispute_endpoint",       # dispute registry
+        "finance.py:set_budget_endpoint",         # budget parameter update
+        "accommodation.py:commit_candidate_plan_endpoint", # plan commit workflow
+        "accommodation.py:freeze_live_plan_endpoint",      # plan freeze status
+        "accommodation.py:allocate_incremental_endpoint",  # incremental placement
+        "accommodation.py:complete_cleaning_endpoint",     # cleaning turnaround
+        "accommodation.py:manual_assignment_endpoint",     # manual assignment workflow
+        "accommodation.py:repair_accommodation_endpoint",  # accommodation repair
+        "vendors.py:shutdown_impact_endpoint",             # vendor shutdown preview
     }
 
     for py_file in api_dir.glob("*.py"):

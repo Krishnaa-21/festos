@@ -325,11 +325,13 @@ export const VolunteerMobileView: React.FC = () => {
           <form onSubmit={handleCheckinSubmit} className="space-y-4">
             <div className="p-4 rounded-xl border border-slate-800 bg-[#0E1526] space-y-3">
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+                <label htmlFor="volunteer-checkin-id-input" className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
                   Participant ID / Barcode <span className="text-rose-400">*</span>
                 </label>
                 <div className="relative">
                   <input
+                    id="volunteer-checkin-id-input"
+                    aria-label="Participant ID / Barcode"
                     type="text"
                     data-testid="volunteer-checkin-id-input"
                     value={checkinId}
@@ -342,10 +344,12 @@ export const VolunteerMobileView: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+                <label htmlFor="volunteer-checkin-wristband-input" className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
                   Wristband Security Code
                 </label>
                 <input
+                  id="volunteer-checkin-wristband-input"
+                  aria-label="Wristband Security Code"
                   type="text"
                   data-testid="volunteer-checkin-wristband-input"
                   value={wristband}
@@ -356,10 +360,12 @@ export const VolunteerMobileView: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+                <label htmlFor="volunteer-checkin-diet-select" className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
                   Diet Verification (Meal Pass)
                 </label>
                 <select
+                  id="volunteer-checkin-diet-select"
+                  aria-label="Diet Verification (Meal Pass)"
                   data-testid="volunteer-checkin-diet-select"
                   value={dietChoice}
                   onChange={(e) => setDietChoice(e.target.value)}
@@ -422,11 +428,13 @@ export const VolunteerMobileView: React.FC = () => {
           <form onSubmit={handleMerchSubmit} className="space-y-4">
             <div className="p-4 rounded-xl border border-slate-800 bg-[#0E1526] space-y-3">
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+                <label htmlFor="volunteer-merch-id-input" className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
                   Participant ID / Barcode <span className="text-rose-400">*</span>
                 </label>
                 <div className="relative">
                   <input
+                    id="volunteer-merch-id-input"
+                    aria-label="Participant ID / Barcode"
                     type="text"
                     data-testid="volunteer-merch-id-input"
                     value={merchId}
@@ -439,10 +447,12 @@ export const VolunteerMobileView: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+                <label htmlFor="volunteer-merch-item-select" className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
                   Select Item to Issue
                 </label>
                 <select
+                  id="volunteer-merch-item-select"
+                  aria-label="Select Item to Issue"
                   data-testid="volunteer-merch-item-select"
                   value={selectedItem}
                   onChange={(e) => setSelectedItem(e.target.value)}
