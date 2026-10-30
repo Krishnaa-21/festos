@@ -1199,6 +1199,31 @@ export const handlers = [
     });
   }),
 
+  // PWA Check-in Offline Batch Sync endpoint
+  http.post("*/api/v1/checkin/sync", async ({ request }) => {
+    const body = (await request.json()) as any;
+    const ops = body?.operations || [];
+    const results = ops.map((op: any, index: number) => {
+      // If op is second or matches duplicate pattern, mark DUPLICATE_IGNORED
+      if (index === 1 || op.participant_id === "P0103_DUP") {
+        return {
+          client_op_id: op.client_op_id,
+          status: "DUPLICATE_IGNORED",
+          message: `Duplicate check-in ignored for participant ${op.participant_id || "P0103"} (already verified on server).`,
+        };
+      }
+      return {
+        client_op_id: op.client_op_id,
+        status: "APPLIED",
+        message: `Check-in verified cleanly for participant ${op.participant_id || "P0102"}.`,
+      };
+    });
+    return HttpResponse.json({
+      device_id: body.device_id,
+      results,
+    });
+  }),
+
   // --- EVENTS & VENUES & SCHEDULE ---
   http.get("*/api/v1/events", ({ request }) => {
     const url = new URL(request.url);
@@ -2269,6 +2294,52 @@ export const handlers = [
       },
       meta: {},
       warnings: [],
+    });
+  }),
+
+  // PWA Merchandise Offline Batch Sync endpoint
+  http.post("*/api/v1/merchandise/sync", async ({ request }) => {
+    const body = (await request.json()) as any;
+    const ops = body?.operations || [];
+    const results = ops.map((op: any, index: number) => {
+      if (op.participant_id === "P0042_CONFLICT" || index === 99) {
+        return {
+          client_op_id: op.client_op_id,
+          status: "CONFLICT",
+          message: `Item ${op.item_name} already claimed at Counter South at 10:15 AM.`,
+          conflict_details: {
+            server_claim_id: "clm_south_991",
+            claimed_at: "2026-10-31T10:15:00Z",
+            counter: "Counter South",
+          },
+        };
+      }
+      return {
+        client_op_id: op.client_op_id,
+        status: "APPLIED",
+        message: `Merchandise ${op.item_name || "T-shirt"} issued to ${op.participant_id}.`,
+      };
+    });
+    return HttpResponse.json({
+      device_id: body.device_id,
+      results,
+    });
+  }),
+
+  // AI Command Center Execution Endpoint
+  http.post("*/api/v1/commands/execute", async ({ request }) => {
+    const body = (await request.json()) as any;
+    const isMutating = body?.command?.is_mutating;
+    return HttpResponse.json({
+      result: {
+        success: true,
+        summary: isMutating
+          ? `Change proposal submitted for approval: ${body?.command?.raw_text || "AI Proposal"}`
+          : `Analysis executed for: ${body?.command?.raw_text || "Query"}`,
+        items_affected: 42,
+        action_route: "/approvals",
+        proposal_id: `prop_${Math.random().toString(36).slice(2, 8)}`,
+      },
     });
   }),
 

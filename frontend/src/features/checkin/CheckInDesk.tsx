@@ -27,6 +27,7 @@ import {
 } from "../../components/ui";
 import { CheckinBoardData, ParticipantCheckinDetail } from "../accommodation/types";
 import { api, generateIdempotencyKey } from "../../api/client";
+import { offlineDb } from "../../pwa/offlineDb";
 
 export const CheckInDesk: React.FC = () => {
   const { addToast } = useToast();
@@ -171,6 +172,40 @@ export const CheckInDesk: React.FC = () => {
   const handleVerifyArrival = async () => {
     if (!searchedParticipant) return;
     setIsCheckingIn(true);
+
+    if (typeof navigator !== "undefined" && !navigator.onLine) {
+      try {
+        await offlineDb.enqueueSafeOp("CHECK_IN", {
+          participant_id: searchedParticipant.participant.id,
+          wristband_code: wristbandCode,
+          verified_fields: selectedDiet ? { diet: selectedDiet } : {},
+          desk_operator: "Desk Volunteer Lead",
+        });
+        addToast({
+          title: "Check-in Queued Offline",
+          message: `${searchedParticipant.participant.name} buffered in IndexedDB. Will sync on reconnect.`,
+          type: "success",
+        });
+        setSearchedParticipant((prev) =>
+          prev
+            ? {
+                ...prev,
+                participant: { ...prev.participant, status: "CHECKED_IN", diet: selectedDiet || prev.participant.diet },
+              }
+            : null
+        );
+      } catch (err: any) {
+        addToast({
+          title: "Offline Storage Error",
+          message: err?.message || "Failed to buffer offline checkin",
+          type: "error",
+        });
+      } finally {
+        setIsCheckingIn(false);
+      }
+      return;
+    }
+
     try {
       await api.post(
         "/api/v1/checkin/verify-arrival",
