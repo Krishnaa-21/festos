@@ -182,3 +182,74 @@ Format:
   - Baseline `ASSUMED` schedule generated during seeding with 312 provisional teams covering all 1,810 registrations without team IDs.
 - **Action Required**:
   - Run `make reset` to drop/recreate tables and ingest the raw data pack, then seed venue availability windows and the baseline assumed schedule.
+
+### 2026-10-30: P3/09-ui-accom (Accommodation Workspace, Shortage Diagnosis, Occupancy Matrix, Decision Flow, & Check-in Desk)
+- **Author**: P3 Lead
+- **Branch**: `p3/09-ui-accom`
+- **Endpoints Contracted & MSW Mocked**:
+  - `GET /api/v1/accommodation/plans` (Plan A, B, C comparison, budget-unset indicator)
+  - `POST /api/v1/accommodation/generate-plan` (Parameters, cleaning buffer, weights solver)
+  - `GET /api/v1/accommodation/shortages` (Unplaced participants grouped by bottleneck)
+  - `GET /api/v1/accommodation/why-not/:id` (Explainable root cause diagnosis, counterfactual change, quick verify)
+  - `GET /api/v1/accommodation/occupancy` (Hostel blocks, floors, beds, external properties with UNVERIFIED badges)
+  - `POST /api/v1/accommodation/check-constraints` (Live pre-flight constraint validation)
+  - `POST /api/v1/accommodation/assign` (Bed assignment with ConfirmWithReason, WhyCard generation, and 409 concurrency conflict support)
+  - `POST /api/v1/accommodation/commit-live` (Promote candidate plan to LIVE operational status)
+  - `GET /api/v1/checkin/board` (Arrival board, pending, arrived, checked-in, late curfew breaches)
+  - `GET /api/v1/checkin/participant/:id` (Participant scan lookup, room readiness, alerts, UNKNOWN prompts)
+  - `POST /api/v1/checkin/verify-arrival` (Idempotent wristband key release)
+  - `POST /api/v1/checkin/checkout` (Check out, 180m room cleaning countdown buffer trigger)
+- **Frontend Components & Features Created**:
+  - `frontend/src/features/accommodation/`:
+    - `AccommodationWorkspace.tsx`: Plan generator, compare table, Recharts trade-off chart, budget banner, approval status tracker.
+    - `ShortageView.tsx`: Grouped unplaced list with Why-not? diagnosis panel.
+    - `OccupancyMap.tsx`: Interactive blocks, floors, beds with non-colour-only text badges, contingent overlays, split highlights, leader proximity badges, external properties with UNVERIFIED badges.
+    - `DecisionFlowModal.tsx`: Live constraint-checked assign/move dialog, locking hard overrides to `FESTIVAL_DIRECTOR`, `ConfirmWithReason`, `WhyCard` on assignment, override register link, and 409 conflict recovery.
+    - `ParticipantAccommodationTab.tsx`: Exported additive tab component mounted in `Participant360Drawer.tsx`.
+    - `types.ts` & `index.tsx`: Domain types & route registration under `/accommodation`.
+  - `frontend/src/features/checkin/`:
+    - `CheckInDesk.tsx`: Large search/scan field with `/` shortcut, one-handed tablet layout, room readiness (180m buffer), accessibility & diet alert chips, 1-tap UNKNOWN verify prompts, live arrival board, check-out with cleaning status.
+    - `index.tsx`: Route registration under `/checkin`.
+- **Tests Added**:
+  - Vitest: `frontend/src/test/accommodation_ui.test.tsx` (13 test suites covering plan compare, trade-off chart, shortage diagnosis, occupancy matrix, live constraint checks, director override gate, 409 recovery, check-in desk, and participant 360 tab).
+  - Playwright: `frontend/e2e/accommodation.spec.ts` (E2E flows: generate plans, compare, explain unplaced, assign with reason, hit 409 and recover, search/scan and check in).
+- **Action Required**:
+  - Run `npm test` and `npm run typecheck` to verify client suite.
+### 2026-10-31: P1/10-inventory (Ledger-Backed Inventory, Equipment Allocation, and Transactional Merchandise Issuance)
+- **Author**: P1 Lead
+- **Branch**: `p1/10-inventory`
+- **Endpoints Added**:
+  - `GET /api/v1/logistics/items`: List inventory items with projected stock buckets (`on_hand`, `reserved`, `in_transit`, `damaged`, `under_repair`, `awaiting_return`, `available`).
+  - `GET /api/v1/logistics/items/{id}`: Single item profile with breakdown across locations.
+  - `GET /api/v1/logistics/locations`: List inventory locations.
+  - `GET /api/v1/logistics/movements`: Immutable double-entry ledger movements history.
+  - `POST /api/v1/logistics/movements`: Append-only movement recording via ChangeService (`RECEIVE`, `RESERVE`, `RELEASE`, `TRANSFER_OUT`, `TRANSFER_IN`, `ISSUE`, `RETURN`, `DAMAGE`, `SEND_REPAIR`, `REPAIR_DONE`, `ADJUST`).
+  - `GET /api/v1/logistics/transfers`: Active and past inter-venue/location transfers.
+  - `POST /api/v1/logistics/transfers`: Initiates transfer with ETA (stock in `TRANSFER_OUT` counts at neither endpoint).
+  - `POST /api/v1/logistics/transfers/{id}/complete`: Explicit transfer completion step writing `TRANSFER_IN` to destination.
+  - `GET /api/v1/logistics/equipment/find`: Searches equipment units for venue session windows; evaluates on-site units and transfer feasibility based on `travel_time` + 15m transfer buffer.
+  - `GET /api/v1/logistics/equipment/{id}/failure-analysis`: Returns dependent sessions, alternative units, and transfer feasibility.
+  - `POST /api/v1/logistics/stocktake`: Stocktake discrepancy reconciliation with mandatory reason.
+  - `GET /api/v1/logistics/ledger/balance`: Mathematical consistency check proving movements balance across the festival.
+  - `GET /api/v1/logistics/reconciliation-flags`: Surfaces reconciliation flags (the 'camera' 31 units under repair case and 'tables' needs check condition).
+  - `GET /api/v1/logistics/reports/inventory-plan`: Exports `inventory_plan.csv`.
+  - `GET /api/v1/logistics/reports/equipment-gap`: Exports `equipment_gap.csv`.
+  - `GET /api/v1/merchandise/catalog`: Catalog items with size-wise stock buckets.
+  - `GET /api/v1/merchandise/policy`: Entitlement policy (1 per confirmed participant for per-head items: T-shirt, ID card, lanyard, tote; winner medals are not per-head) and size demand/shortage analysis.
+  - `POST /api/v1/merchandise/issue`: Transactional, idempotent merchandise issuance to canonical participant; atomic claim insert + ISSUE ledger movement; returns 409 `ALREADY_ISSUED` on repeat attempt with original timestamp, counter, and staff member.
+  - `POST /api/v1/merchandise/void`: Void claim with mandatory reason and Director review; returns item to `awaiting_return`.
+  - `GET /api/v1/merchandise/qr/{participant_id}`: Signed HMAC token using `QR_SECRET`, SVG generation, and checklist.
+  - `POST /api/v1/merchandise/scan`: Validates QR token and returns canonical participant entitlements (masked for volunteers).
+  - `POST /api/v1/merchandise/sync`: Offline batch synchronization keyed idempotently by `client_op_id`.
+- **Public Functions Added**:
+  - `services/logistics/public.py`: `summary`, `risks` (camera repair deficit, tables unverified, overdue transfers), `dependents`, `inventory_plan_csv`, `equipment_gap_csv`.
+  - `services/merchandise/public.py`: `summary`, `risks` (size shortages, missing sizes requiring collection), `dependents`.
+  - `engines/equipment_allocation.py`: Refined `LedgerEquipmentAvailabilityAdapter` implementing `EquipmentAvailabilityPort` for Prompt 7 conflict detector.
+  - Registered participant 360 dynamic section `'merchandise'`.
+- **Breaking Changes / Schema Migrations**:
+  - Added `inventory_item`, `inventory_location`, `inventory_movement`, `inventory_transfer`, `merch_claim`, `entitlement_policy` tables.
+  - `inventory_movement` enforces double-entry invariant: quantities are strictly positive; physical inventory is never overwritten.
+  - Unique DB constraint on `merch_claim` for `(canonical_participant_id, item_id)` ensures strict single-claim semantics.
+  - Order 40 seeder ingests `inventory_logistics.csv` and `inventory_merch.csv`.
+- **Action Required**:
+  - Run database seeders to populate initial logistics and merchandise inventory.

@@ -265,6 +265,157 @@ export interface paths {
      * @description Promotes staged records to canonical tables through ChangeService handler imports.promote.
      */
     post: operations["post_promote_import_batch_api_v1_imports__id__promote_post"];
+  "/api/v1/logistics/items": {
+    /**
+     * List Items
+     * @description List inventory items with projected stock buckets.
+     */
+    get: operations["list_items_api_v1_logistics_items_get"];
+  };
+  "/api/v1/logistics/items/{id}": {
+    /**
+     * Get Item
+     * @description Get single inventory item profile with location breakdown.
+     */
+    get: operations["get_item_api_v1_logistics_items__id__get"];
+  };
+  "/api/v1/logistics/locations": {
+    /**
+     * List Locations
+     * @description List inventory locations.
+     */
+    get: operations["list_locations_api_v1_logistics_locations_get"];
+  };
+  "/api/v1/logistics/movements": {
+    /**
+     * List Movements
+     * @description List inventory movements from the immutable ledger.
+     */
+    get: operations["list_movements_api_v1_logistics_movements_get"];
+    /**
+     * Record Movement
+     * @description Record an inventory movement in the ledger via ChangeService.
+     */
+    post: operations["record_movement_api_v1_logistics_movements_post"];
+  };
+  "/api/v1/logistics/transfers": {
+    /**
+     * List Transfers
+     * @description List transfers.
+     */
+    get: operations["list_transfers_api_v1_logistics_transfers_get"];
+    /**
+     * Create Transfer
+     * @description Initiate an equipment transfer between locations.
+     */
+    post: operations["create_transfer_api_v1_logistics_transfers_post"];
+  };
+  "/api/v1/logistics/transfers/{id}/complete": {
+    /**
+     * Complete Transfer
+     * @description Complete an in-transit transfer.
+     */
+    post: operations["complete_transfer_api_v1_logistics_transfers__id__complete_post"];
+  };
+  "/api/v1/logistics/equipment/find": {
+    /**
+     * Find Equipment
+     * @description Searches equipment units for a venue session window and evaluates transfer feasibility.
+     */
+    get: operations["find_equipment_api_v1_logistics_equipment_find_get"];
+  };
+  "/api/v1/logistics/equipment/{id}/failure-analysis": {
+    /**
+     * Failure Analysis
+     * @description Analyzes dependent sessions, alternatives, and transfer feasibility for equipment failure.
+     */
+    get: operations["failure_analysis_api_v1_logistics_equipment__id__failure_analysis_get"];
+  };
+  "/api/v1/logistics/stocktake": {
+    /**
+     * Stocktake Adjust
+     * @description Records stocktake discrepancy adjustment with mandatory justification reason.
+     */
+    post: operations["stocktake_adjust_api_v1_logistics_stocktake_post"];
+  };
+  "/api/v1/logistics/ledger/balance": {
+    /**
+     * Verify Ledger Balance
+     * @description Verifies double-entry ledger balance consistency across all items and locations.
+     */
+    get: operations["verify_ledger_balance_api_v1_logistics_ledger_balance_get"];
+  };
+  "/api/v1/logistics/reconciliation-flags": {
+    /**
+     * Get Reconciliation Flags
+     * @description Surfaces ambiguous data flags (the 'camera' case and 'tables' needs check).
+     */
+    get: operations["get_reconciliation_flags_api_v1_logistics_reconciliation_flags_get"];
+  };
+  "/api/v1/logistics/reports/inventory-plan": {
+    /**
+     * Get Inventory Plan Report
+     * @description Exports inventory_plan.csv.
+     */
+    get: operations["get_inventory_plan_report_api_v1_logistics_reports_inventory_plan_get"];
+  };
+  "/api/v1/logistics/reports/equipment-gap": {
+    /**
+     * Get Equipment Gap Report
+     * @description Exports equipment_gap.csv.
+     */
+    get: operations["get_equipment_gap_report_api_v1_logistics_reports_equipment_gap_get"];
+  };
+  "/api/v1/merchandise/catalog": {
+    /**
+     * Get Catalog
+     * @description Returns merchandise catalog items with stock buckets.
+     */
+    get: operations["get_catalog_api_v1_merchandise_catalog_get"];
+  };
+  "/api/v1/merchandise/policy": {
+    /**
+     * Get Policy
+     * @description Returns entitlement policy rules and size-wise demand vs stock analysis.
+     */
+    get: operations["get_policy_api_v1_merchandise_policy_get"];
+  };
+  "/api/v1/merchandise/issue": {
+    /**
+     * Issue Item
+     * @description Issues merchandise to a canonical participant. Idempotent and atomic.
+     * Returns 409 ALREADY_ISSUED with original details if already claimed.
+     */
+    post: operations["issue_item_api_v1_merchandise_issue_post"];
+  };
+  "/api/v1/merchandise/void": {
+    /**
+     * Void Claim
+     * @description Voids an issued merch claim and returns item to awaiting_return. Requires approval.
+     */
+    post: operations["void_claim_api_v1_merchandise_void_post"];
+  };
+  "/api/v1/merchandise/qr/{participant_id}": {
+    /**
+     * Get Qr
+     * @description Returns signed HMAC QR token, SVG graphic, and entitlement checklist.
+     */
+    get: operations["get_qr_api_v1_merchandise_qr__participant_id__get"];
+  };
+  "/api/v1/merchandise/scan": {
+    /**
+     * Scan Qr
+     * @description Validates QR token and returns canonical participant entitlements.
+     * Volunteers receive minimal verification data.
+     */
+    post: operations["scan_qr_api_v1_merchandise_scan_post"];
+  };
+  "/api/v1/merchandise/sync": {
+    /**
+     * Sync Offline
+     * @description Batch synchronizes offline issuance operations keyed idempotently by client_op_id.
+     */
+    post: operations["sync_offline_api_v1_merchandise_sync_post"];
   };
   "/api/v1/overrides": {
     /**
@@ -866,6 +1017,22 @@ export interface components {
       /** Operational Impact */
       operational_impact: string;
     };
+    /** CreateTransferBody */
+    CreateTransferBody: {
+      /** Expected Version */
+      expected_version?: number | null;
+      /** Reason */
+      reason?: string | null;
+      /**
+       * Dry Run
+       * @default false
+       */
+      dry_run?: boolean;
+      /** Payload */
+      payload: {
+        [key: string]: unknown;
+      };
+    };
     /** DecisionRequest */
     DecisionRequest: {
       /**
@@ -981,6 +1148,12 @@ export interface components {
     Envelope_List_AssumptionItem__: {
       /** Data */
       data: components["schemas"]["AssumptionItem"][];
+    /** Envelope[List[Dict[str, Any]]] */
+    Envelope_List_Dict_str__Any___: {
+      /** Data */
+      data: {
+          [key: string]: unknown;
+        }[];
       /** Meta */
       meta?: {
         [key: string]: unknown;
@@ -1135,6 +1308,24 @@ export interface components {
       payload?: {
         [key: string]: unknown;
       };
+    /** IssueItemBody */
+    IssueItemBody: {
+      /** Participant Id */
+      participant_id: string;
+      /** Item Id */
+      item_id: string;
+      /**
+       * Counter Id
+       * @default DESK_CENTRAL
+       */
+      counter_id?: string | null;
+      /** Size Override */
+      size_override?: string | null;
+      /**
+       * Reason
+       * @default Registration desk kit handover
+       */
+      reason?: string | null;
     };
     /** JudgeCreateBody */
     JudgeCreateBody: {
@@ -1292,11 +1483,38 @@ export interface components {
        * Format: date-time
        */
       created_at: string;
+    /** RecordMovementBody */
+    RecordMovementBody: {
+      /** Expected Version */
+      expected_version?: number | null;
+      /** Reason */
+      reason?: string | null;
+      /**
+       * Dry Run
+       * @default false
+       */
+      dry_run?: boolean;
+      /** Payload */
+      payload: {
+        [key: string]: unknown;
+      };
     };
     /** RefreshRequest */
     RefreshRequest: {
       /** Refresh Token */
       refresh_token: string;
+    };
+    /** ScanQrBody */
+    ScanQrBody: {
+      /** Token */
+      token: string;
+      /**
+       * Counter Id
+       * @default DESK_CENTRAL
+       */
+      counter_id?: string | null;
+      /** Auto Issue Items */
+      auto_issue_items?: string[] | null;
     };
     /** ScheduleGenerateBody */
     ScheduleGenerateBody: {
@@ -1363,6 +1581,29 @@ export interface components {
      * @enum {integer}
      */
     Severity: 1 | 2 | 3 | 4;
+    /** StocktakeAdjustBody */
+    StocktakeAdjustBody: {
+      /** Expected Version */
+      expected_version?: number | null;
+      /** Reason */
+      reason?: string | null;
+      /**
+       * Dry Run
+       * @default false
+       */
+      dry_run?: boolean;
+      /** Payload */
+      payload: {
+        [key: string]: unknown;
+      };
+    };
+    /** SyncOfflineBody */
+    SyncOfflineBody: {
+      /** Operations */
+      operations: {
+          [key: string]: unknown;
+        }[];
+    };
     /** TokenConfirmBody */
     TokenConfirmBody: {
       /** Value */
@@ -1454,6 +1695,18 @@ export interface components {
       message: string;
       /** Entity Refs */
       entity_refs?: components["schemas"]["EntityRef"][];
+    };
+    /** VoidClaimBody */
+    VoidClaimBody: {
+      /** Claim Id */
+      claim_id: string;
+      /** Reason */
+      reason: string;
+      /**
+       * Return To Awaiting Inspection
+       * @default true
+       */
+      return_to_awaiting_inspection?: boolean;
     };
   };
   responses: never;
@@ -2535,11 +2788,18 @@ export interface operations {
    * @description Lists import batch history with pagination and status filtering.
    */
   get_import_history_api_v1_imports_get: {
+   * List Items
+   * @description List inventory items with projected stock buckets.
+   */
+  list_items_api_v1_logistics_items_get: {
     parameters: {
       query?: {
         page?: number;
         page_size?: number;
         status?: string | null;
+        kind?: string | null;
+        q?: string | null;
+        location_id?: string | null;
       };
       header?: {
         authorization?: string | null;
@@ -2550,6 +2810,7 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["Envelope_Page_ImportBatchItem__"];
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
         };
       };
       /** @description Validation Error */
@@ -2565,6 +2826,94 @@ export interface operations {
    * @description Uploads and ingests a raw CSV file into raw_record, staging, and quarantine.
    */
   upload_import_file_api_v1_imports_post: {
+   * Get Item
+   * @description Get single inventory item profile with location breakdown.
+   */
+  get_item_api_v1_logistics_items__id__get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * List Locations
+   * @description List inventory locations.
+   */
+  list_locations_api_v1_logistics_locations_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_List_Dict_str__Any___"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * List Movements
+   * @description List inventory movements from the immutable ledger.
+   */
+  list_movements_api_v1_logistics_movements_get: {
+    parameters: {
+      query?: {
+        item_id?: string | null;
+        location_id?: string | null;
+        page?: number;
+        page_size?: number;
+      };
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Record Movement
+   * @description Record an inventory movement in the ledger via ChangeService.
+   */
+  record_movement_api_v1_logistics_movements_post: {
     parameters: {
       header?: {
         "Idempotency-Key"?: string | null;
@@ -2574,6 +2923,7 @@ export interface operations {
     requestBody: {
       content: {
         "multipart/form-data": components["schemas"]["Body_upload_import_file_api_v1_imports_post"];
+        "application/json": components["schemas"]["RecordMovementBody"];
       };
     };
     responses: {
@@ -2581,6 +2931,7 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["Envelope_ImportBatchResponse_"];
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
         };
       };
       /** @description Validation Error */
@@ -2596,8 +2947,69 @@ export interface operations {
    * @description Fetches details for a specific import batch.
    */
   get_import_batch_details_api_v1_imports__id__get: {
+   * List Transfers
+   * @description List transfers.
+   */
+  list_transfers_api_v1_logistics_transfers_get: {
     parameters: {
       header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_List_Dict_str__Any___"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Create Transfer
+   * @description Initiate an equipment transfer between locations.
+   */
+  create_transfer_api_v1_logistics_transfers_post: {
+    parameters: {
+      header?: {
+        "Idempotency-Key"?: string | null;
+        authorization?: string | null;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CreateTransferBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Complete Transfer
+   * @description Complete an in-transit transfer.
+   */
+  complete_transfer_api_v1_logistics_transfers__id__complete_post: {
+    parameters: {
+      header?: {
+        "Idempotency-Key"?: string | null;
         authorization?: string | null;
       };
       path: {
@@ -2609,6 +3021,7 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["Envelope_ImportBatchItem_"];
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
         };
       };
       /** @description Validation Error */
@@ -2628,7 +3041,43 @@ export interface operations {
       query?: {
         page?: number;
         page_size?: number;
+   * Find Equipment
+   * @description Searches equipment units for a venue session window and evaluates transfer feasibility.
+   */
+  find_equipment_api_v1_logistics_equipment_find_get: {
+    parameters: {
+      query: {
+        item_name: string;
+        venue_id: string;
+        start_at: string;
+        end_at: string;
+        quantity_needed?: number;
       };
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Failure Analysis
+   * @description Analyzes dependent sessions, alternatives, and transfer feasibility for equipment failure.
+   */
+  failure_analysis_api_v1_logistics_equipment__id__failure_analysis_get: {
+    parameters: {
       header?: {
         authorization?: string | null;
       };
@@ -2641,6 +3090,7 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["Envelope_Page_QuarantineIssueItem__"];
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
         };
       };
       /** @description Validation Error */
@@ -2656,6 +3106,10 @@ export interface operations {
    * @description Promotes staged records to canonical tables through ChangeService handler imports.promote.
    */
   post_promote_import_batch_api_v1_imports__id__promote_post: {
+   * Stocktake Adjust
+   * @description Records stocktake discrepancy adjustment with mandatory justification reason.
+   */
+  stocktake_adjust_api_v1_logistics_stocktake_post: {
     parameters: {
       header?: {
         "Idempotency-Key"?: string | null;
@@ -2668,6 +3122,312 @@ export interface operations {
     requestBody?: {
       content: {
         "application/json": components["schemas"]["ImportPromoteRequest"];
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["StocktakeAdjustBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Verify Ledger Balance
+   * @description Verifies double-entry ledger balance consistency across all items and locations.
+   */
+  verify_ledger_balance_api_v1_logistics_ledger_balance_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Reconciliation Flags
+   * @description Surfaces ambiguous data flags (the 'camera' case and 'tables' needs check).
+   */
+  get_reconciliation_flags_api_v1_logistics_reconciliation_flags_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_List_Dict_str__Any___"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Inventory Plan Report
+   * @description Exports inventory_plan.csv.
+   */
+  get_inventory_plan_report_api_v1_logistics_reports_inventory_plan_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Equipment Gap Report
+   * @description Exports equipment_gap.csv.
+   */
+  get_equipment_gap_report_api_v1_logistics_reports_equipment_gap_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Catalog
+   * @description Returns merchandise catalog items with stock buckets.
+   */
+  get_catalog_api_v1_merchandise_catalog_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Policy
+   * @description Returns entitlement policy rules and size-wise demand vs stock analysis.
+   */
+  get_policy_api_v1_merchandise_policy_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Issue Item
+   * @description Issues merchandise to a canonical participant. Idempotent and atomic.
+   * Returns 409 ALREADY_ISSUED with original details if already claimed.
+   */
+  issue_item_api_v1_merchandise_issue_post: {
+    parameters: {
+      header?: {
+        "Idempotency-Key"?: string | null;
+        authorization?: string | null;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["IssueItemBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Void Claim
+   * @description Voids an issued merch claim and returns item to awaiting_return. Requires approval.
+   */
+  void_claim_api_v1_merchandise_void_post: {
+    parameters: {
+      header?: {
+        "Idempotency-Key"?: string | null;
+        authorization?: string | null;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["VoidClaimBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Qr
+   * @description Returns signed HMAC QR token, SVG graphic, and entitlement checklist.
+   */
+  get_qr_api_v1_merchandise_qr__participant_id__get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+      path: {
+        participant_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Scan Qr
+   * @description Validates QR token and returns canonical participant entitlements.
+   * Volunteers receive minimal verification data.
+   */
+  scan_qr_api_v1_merchandise_scan_post: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ScanQrBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Sync Offline
+   * @description Batch synchronizes offline issuance operations keyed idempotently by client_op_id.
+   */
+  sync_offline_api_v1_merchandise_sync_post: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SyncOfflineBody"];
       };
     };
     responses: {
@@ -2675,6 +3435,7 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["Envelope_ChangeResult_"];
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
         };
       };
       /** @description Validation Error */
