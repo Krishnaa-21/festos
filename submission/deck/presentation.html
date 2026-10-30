@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FestOS — 7-Minute Master Pitch Deck</title>
+  <style>
+    :root {
+      --bg: #070B14;
+      --card-bg: #0E1526;
+      --border: #1E293B;
+      --primary: #6366F1;
+      --primary-light: #818CF8;
+      --accent: #10B981;
+      --warning: #F59E0B;
+      --danger: #EF4444;
+      --text: #F8FAFC;
+      --text-muted: #94A3B8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    #presentation-container {
+      width: 90vw;
+      max-width: 1200px;
+      height: 85vh;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 48px;
+      position: relative;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .slide {
+      display: none;
+      height: 100%;
+      flex-direction: column;
+      justify-content: center;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .slide.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 16px;
+    }
+
+    .badge-primary { background: rgba(99, 102, 241, 0.15); color: var(--primary-light); border: 1px solid rgba(99, 102, 241, 0.3); }
+    .badge-accent { background: rgba(16, 185, 129, 0.15); color: var(--accent); border: 1px solid rgba(16, 185, 129, 0.3); }
+    .badge-warning { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.3); }
+
+    h1 {
+      font-size: 2.75rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, #FFFFFF 0%, #94A3B8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 24px;
+      color: #FFFFFF;
+    }
+
+    p.subtitle {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 32px;
+      max-width: 800px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 16px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      margin-top: 16px;
+    }
+
+    .card {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+    }
+
+    .card h3 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--primary-light);
+    }
+
+    .card p {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: 800;
+      font-family: monospace;
+      color: #FFFFFF;
+      margin-bottom: 4px;
+    }
+
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--border);
+      padding-top: 20px;
+    }
+
+    .controls button {
+      background: var(--border);
+      border: none;
+      color: var(--text);
+      padding: 10px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      margin-left: 8px;
+      transition: all 0.2s;
+    }
+
+    .controls button:hover {
+      background: var(--primary);
+    }
+
+    .progress {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-family: monospace;
+    }
+
+    ul.check-list {
+      list-style: none;
+      margin-top: 12px;
+    }
+
+    ul.check-list li {
+      position: relative;
+      padding-left: 28px;
+      margin-bottom: 12px;
+      font-size: 1.05rem;
+      color: #E2E8F0;
+      line-height: 1.4;
+    }
+
+    ul.check-list li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-weight: 800;
+    }
+
+    .highlight-box {
+      background: rgba(99, 102, 241, 0.08);
+      border-left: 4px solid var(--primary);
+      padding: 16px 20px;
+      border-radius: 0 8px 8px 0;
+      margin-top: 20px;
+      font-size: 1rem;
+      color: #CBD5E1;
+    }
+  </style>
+</head>
+<body>
+
+<div id="presentation-container">
+  
+  <!-- SLIDE 1: TITLE & CORE PROBLEM -->
+  <div class="slide active" data-slide="1">
+    <span class="badge badge-primary">Aarohan 2026 · EPINOIA Master Pitch</span>
+    <h1>FestOS</h1>
+    <h2>The Command Center for Festival Resilience</h2>
+    <p class="subtitle">A real-time operational platform replacing spreadsheet chaos with deterministic decision intelligence and cascading blast-radius management.</p>
+    
+    <div class="grid-3">
+      <div class="card">
+        <div class="stat-number">2,836</div>
+        <h3>Raw Entrants Reconciled</h3>
+        <p>Never forced to 2,400. 426 unexplained remainder surfaced for transparent audit.</p>
+      </div>
+      <div class="card">
+        <div class="stat-number">1,450</div>
+        <h3>Beds Across Campus & Resorts</h3>
+        <p>Three explainable allocation plans (Cohesion, Cost, Balanced) with Why-not? diagnosis.</p>
+      </div>
+      <div class="card">
+        <div class="stat-number">7 / 7</div>
+        <h3>Live Disruption Scenarios</h3>
+        <p>Sub-second blast radius calculation with downstream subsystem state updates.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: THE FESTIVAL PROBLEM -->
+  <div class="slide" data-slide="2">
+    <span class="badge badge-warning">0:00 – 0:45 · Problem Context</span>
+    <h2>The Anatomy of Festival Chaos</h2>
+    <p class="subtitle">Why traditional spreadsheets and WhatsApp groups fail under live event pressure.</p>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>Spreadsheet Silos</h3>
+        <ul class="check-list">
+          <li>Accommodation doesn't talk to transportation or dining.</li>
+          <li>A bus delayed 3 hours causes participants to forfeit stage rounds before anyone notices.</li>
+          <li>Duplicate registrations result in ghost beds while students sleep in auditoriums.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3>The FestOS Principle</h3>
+        <div class="highlight-box">
+          <strong>"AI proposes. Deterministic logic validates. Humans approve."</strong><br><br>
+          Every mutation goes through ChangeService. Every override requires an operational justification. Every change propagates downstream consequences across connected modules.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: DATA RECONCILIATION -->
+  <div class="slide" data-slide="3">
+    <span class="badge badge-primary">0:45 – 1:45 · Data Quality</span>
+    <h2>Data Reconciliation: The Golden Headcount</h2>
+    <p class="subtitle">Refusing to massage messy data into a false 2,400 narrative.</p>
+
+    <div class="grid-3">
+      <div class="card">
+        <h3>2,400 Portal Base</h3>
+        <p>Primary university registrations deduped across college portals.</p>
+      </div>
+      <div class="card">
+        <h3>436 Late Additions</h3>
+        <p>Valid entrants arriving via official university contingent rosters.</p>
+      </div>
+      <div class="card">
+        <h3>426 Remainder</h3>
+        <p>Surfaced in the audit waterfall rather than silently dropped.</p>
+      </div>
+    </div>
+
+    <div class="highlight-box">
+      <strong>Zero Silent Auto-Merges:</strong> 12 duplicate candidates flagged for human review. 3 malformed rows preserved in raw quarantine. UNKNOWN is a first-class value, never assumed as NULL.
+    </div>
+  </div>
+
+  <!-- SLIDE 4: ACCOMMODATION & EXPLAINABILITY -->
+  <div class="slide" data-slide="4">
+    <span class="badge badge-accent">1:45 – 3:00 · Decision Systems</span>
+    <h2>Accommodation: Three Transparent Plans</h2>
+    <p class="subtitle">Deterministic heuristics with verifiable trade-offs and explicit explainability.</p>
+
+    <div class="grid-3">
+      <div class="card">
+        <h3>Plan A: Cohesion-First</h3>
+        <p>Preserves college teams together in contiguous room blocks. 100% cohesion; +₹42,500 external resort expenditure.</p>
+      </div>
+      <div class="card">
+        <h3>Plan B: Cost-First</h3>
+        <p>Minimizes off-campus spending to +₹21,000 by scattering participants into remnant beds. Cohesion drops by 38%.</p>
+      </div>
+      <div class="card">
+        <h3>Plan C: Balanced</h3>
+        <p>The optimal equilibrium: 50% cohesion, 30% cost, 20% travel proximity. Parameterized and configurable.</p>
+      </div>
+    </div>
+
+    <div class="highlight-box">
+      <strong>The Why-not? Diagnostic Innovation:</strong> Inspecting unplaced participants diagnoses exact bottleneck constraints (e.g. 180-min cleaning buffer or ground-floor wheelchair requirement).
+    </div>
+  </div>
+
+  <!-- SLIDE 5: LIVE HOSTEL DISRUPTION -->
+  <div class="slide" data-slide="5">
+    <span class="badge badge-warning">3:00 – 4:30 · Live Disruption Drill</span>
+    <h2>Hostel 3 Closure: 85 Beds Evacuated</h2>
+    <p class="subtitle">A full operational disruption simulated, evaluated, approved, and verified live.</p>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>Live-Test Guided Flow</h3>
+        <ul class="check-list">
+          <li><strong>Dry-Run Blast Radius:</strong> Computed in 76ms (85 beds, 2 heats, 7 shuttle loops).</li>
+          <li><strong>Multi-Plan Comparison:</strong> Plan A selected for team cohesion.</li>
+          <li><strong>ConfirmWithReason:</strong> Mandatory justification enforced before execution.</li>
+          <li><strong>Downstream Verification:</strong> Accommodation, Transport, and Dining tracked live.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3>Interactive Impact Tree</h3>
+        <p>Visual tree expanding from the root disruption down to individual participant nodes. Auditable before-and-after operational metrics.</p>
+        <div class="highlight-box" style="margin-top: 12px;">
+          <strong>State Commitment:</strong> Real tables mutate. Lakeview Resort rooms blocked, 7 Tempo Traveler shuttles scheduled, dining tokens transferred.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: SECURITY, MERCH & PWA OFFLINE -->
+  <div class="slide" data-slide="6">
+    <span class="badge badge-primary">4:30 – 6:15 · Resilience & Governance</span>
+    <h2>Zero-Trust Security & Offline Resilience</h2>
+    <p class="subtitle">Guaranteed operations even when campus Wi-Fi drops completely.</p>
+
+    <div class="grid-3">
+      <div class="card">
+        <h3>Merchandise Fraud Shield</h3>
+        <p>Database constraint <code>UNIQUE(participant_id, item_id)</code> rejects repeat scans with 409 ALREADY_ISSUED.</p>
+      </div>
+      <div class="card">
+        <h3>Break-Glass Protocol</h3>
+        <p>Emergency medical unmasking requires justification and writes an indelible SHA-256 audit entry.</p>
+      </div>
+      <div class="card">
+        <h3>PWA Offline Sync</h3>
+        <p>Wi-Fi drop buffers check-ins in IndexedDB (Dexie). Reconnect enforces exactly-once sync and ignores duplicates.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: AI DISCLOSURE & SUMMARY -->
+  <div class="slide" data-slide="7">
+    <span class="badge badge-accent">6:15 – 7:00 · Honest Engineering</span>
+    <h2>AI Disclosure & Master Summary</h2>
+    <p class="subtitle">Honest boundaries between artificial intelligence and human authority.</p>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>What AI Did</h3>
+        <ul class="check-list">
+          <li>Rapid boilerplate scaffolding & test fixtures.</li>
+          <li>Natural-language regex command interpretation.</li>
+          <li>Draft notification broadcast generation.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3>What Humans & Logic Controlled</h3>
+        <ul class="check-list">
+          <li>Hard constraint hierarchy (accessibility, safety, minors).</li>
+          <li>Deterministic validation before database commit.</li>
+          <li>Human approval gates for every high-risk mutation.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="highlight-box">
+      <strong>Rehearsal Guarantee:</strong> <code>make reset-demo</code> returns the entire database to a clean, known snapshot in <strong>0.08 seconds</strong>.
+    </div>
+  </div>
+
+  <!-- FOOTER CONTROLS -->
+  <div class="footer">
+    <div class="progress">
+      SLIDE <span id="current-slide">1</span> OF <span id="total-slides">7</span>
+    </div>
+    <div class="controls">
+      <button id="prev-btn" onclick="prevSlide()">← Previous</button>
+      <button id="next-btn" onclick="nextSlide()">Next →</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  let currentSlide = 1;
+  const totalSlides = document.querySelectorAll('.slide').length;
+  document.getElementById('total-slides').innerText = totalSlides;
+
+  function showSlide(index) {
+    document.querySelectorAll('.slide').forEach((s, idx) => {
+      s.classList.toggle('active', idx + 1 === index);
+    });
+    document.getElementById('current-slide').innerText = index;
+    currentSlide = index;
+  }
+
+  function nextSlide() {
+    if (currentSlide < totalSlides) {
+      showSlide(currentSlide + 1);
+    }
+  }
+
+  function prevSlide() {
+    if (currentSlide > 1) {
+      showSlide(currentSlide - 1);
+    }
+  }
+
+  // Keyboard navigation
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') {
+      e.preventDefault();
+      nextSlide();
+    } else if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      prevSlide();
+    }
+  });
+</script>
+
+</body>
+</html>

@@ -1,6 +1,6 @@
 .PHONY: setup dev dev-api dev-web test lint gen-types seed reset demo reset-demo smoke consistency backup restore snapshot samples clean
 
-PYTHON ?= python
+PYTHON ?= $(shell which python3 2>/dev/null || which python 2>/dev/null || echo python3)
 NPM ?= npm
 
 setup:
@@ -21,6 +21,9 @@ dev-web:
 test:
 	$(PYTHON) -m pytest -v backend/tests
 	cd frontend && $(NPM) run test
+
+pre-demo-check:
+	$(PYTHON) scripts/pre_demo_check.py
 
 smoke:
 	$(PYTHON) scripts/smoke_all.py

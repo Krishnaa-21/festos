@@ -27,18 +27,20 @@ def get_live_db_path() -> Path:
     db_url = os.environ.get("DATABASE_URL", "")
     if db_url.startswith("sqlite:///"):
         rel_path = db_url.replace("sqlite:///", "")
-        candidate = (REPO_ROOT / rel_path).resolve()
+        candidate = Path(rel_path)
+        if not candidate.is_absolute():
+            candidate = (REPO_ROOT / rel_path).resolve()
         if candidate.exists():
             return candidate
 
-    root_db = REPO_ROOT / "festos.db"
-    if root_db.exists():
-        return root_db
-    backend_db = REPO_ROOT / "backend" / "festos.db"
+    backend_db = (REPO_ROOT / "backend" / "festos.db").resolve()
     if backend_db.exists():
         return backend_db
+    root_db = (REPO_ROOT / "festos.db").resolve()
+    if root_db.exists():
+        return root_db
 
-    return root_db
+    return backend_db
 
 
 def backup_database(src: Path, dst: Path) -> None:

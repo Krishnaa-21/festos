@@ -33,6 +33,10 @@ BACKEND_DIR = REPO_ROOT / "backend"
 if str(BACKEND_DIR) not in sys.path:
     sys.path.insert(0, str(BACKEND_DIR))
 
+import os
+if "DATABASE_URL" not in os.environ:
+    os.environ["DATABASE_URL"] = f"sqlite:///{(BACKEND_DIR / 'festos.db').resolve()}"
+
 # The 9 test roles from docs/TEST_CREDENTIALS.md
 TEST_USERS = [
     {"role": "FESTIVAL_DIRECTOR", "email": "director@festos.internal", "password": "FestOSDirector2026!"},
