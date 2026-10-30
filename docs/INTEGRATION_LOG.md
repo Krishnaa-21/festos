@@ -396,4 +396,53 @@ Format:
   - `backend/tests/accommodation/test_accommodation_ops.py`: 7 tests covering concurrent bed allocation 409 conflict guard, checkout cleaning buffer lock, cancellation releasing bed and generating advisory suggestion (not auto-applied), Director-only hard override enforcement, minimal-change repair after hostel block closure, offline sync idempotent replay, and full acceptance lifecycle (candidate C -> propose commit -> approval -> live plan -> block closure -> repair proposal -> approval -> live diff applied with audit trail).
   - Total 28 tests in `backend/tests/accommodation/` passing.
 
+### 2026-10-30: P2/11-vendors (Vendors, Food Coverage & Compliance, Emergency Shutdown, Notifications, Finance)
+- **Author**: P2 Lead
+- **Branch**: `p2/11-vendors`
+- **Contracts Added**:
+  - `docs/api/vendors.md`: 14 vendors profile, menu, dietary declared options, contracts, payment terms, hours, shutdown impact/analysis/execute, compliance reports.
+  - `docs/api/food.md`: Dietary coverage and demand matrix, menu verification flags, meal slots catalogue.
+  - `docs/api/finance.md`: External accommodation spend, vendor settlements, payment recording, dispute logging, emergency spend, budget ceilings, financial override audit report.
+  - `docs/api/notifications.md`: Notification drafts generation across 5 audiences, draft approvals, mock delivery, delivery logs.
+- **Endpoints Added**:
+  - `GET /api/v1/vendors`: List vendors with compliance and active status filtering.
+  - `GET /api/v1/vendors/{id}`: Vendor profile with meal slot capacities and operating hours.
+  - `POST /api/v1/vendors/{id}/shutdown-impact` & `POST /api/v1/vendors/{id}/shutdown-analysis`: 10-step shutdown impact assessment with ranked replacement candidates and cost deltas.
+  - `POST /api/v1/vendors/{id}/shutdown` & `POST /api/v1/vendors/{id}/shutdown-execute`: Execute shutdown and slot reallocation via ChangeService handler `vendors.shutdown`.
+  - `GET /api/v1/vendors/reports/{report_name}`: CSV downloads for `vendor_coverage.csv` and `vendor_compliance.csv`.
+  - `GET /api/v1/food/coverage`: Slot-by-slot dietary coverage matrix with UNKNOWN demand ranges and zero-coverage alerts.
+  - `GET /api/v1/food/compliance` & `GET /api/v1/food/compliance-flags`: Menu item keyword mismatch verification flags (`requires_human_confirmation: true`).
+  - `GET /api/v1/food/slots` & `GET /api/v1/food/meal-slots`: Festival meal slot schedules.
+  - `GET /api/v1/notifications/drafts`: Audience-filtered notification drafts list.
+  - `POST /api/v1/notifications/drafts/generate`: Generate drafts across 5 audiences (`contingent_leaders`, `volunteers`, `vendors`, `accommodation_coordinators`, `event_organisers`).
+  - `PUT /api/v1/notifications/drafts/{id}` & `PATCH /api/v1/notifications/drafts/{id}`: Edit draft content and templates.
+  - `POST /api/v1/notifications/drafts/{id}/approve`: Audited draft approval.
+  - `POST /api/v1/notifications/drafts/{id}/send`: Mock notification dispatcher enforcing prior approval.
+  - `GET /api/v1/notifications/delivery-logs`: Log of dispatched notifications.
+  - `GET /api/v1/finance/summary`: Budget gauge metrics, committed spend, projected spend, and budget-unset explanation.
+  - `GET /api/v1/finance/accommodation-spend`: Property-by-property external accommodation spending breakdown.
+  - `GET /api/v1/finance/vendor-settlements`: Vendor settlement invoices, due dates, advance payments, and dispute statuses.
+  - `POST /api/v1/finance/vendor-settlements/{id}/pay`: Record settlement disbursements via `finance.record_payment`.
+  - `POST /api/v1/finance/vendor-settlements/{id}/dispute`: Record settlement disputes via `finance.open_dispute`.
+  - `GET /api/v1/finance/merchandise-costs`: Merchandise procurement overview.
+  - `GET /api/v1/finance/emergency-spend`: Approved emergency procurement disbursements log.
+  - `POST /api/v1/finance/emergency-spend`: Propose emergency spend with auto-approval for Festival Director via `finance.emergency_spend`.
+  - `GET /api/v1/finance/overrides-report` & `GET /api/v1/finance/budget-overrides-report`: Financial and constraint override audit trail.
+  - `POST /api/v1/finance/budget/set`: Set external accommodation budget ceiling assumption (`external_budget_inr`).
+- **Engines & ChangeService Handlers**:
+  - `backend/app/engines/vendors/compliance.py`: Certificate validity classifier (`is_certificate_valid_at`), operating hours overlap (`hours_cover_slot`), menu label keyword mismatch classifier (`verify_menu_labels`).
+  - `backend/app/engines/vendors/coverage.py`: Demand and coverage matrix (`evaluate_dietary_matrix`), UNKNOWN demand range preservation, zero-coverage critical alerts.
+  - `backend/app/engines/vendors/shutdown.py`: Feature 7 10-step shutdown analysis (`vendor_shutdown_analysis`), replacement ranking, backup capacity absorption check, cost delta calculation, audience draft generation.
+  - `backend/app/services/vendors/handlers.py`: Registered `vendors.shutdown` handler.
+  - `backend/app/services/finance/handlers.py`: Registered `finance.record_payment`, `finance.open_dispute`, `finance.emergency_spend` handlers.
+  - `backend/app/services/notifications/service.py`: Notification service with approval gating and `generate_drafts(event_type, context, session)` export.
+- **Models & Seeders**:
+  - `Vendor`, `MealSlot`, `VendorAssignment`, `VendorSettlement`, `EmergencySpend`, `NotificationDraft`, `NotificationDeliveryLog`.
+  - Seeder (order 50) `app.seed.vendors`: 14 vendors, festival meal slots, assignments, baseline settlements.
+  - Module public contracts: `vendors.public`, `food.public`, `notifications.public`, `finance.public` with `summary`, `risks`, `dependents`, and CSV report exporters.
+- **Tests Added & Passing**:
+  - 26 unit and operations tests in `test_vendors_ops.py`, `test_food_ops.py`, `test_notifications_ops.py`, `test_finance_ops.py`.
+  - 0 regressions in accommodation test suite (54 total tests passing across all 5 test suites).
+
+
 

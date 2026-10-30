@@ -67,6 +67,8 @@ ROLE_PERMISSIONS: Dict[str, List[str]] = {
         "vendors:read",
         "vendors:write",
         "vendors:export",
+        "notifications:read",
+        "notifications:write",
         "reports:read",
         "assumptions:read",
     ],
