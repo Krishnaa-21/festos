@@ -42,7 +42,14 @@ from app.models.participants import (
     Registration,
 )
 from app.models.staff import Shift, Staff
-from app.models.transport import ShuttleAssignment, Transport
+from app.models.transport import (
+    EscortAssignment,
+    GuardianApproval,
+    Route,
+    ShuttleAssignment,
+    ShuttleRun,
+    Transport,
+)
 from app.models.vendors import MealSlot, Vendor, VendorAssignment
 
 __all__ = [
@@ -67,7 +74,11 @@ __all__ = [
     "Staff",
     "Shift",
     "Transport",
+    "Route",
+    "ShuttleRun",
     "ShuttleAssignment",
+    "EscortAssignment",
+    "GuardianApproval",
     "ChangeSet",
     "IdempotencyKey",
     "Scenario",

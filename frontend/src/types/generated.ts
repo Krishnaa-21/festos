@@ -587,6 +587,158 @@ export interface paths {
     /** Get Gantt Timeline */
     get: operations["get_gantt_timeline_api_v1_schedule_timeline_get"];
   };
+  "/api/v1/staff": {
+    /**
+     * List Staff
+     * @description List staff profiles with roles, shift bands, skills, and status.
+     */
+    get: operations["list_staff_api_v1_staff_get"];
+  };
+  "/api/v1/staff/shifts": {
+    /**
+     * List Shifts
+     * @description List scheduled shifts and venue assignments.
+     */
+    get: operations["list_shifts_api_v1_staff_shifts_get"];
+  };
+  "/api/v1/staff/shifts/assign": {
+    /**
+     * Assign Shift
+     * @description Assign a staff member to a shift or session via ChangeService (staff.assign).
+     */
+    post: operations["assign_shift_api_v1_staff_shifts_assign_post"];
+  };
+  "/api/v1/staff/shifts/{id}/replace": {
+    /**
+     * Replace Shift
+     * @description Emergency replacement of an assigned staff member via ChangeService (staff.replace).
+     *
+     * A handover note is strictly enforced.
+     */
+    post: operations["replace_shift_api_v1_staff_shifts__id__replace_post"];
+  };
+  "/api/v1/staff/demand": {
+    /**
+     * Get Demand
+     * @description Calculates volunteer requirement demand over time and uncovered gaps.
+     */
+    get: operations["get_demand_api_v1_staff_demand_get"];
+  };
+  "/api/v1/staff/overloaded": {
+    /**
+     * Get Overloaded
+     * @description Returns staff members exceeding daily maximum or consecutive hours.
+     */
+    get: operations["get_overloaded_api_v1_staff_overloaded_get"];
+  };
+  "/api/v1/staff/conflicts": {
+    /**
+     * Get Conflicts
+     * @description Surfaces dual roles, self-escort conflicts, and shift overlaps.
+     */
+    get: operations["get_conflicts_api_v1_staff_conflicts_get"];
+  };
+  "/api/v1/staff/replacements/suggest": {
+    /**
+     * Suggest Replacements
+     * @description Suggests ranked replacement candidates for a shift window.
+     */
+    get: operations["suggest_replacements_api_v1_staff_replacements_suggest_get"];
+  };
+  "/api/v1/staff/reports/staff-coverage": {
+    /**
+     * Get Staff Coverage Report
+     * @description Generates downloadable CSV report for staff coverage and gap analysis.
+     */
+    get: operations["get_staff_coverage_report_api_v1_staff_reports_staff_coverage_get"];
+  };
+  "/api/v1/staff/{id}": {
+    /**
+     * Get Staff
+     * @description Returns detailed staff profile, active assignments, and workload metrics.
+     */
+    get: operations["get_staff_api_v1_staff__id__get"];
+  };
+  "/api/v1/transport/assumptions": {
+    /**
+     * Get Assumptions
+     * @description Returns all configurable transport planning assumptions, all marked ASSUMED.
+     */
+    get: operations["get_assumptions_api_v1_transport_assumptions_get"];
+    /**
+     * Update Assumptions
+     * @description Updates transport planning assumptions via ChangeService (transport.update_assumptions).
+     */
+    patch: operations["update_assumptions_api_v1_transport_assumptions_patch"];
+  };
+  "/api/v1/transport/shuttles/plan": {
+    /**
+     * Get Shuttle Plan
+     * @description Computes required shuttle runs per property and time window vs fleet capacity.
+     */
+    get: operations["get_shuttle_plan_api_v1_transport_shuttles_plan_get"];
+  };
+  "/api/v1/transport/shuttles/runs": {
+    /**
+     * List Runs
+     * @description Lists scheduled, in-transit, and completed shuttle runs.
+     */
+    get: operations["list_runs_api_v1_transport_shuttles_runs_get"];
+    /**
+     * Create Run
+     * @description Creates or dispatches a shuttle run via ChangeService (transport.create_run).
+     */
+    post: operations["create_run_api_v1_transport_shuttles_runs_post"];
+  };
+  "/api/v1/transport/safety/night-roster": {
+    /**
+     * Get Night Roster
+     * @description Returns late-night movements and identifies participants with unverified safety arrangements.
+     */
+    get: operations["get_night_roster_api_v1_transport_safety_night_roster_get"];
+  };
+  "/api/v1/transport/safety/verify": {
+    /**
+     * Verify Safety
+     * @description Marks a participant's night transport and escort verified via ChangeService (transport.verify_safety).
+     */
+    post: operations["verify_safety_api_v1_transport_safety_verify_post"];
+  };
+  "/api/v1/transport/guardians/queue": {
+    /**
+     * Get Guardians Queue
+     * @description Dedicated approval queue for minors (<18 years old) residing in external accommodation.
+     */
+    get: operations["get_guardians_queue_api_v1_transport_guardians_queue_get"];
+  };
+  "/api/v1/transport/guardians/{id}/approve": {
+    /**
+     * Approve Guardian
+     * @description Approves or rejects guardian authorization for a minor via ChangeService (transport.approve_guardian).
+     */
+    post: operations["approve_guardian_api_v1_transport_guardians__id__approve_post"];
+  };
+  "/api/v1/transport/alerts": {
+    /**
+     * Get Alerts
+     * @description Surfaces high-priority plain-text transport and duty-of-care alerts.
+     */
+    get: operations["get_alerts_api_v1_transport_alerts_get"];
+  };
+  "/api/v1/transport/coverage/summary": {
+    /**
+     * Get Coverage Summary
+     * @description High-level safety coverage summary across participants, shuttles, escorts, and external properties.
+     */
+    get: operations["get_coverage_summary_api_v1_transport_coverage_summary_get"];
+  };
+  "/api/v1/transport/feasibility": {
+    /**
+     * Get Feasibility
+     * @description Checks whether transportation is feasible for an external property at a specific timestamp.
+     */
+    get: operations["get_feasibility_api_v1_transport_feasibility_get"];
+  };
   "/api/v1/unknowns/queue": {
     /**
      * Get Verification Queue
@@ -659,103 +811,37 @@ export type webhooks = Record<string, never>;
 
 export interface components {
   schemas: {
-    /** AssumptionDependentsResponse */
-    AssumptionDependentsResponse: {
-      /** Key */
-      key: string;
-      /** Dependent Modules */
-      dependent_modules?: string[];
-      /** Description */
-      description: string;
-    };
-    /** AssumptionHistoryItem */
-    AssumptionHistoryItem: {
-      /** Change Set Id */
-      change_set_id: string;
-      /**
-       * Action
-       * @default assumptions.update
-       */
-      action?: string;
-      /** Actor Id */
-      actor_id: string;
-      /** Actor Role */
-      actor_role: string;
-      /** Previous Value */
-      previous_value?: string | null;
-      /** New Value */
-      new_value: string;
-      /** Reason */
-      reason?: string | null;
-      /**
-       * Applied At
-       * Format: date-time
-       */
-      applied_at: string;
-    };
-    /** AssumptionHistoryResponse */
-    AssumptionHistoryResponse: {
-      /** Key */
-      key: string;
-      /** History */
-      history?: components["schemas"]["AssumptionHistoryItem"][];
-    };
-    /** AssumptionItem */
-    AssumptionItem: {
-      /** Id */
-      id: string;
-      /** Key */
-      key: string;
-      /** Value */
-      value: string;
-      /** Typed Value */
-      typed_value: unknown;
-      /** Type */
-      type: string;
-      /** Owner */
-      owner: string;
-      /** Source */
-      source: string;
-      /** Reason */
-      reason: string;
-      /** Impact If Changed */
-      impact_if_changed: string;
-      /**
-       * Updated At
-       * Format: date-time
-       */
-      updated_at: string;
-    };
-    /** AssumptionUpdateRequest */
-    AssumptionUpdateRequest: {
-      /** Key */
-      key?: string | null;
-      /** Value */
-      value: string;
-      /**
-       * Reason
-       * @default Operational baseline adjustment
-       */
-      reason?: string | null;
+    /** ApproveGuardianBody */
+    ApproveGuardianBody: {
       /** Expected Version */
       expected_version?: number | null;
+      /** Reason */
+      reason?: string | null;
       /**
        * Dry Run
        * @default false
        */
       dry_run?: boolean;
+      /** Payload */
+      payload: {
+        [key: string]: unknown;
+      };
     };
-    /** Body_upload_import_file_api_v1_imports_post */
-    Body_upload_import_file_api_v1_imports_post: {
-      /** File */
-      file: string;
-      /** Sheet Name */
-      sheet_name?: string | null;
+    /** AssignShiftBody */
+    AssignShiftBody: {
+      /** Expected Version */
+      expected_version?: number | null;
+      /** Reason */
+      reason?: string | null;
       /**
        * Dry Run
        * @default false
        */
       dry_run?: boolean;
+      /** Payload */
+      payload: {
+        [key: string]: unknown;
+      };
     };
     /** BreakGlassRequest */
     BreakGlassRequest: {
@@ -938,12 +1024,12 @@ export interface components {
       /** Message */
       message: string;
       /**
-       * Count
-       * @default 1
+       * Dry Run
+       * @default false
        */
-      count?: number;
-      /** Details */
-      details?: {
+      dry_run?: boolean;
+      /** Payload */
+      payload: {
         [key: string]: unknown;
       };
     };
@@ -1514,6 +1600,22 @@ export interface components {
       /** Refresh Token */
       refresh_token: string;
     };
+    /** ReplaceShiftBody */
+    ReplaceShiftBody: {
+      /** Expected Version */
+      expected_version?: number | null;
+      /** Reason */
+      reason?: string | null;
+      /**
+       * Dry Run
+       * @default false
+       */
+      dry_run?: boolean;
+      /** Payload */
+      payload: {
+        [key: string]: unknown;
+      };
+    };
     /** ScanQrBody */
     ScanQrBody: {
       /** Token */
@@ -1645,6 +1747,22 @@ export interface components {
        */
       dry_run?: boolean;
     };
+    /** UpdateAssumptionsBody */
+    UpdateAssumptionsBody: {
+      /** Expected Version */
+      expected_version?: number | null;
+      /** Reason */
+      reason?: string | null;
+      /**
+       * Dry Run
+       * @default false
+       */
+      dry_run?: boolean;
+      /** Payload */
+      payload: {
+        [key: string]: unknown;
+      };
+    };
     /** ValidationError */
     ValidationError: {
       /** Location */
@@ -1676,6 +1794,22 @@ export interface components {
     };
     /** VerifyFieldBody */
     VerifyFieldBody: {
+      /** Expected Version */
+      expected_version?: number | null;
+      /** Reason */
+      reason?: string | null;
+      /**
+       * Dry Run
+       * @default false
+       */
+      dry_run?: boolean;
+      /** Payload */
+      payload: {
+        [key: string]: unknown;
+      };
+    };
+    /** VerifySafetyBody */
+    VerifySafetyBody: {
       /** Expected Version */
       expected_version?: number | null;
       /** Reason */
@@ -4363,6 +4497,638 @@ export interface operations {
       query?: {
         from?: string | null;
         to?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * List Staff
+   * @description List staff profiles with roles, shift bands, skills, and status.
+   */
+  list_staff_api_v1_staff_get: {
+    parameters: {
+      query?: {
+        page?: number;
+        page_size?: number;
+        role?: string | null;
+        shift?: string | null;
+        skill?: string | null;
+        q?: string | null;
+      };
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * List Shifts
+   * @description List scheduled shifts and venue assignments.
+   */
+  list_shifts_api_v1_staff_shifts_get: {
+    parameters: {
+      query?: {
+        staff_id?: string | null;
+        session_id?: string | null;
+        venue_id?: string | null;
+        date?: string | null;
+        status?: string | null;
+      };
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Assign Shift
+   * @description Assign a staff member to a shift or session via ChangeService (staff.assign).
+   */
+  assign_shift_api_v1_staff_shifts_assign_post: {
+    parameters: {
+      header?: {
+        "Idempotency-Key"?: string | null;
+        authorization?: string | null;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AssignShiftBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Replace Shift
+   * @description Emergency replacement of an assigned staff member via ChangeService (staff.replace).
+   *
+   * A handover note is strictly enforced.
+   */
+  replace_shift_api_v1_staff_shifts__id__replace_post: {
+    parameters: {
+      header?: {
+        "Idempotency-Key"?: string | null;
+        authorization?: string | null;
+      };
+      path: {
+        id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ReplaceShiftBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Demand
+   * @description Calculates volunteer requirement demand over time and uncovered gaps.
+   */
+  get_demand_api_v1_staff_demand_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Overloaded
+   * @description Returns staff members exceeding daily maximum or consecutive hours.
+   */
+  get_overloaded_api_v1_staff_overloaded_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Conflicts
+   * @description Surfaces dual roles, self-escort conflicts, and shift overlaps.
+   */
+  get_conflicts_api_v1_staff_conflicts_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Suggest Replacements
+   * @description Suggests ranked replacement candidates for a shift window.
+   */
+  suggest_replacements_api_v1_staff_replacements_suggest_get: {
+    parameters: {
+      query: {
+        venue_id: string;
+        start_at: string;
+        end_at: string;
+        role_required?: string | null;
+        shift_id?: string | null;
+      };
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Staff Coverage Report
+   * @description Generates downloadable CSV report for staff coverage and gap analysis.
+   */
+  get_staff_coverage_report_api_v1_staff_reports_staff_coverage_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Staff
+   * @description Returns detailed staff profile, active assignments, and workload metrics.
+   */
+  get_staff_api_v1_staff__id__get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Assumptions
+   * @description Returns all configurable transport planning assumptions, all marked ASSUMED.
+   */
+  get_assumptions_api_v1_transport_assumptions_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Update Assumptions
+   * @description Updates transport planning assumptions via ChangeService (transport.update_assumptions).
+   */
+  update_assumptions_api_v1_transport_assumptions_patch: {
+    parameters: {
+      header?: {
+        "Idempotency-Key"?: string | null;
+        authorization?: string | null;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UpdateAssumptionsBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Shuttle Plan
+   * @description Computes required shuttle runs per property and time window vs fleet capacity.
+   */
+  get_shuttle_plan_api_v1_transport_shuttles_plan_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * List Runs
+   * @description Lists scheduled, in-transit, and completed shuttle runs.
+   */
+  list_runs_api_v1_transport_shuttles_runs_get: {
+    parameters: {
+      query?: {
+        property_id?: string | null;
+        status?: string | null;
+        date?: string | null;
+      };
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Create Run
+   * @description Creates or dispatches a shuttle run via ChangeService (transport.create_run).
+   */
+  create_run_api_v1_transport_shuttles_runs_post: {
+    parameters: {
+      header?: {
+        "Idempotency-Key"?: string | null;
+        authorization?: string | null;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CreateRunBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Night Roster
+   * @description Returns late-night movements and identifies participants with unverified safety arrangements.
+   */
+  get_night_roster_api_v1_transport_safety_night_roster_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Verify Safety
+   * @description Marks a participant's night transport and escort verified via ChangeService (transport.verify_safety).
+   */
+  verify_safety_api_v1_transport_safety_verify_post: {
+    parameters: {
+      header?: {
+        "Idempotency-Key"?: string | null;
+        authorization?: string | null;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["VerifySafetyBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Guardians Queue
+   * @description Dedicated approval queue for minors (<18 years old) residing in external accommodation.
+   */
+  get_guardians_queue_api_v1_transport_guardians_queue_get: {
+    parameters: {
+      query?: {
+        status?: string | null;
+        property_id?: string | null;
+      };
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Approve Guardian
+   * @description Approves or rejects guardian authorization for a minor via ChangeService (transport.approve_guardian).
+   */
+  approve_guardian_api_v1_transport_guardians__id__approve_post: {
+    parameters: {
+      header?: {
+        "Idempotency-Key"?: string | null;
+        authorization?: string | null;
+      };
+      path: {
+        id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ApproveGuardianBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Alerts
+   * @description Surfaces high-priority plain-text transport and duty-of-care alerts.
+   */
+  get_alerts_api_v1_transport_alerts_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Coverage Summary
+   * @description High-level safety coverage summary across participants, shuttles, escorts, and external properties.
+   */
+  get_coverage_summary_api_v1_transport_coverage_summary_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Feasibility
+   * @description Checks whether transportation is feasible for an external property at a specific timestamp.
+   */
+  get_feasibility_api_v1_transport_feasibility_get: {
+    parameters: {
+      query: {
+        property_id: string;
+        time: string;
+      };
+      header?: {
+        authorization?: string | null;
       };
     };
     responses: {
