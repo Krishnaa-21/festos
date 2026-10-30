@@ -37,6 +37,12 @@ class ExternalProperty(SQLModel, table=True):
     name: str = Field(index=True)
     beds: int = Field(default=0)
     cost_per_bed_night: float = Field(default=0.0)
+    category: Optional[str] = Field(default="HOTEL")
+    address: Optional[str] = Field(default=None)
+    contact_name: Optional[str] = Field(default=None)
+    contact_phone: Optional[str] = Field(default=None)
+    total_rooms: Optional[int] = Field(default=None)
+    rate_per_room_inr: Optional[float] = Field(default=None)
     distance_km: float = Field(default=0.0)
     transport_availability: Optional[str] = Field(default="yes")  # 'yes'|'limited'|'no'
     transport_limited: bool = Field(default=False)

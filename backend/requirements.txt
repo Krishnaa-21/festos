@@ -15,6 +15,7 @@ black>=24.2.0
 # --- P2 ---
 pandas>=2.2.0
 rapidfuzz>=3.6.0
+hypothesis>=6.98.0
 
 # --- P3 ---
 python-jose[cryptography]>=3.3.0

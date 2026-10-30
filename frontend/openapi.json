@@ -119,6 +119,808 @@
         }
       }
     },
+    "/api/v1/accommodation/generate-plan": {
+      "post": {
+        "tags": [
+          "Accommodation"
+        ],
+        "summary": "Generate Candidate Plans",
+        "description": "Generate candidate accommodation plans (A, B, C) using pure staged allocation engine.",
+        "operationId": "generate_candidate_plans_api_v1_accommodation_generate_plan_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeneratePlanRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_PlansResponseData_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/accommodation/plans/generate": {
+      "post": {
+        "tags": [
+          "Accommodation"
+        ],
+        "summary": "Generate Candidate Plans",
+        "description": "Generate candidate accommodation plans (A, B, C) using pure staged allocation engine.",
+        "operationId": "generate_candidate_plans_api_v1_accommodation_plans_generate_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeneratePlanRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_PlansResponseData_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/accommodation/plans": {
+      "get": {
+        "tags": [
+          "Accommodation"
+        ],
+        "summary": "List Candidate Plans",
+        "description": "Retrieve all candidate accommodation plans and budget status.",
+        "operationId": "list_candidate_plans_api_v1_accommodation_plans_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_PlansResponseData_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/accommodation/plans/compare": {
+      "get": {
+        "tags": [
+          "Accommodation"
+        ],
+        "summary": "Compare Candidate Plans",
+        "description": "Side-by-side comparison of plan metrics, trade-offs, and plain-language sacrifices.",
+        "operationId": "compare_candidate_plans_api_v1_accommodation_plans_compare_get",
+        "parameters": [
+          {
+            "name": "ids",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Comma-separated plan IDs or kinds to compare (e.g. A,B,C)",
+              "title": "Ids"
+            },
+            "description": "Comma-separated plan IDs or kinds to compare (e.g. A,B,C)"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/accommodation/plans/{id}": {
+      "get": {
+        "tags": [
+          "Accommodation"
+        ],
+        "summary": "Get Plan Detail",
+        "description": "Retrieve details, metrics, and parameters of a specific plan.",
+        "operationId": "get_plan_detail_api_v1_accommodation_plans__id__get",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/accommodation/shortages": {
+      "get": {
+        "tags": [
+          "Accommodation"
+        ],
+        "summary": "Get Shortages",
+        "description": "Retrieve unplaced participants grouped by the 7-item fixed blocking reason taxonomy.",
+        "operationId": "get_shortages_api_v1_accommodation_shortages_get",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Id"
+            }
+          },
+          {
+            "name": "plan_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Plan Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_ShortagesResponseData_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/accommodation/plans/{id}/shortages": {
+      "get": {
+        "tags": [
+          "Accommodation"
+        ],
+        "summary": "Get Shortages",
+        "description": "Retrieve unplaced participants grouped by the 7-item fixed blocking reason taxonomy.",
+        "operationId": "get_shortages_api_v1_accommodation_plans__id__shortages_get",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Id"
+            }
+          },
+          {
+            "name": "plan_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Plan Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_ShortagesResponseData_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/accommodation/why-not/{participant_id}": {
+      "get": {
+        "tags": [
+          "Accommodation"
+        ],
+        "summary": "Get Why Not Diagnosis",
+        "description": "Explainable diagnostic panel detailing why a participant cannot be accommodated and counterfactuals.",
+        "operationId": "get_why_not_diagnosis_api_v1_accommodation_why_not__participant_id__get",
+        "parameters": [
+          {
+            "name": "participant_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Participant Id"
+            }
+          },
+          {
+            "name": "plan_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Plan Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_WhyNotResponseData_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/accommodation/demand-timeline": {
+      "get": {
+        "tags": [
+          "Accommodation"
+        ],
+        "summary": "Get Bed Demand Timeline View",
+        "description": "Bed-demand timeline evaluating rolling occupancy, confirmed demand, possible demand, and peak hour.",
+        "operationId": "get_bed_demand_timeline_view_api_v1_accommodation_demand_timeline_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_DemandTimelineResponseData_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/accommodation/rooms": {
+      "get": {
+        "tags": [
+          "Accommodation"
+        ],
+        "summary": "List On Campus Rooms",
+        "description": "List on-campus rooms and beds with block, floor, accessibility, capacity, and cleaning status.",
+        "operationId": "list_on_campus_rooms_api_v1_accommodation_rooms_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/accommodation/properties": {
+      "get": {
+        "tags": [
+          "Accommodation"
+        ],
+        "summary": "List External Properties",
+        "description": "List external properties with beds, cost per bed-night, distance, transport availability, and verification flags.",
+        "operationId": "list_external_properties_api_v1_accommodation_properties_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/accommodation/reports/{report_name}": {
+      "get": {
+        "tags": [
+          "Accommodation"
+        ],
+        "summary": "Download Accommodation Report",
+        "description": "Download accommodation CSV reports (accommodation_plan_A/B/C.csv, shortage_report.csv, accommodation_summary.csv, bed_demand_timeline.csv).",
+        "operationId": "download_accommodation_report_api_v1_accommodation_reports__report_name__get",
+        "parameters": [
+          {
+            "name": "report_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Report Name"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/accommodation/decision-cards/{plan_id}": {
+      "get": {
+        "tags": [
+          "Accommodation"
+        ],
+        "summary": "Get Plan Decision Card",
+        "description": "Get structured DecisionCard for a plan.",
+        "operationId": "get_plan_decision_card_api_v1_accommodation_decision_cards__plan_id__get",
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Plan Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_DecisionCard_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/approvals": {
       "get": {
         "tags": [
@@ -1574,6 +2376,106 @@
         }
       }
     },
+    "/api/v1/checkin/board": {
+      "get": {
+        "tags": [
+          "checkin"
+        ],
+        "summary": "Get Checkin Board",
+        "description": "Arrival desk board summarizing arrivals, checkin statuses, and pending counts.",
+        "operationId": "get_checkin_board_api_v1_checkin_board_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/checkin": {
+      "get": {
+        "tags": [
+          "checkin"
+        ],
+        "summary": "Get Checkin Board",
+        "description": "Arrival desk board summarizing arrivals, checkin statuses, and pending counts.",
+        "operationId": "get_checkin_board_api_v1_checkin_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/commands/parse": {
       "post": {
         "tags": [
@@ -1677,6 +2579,56 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Envelope_ExecuteResponseData_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/commands": {
+      "get": {
+        "tags": [
+          "Commands"
+        ],
+        "summary": "List Command Intents",
+        "description": "Lists supported natural-language command intents and their schema definitions.",
+        "operationId": "list_command_intents_api_v1_commands_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
                 }
               }
             }
@@ -3315,6 +4267,504 @@
         }
       }
     },
+    "/api/v1/finance/summary": {
+      "get": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "Get Finance Summary",
+        "description": "Returns festival financial overview: budget ceilings, external accommodation commitments, and cost breakdown.",
+        "operationId": "get_finance_summary_api_v1_finance_summary_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/finance": {
+      "get": {
+        "tags": [
+          "finance"
+        ],
+        "summary": "Get Finance Summary",
+        "description": "Returns festival financial overview: budget ceilings, external accommodation commitments, and cost breakdown.",
+        "operationId": "get_finance_summary_api_v1_finance_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/food/coverage": {
+      "get": {
+        "tags": [
+          "food"
+        ],
+        "summary": "Get Food Coverage",
+        "description": "Returns dietary coverage matrix across categories, meal slots, and venues.",
+        "operationId": "get_food_coverage_api_v1_food_coverage_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/food": {
+      "get": {
+        "tags": [
+          "food"
+        ],
+        "summary": "Get Food Coverage",
+        "description": "Returns dietary coverage matrix across categories, meal slots, and venues.",
+        "operationId": "get_food_coverage_api_v1_food_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/food/compliance": {
+      "get": {
+        "tags": [
+          "food"
+        ],
+        "summary": "Get Food Compliance",
+        "description": "List food safety and dietary compliance issues and expiring certifications.",
+        "operationId": "get_food_compliance_api_v1_food_compliance_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/forecasting/crowd": {
+      "get": {
+        "tags": [
+          "forecasting"
+        ],
+        "summary": "Get Crowd Forecasting",
+        "description": "Predictive analytics and crowd flow forecasting across festival venues.",
+        "operationId": "get_crowd_forecasting_api_v1_forecasting_crowd_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/forecasting": {
+      "get": {
+        "tags": [
+          "forecasting"
+        ],
+        "summary": "Get Crowd Forecasting",
+        "description": "Predictive analytics and crowd flow forecasting across festival venues.",
+        "operationId": "get_crowd_forecasting_api_v1_forecasting_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/impact/blast-radius": {
+      "get": {
+        "tags": [
+          "impact"
+        ],
+        "summary": "Get Blast Radius",
+        "description": "Calculates cross-module downstream blast radius of a change on entity_type:entity_id.",
+        "operationId": "get_blast_radius_api_v1_impact_blast_radius_get",
+        "parameters": [
+          {
+            "name": "entity_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Entity type: venue, hostel, event, participant",
+              "default": "venue",
+              "title": "Entity Type"
+            },
+            "description": "Entity type: venue, hostel, event, participant"
+          },
+          {
+            "name": "entity_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Entity ID",
+              "default": "V01",
+              "title": "Entity Id"
+            },
+            "description": "Entity ID"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/impact": {
+      "get": {
+        "tags": [
+          "impact"
+        ],
+        "summary": "Get Blast Radius",
+        "description": "Calculates cross-module downstream blast radius of a change on entity_type:entity_id.",
+        "operationId": "get_blast_radius_api_v1_impact_get",
+        "parameters": [
+          {
+            "name": "entity_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Entity type: venue, hostel, event, participant",
+              "default": "venue",
+              "title": "Entity Type"
+            },
+            "description": "Entity type: venue, hostel, event, participant"
+          },
+          {
+            "name": "entity_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Entity ID",
+              "default": "V01",
+              "title": "Entity Id"
+            },
+            "description": "Entity ID"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/imports": {
       "post": {
         "tags": [
@@ -3692,6 +5142,185 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Envelope_ChangeResult_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/incidents": {
+      "get": {
+        "tags": [
+          "incidents"
+        ],
+        "summary": "List Incidents",
+        "description": "List operational incidents.",
+        "operationId": "list_incidents_api_v1_incidents_get",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "severity",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Severity"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "title": "Page"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 50,
+              "title": "Page Size"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "incidents"
+        ],
+        "summary": "Create Incident",
+        "description": "Log an incident via ChangeService.",
+        "operationId": "create_incident_api_v1_incidents_post",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateIncidentBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
                 }
               }
             }
@@ -5176,6 +6805,290 @@
         }
       }
     },
+    "/api/v1/notifications/drafts": {
+      "get": {
+        "tags": [
+          "notifications"
+        ],
+        "summary": "List Notifications",
+        "description": "List operational notification drafts.",
+        "operationId": "list_notifications_api_v1_notifications_drafts_get",
+        "parameters": [
+          {
+            "name": "channel",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Channel"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "title": "Page"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Page Size"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "notifications"
+        ],
+        "summary": "Draft Notification",
+        "description": "Draft an operational notification via ChangeService.",
+        "operationId": "draft_notification_api_v1_notifications_drafts_post",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DraftNotificationBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/notifications": {
+      "get": {
+        "tags": [
+          "notifications"
+        ],
+        "summary": "List Notifications",
+        "description": "List operational notification drafts.",
+        "operationId": "list_notifications_api_v1_notifications_get",
+        "parameters": [
+          {
+            "name": "channel",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Channel"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "title": "Page"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Page Size"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/overrides": {
       "get": {
         "tags": [
@@ -6159,6 +8072,106 @@
             "schema": {
               "type": "string",
               "title": "Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/premortem/resilience": {
+      "get": {
+        "tags": [
+          "premortem"
+        ],
+        "summary": "Get Premortem Analysis",
+        "description": "Predictive festival resilience simulator and pre-mortem vulnerability rankings.",
+        "operationId": "get_premortem_analysis_api_v1_premortem_resilience_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/premortem": {
+      "get": {
+        "tags": [
+          "premortem"
+        ],
+        "summary": "Get Premortem Analysis",
+        "description": "Predictive festival resilience simulator and pre-mortem vulnerability rankings.",
+        "operationId": "get_premortem_analysis_api_v1_premortem_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
             }
           }
         ],
@@ -10242,6 +12255,95 @@
         }
       }
     },
+    "/api/v1/vendors": {
+      "get": {
+        "tags": [
+          "vendors"
+        ],
+        "summary": "List Vendors",
+        "description": "List festival food vendors with hygiene certificate status and capacity.",
+        "operationId": "list_vendors_api_v1_vendors_get",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "title": "Page"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 50,
+              "title": "Page Size"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/venues": {
       "get": {
         "tags": [
@@ -10670,6 +12772,136 @@
   },
   "components": {
     "schemas": {
+      "AccommodationPlanSchema": {
+        "properties": {
+          "plan_id": {
+            "type": "string",
+            "title": "Plan Id"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "on_campus_placed": {
+            "type": "integer",
+            "title": "On Campus Placed"
+          },
+          "external_placed": {
+            "type": "integer",
+            "title": "External Placed"
+          },
+          "unplaced_count": {
+            "type": "integer",
+            "title": "Unplaced Count"
+          },
+          "contingent_splits": {
+            "type": "integer",
+            "title": "Contingent Splits"
+          },
+          "total_cost_inr": {
+            "type": "number",
+            "title": "Total Cost Inr"
+          },
+          "safety_flags_count": {
+            "type": "integer",
+            "title": "Safety Flags Count"
+          },
+          "accessibility_issues_count": {
+            "type": "integer",
+            "title": "Accessibility Issues Count"
+          },
+          "relaxed_constraints_count": {
+            "type": "integer",
+            "title": "Relaxed Constraints Count"
+          },
+          "minors_external_count": {
+            "type": "integer",
+            "title": "Minors External Count"
+          },
+          "plan_hash": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Hash"
+          },
+          "sacrifices_summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sacrifices Summary"
+          },
+          "parameters_applied": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parameters Applied"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "plan_id",
+          "kind",
+          "name",
+          "status",
+          "on_campus_placed",
+          "external_placed",
+          "unplaced_count",
+          "contingent_splits",
+          "total_cost_inr",
+          "safety_flags_count",
+          "accessibility_issues_count",
+          "relaxed_constraints_count",
+          "minors_external_count",
+          "created_at"
+        ],
+        "title": "AccommodationPlanSchema"
+      },
+      "AlternativeRejected": {
+        "properties": {
+          "option": {
+            "type": "string",
+            "title": "Option"
+          },
+          "why": {
+            "type": "string",
+            "title": "Why"
+          }
+        },
+        "type": "object",
+        "required": [
+          "option",
+          "why"
+        ],
+        "title": "AlternativeRejected"
+      },
       "ApproveGuardianBody": {
         "properties": {
           "expected_version": {
@@ -11429,6 +13661,45 @@
         ],
         "title": "CreateExampleRequest"
       },
+      "CreateIncidentBody": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "severity": {
+            "type": "integer",
+            "title": "Severity",
+            "default": 2
+          },
+          "category": {
+            "type": "string",
+            "title": "Category",
+            "default": "GENERAL"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "description"
+        ],
+        "title": "CreateIncidentBody"
+      },
       "CreateOverrideRequest": {
         "properties": {
           "entity_type": {
@@ -11741,6 +14012,81 @@
         ],
         "title": "DataQualityUnknownField"
       },
+      "DecisionCard": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "subject": {
+            "type": "string",
+            "title": "Subject"
+          },
+          "recommendation": {
+            "type": "string",
+            "title": "Recommendation"
+          },
+          "hard_satisfied": {
+            "type": "boolean",
+            "title": "Hard Satisfied",
+            "default": true
+          },
+          "soft_relaxed": {
+            "items": {
+              "$ref": "#/components/schemas/SoftRelaxed"
+            },
+            "type": "array",
+            "title": "Soft Relaxed"
+          },
+          "alternatives_rejected": {
+            "items": {
+              "$ref": "#/components/schemas/AlternativeRejected"
+            },
+            "type": "array",
+            "title": "Alternatives Rejected"
+          },
+          "cost_impact": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cost Impact"
+          },
+          "people_affected": {
+            "type": "integer",
+            "title": "People Affected",
+            "default": 0
+          },
+          "approved_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approved By"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "subject",
+          "recommendation",
+          "created_at"
+        ],
+        "title": "DecisionCard"
+      },
       "DecisionRequest": {
         "properties": {
           "reason": {
@@ -11754,6 +14100,111 @@
           "reason"
         ],
         "title": "DecisionRequest"
+      },
+      "DemandTimelineResponseData": {
+        "properties": {
+          "total_participants_requesting": {
+            "type": "integer",
+            "title": "Total Participants Requesting"
+          },
+          "valid_intervals_included": {
+            "type": "integer",
+            "title": "Valid Intervals Included"
+          },
+          "invalid_intervals_count": {
+            "type": "integer",
+            "title": "Invalid Intervals Count"
+          },
+          "invalid_intervals": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Invalid Intervals"
+          },
+          "confirmed_demand_count": {
+            "type": "integer",
+            "title": "Confirmed Demand Count"
+          },
+          "possible_demand_count": {
+            "type": "integer",
+            "title": "Possible Demand Count"
+          },
+          "peak_simultaneous_demand": {
+            "type": "integer",
+            "title": "Peak Simultaneous Demand"
+          },
+          "peak_time": {
+            "type": "string",
+            "title": "Peak Time"
+          },
+          "timeline": {
+            "items": {
+              "$ref": "#/components/schemas/TimelinePointSchema"
+            },
+            "type": "array",
+            "title": "Timeline"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total_participants_requesting",
+          "valid_intervals_included",
+          "invalid_intervals_count",
+          "invalid_intervals",
+          "confirmed_demand_count",
+          "possible_demand_count",
+          "peak_simultaneous_demand",
+          "peak_time",
+          "timeline"
+        ],
+        "title": "DemandTimelineResponseData"
+      },
+      "DraftNotificationBody": {
+        "properties": {
+          "channel": {
+            "type": "string",
+            "title": "Channel",
+            "default": "SMS"
+          },
+          "recipient": {
+            "type": "string",
+            "title": "Recipient"
+          },
+          "subject": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subject"
+          },
+          "body": {
+            "type": "string",
+            "title": "Body"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "recipient",
+          "body"
+        ],
+        "title": "DraftNotificationBody"
       },
       "EntityRef": {
         "properties": {
@@ -11921,6 +14372,54 @@
           "data"
         ],
         "title": "Envelope[DataQualityReport]"
+      },
+      "Envelope_DecisionCard_": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/DecisionCard"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Meta"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "Envelope[DecisionCard]"
+      },
+      "Envelope_DemandTimelineResponseData_": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/DemandTimelineResponseData"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Meta"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "Envelope[DemandTimelineResponseData]"
       },
       "Envelope_Dict_str__Any__": {
         "properties": {
@@ -12173,6 +14672,78 @@
         ],
         "title": "Envelope[ParseResponseData]"
       },
+      "Envelope_PlansResponseData_": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/PlansResponseData"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Meta"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "Envelope[PlansResponseData]"
+      },
+      "Envelope_ShortagesResponseData_": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/ShortagesResponseData"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Meta"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "Envelope[ShortagesResponseData]"
+      },
+      "Envelope_WhyNotResponseData_": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/WhyNotResponseData"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Meta"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "Envelope[WhyNotResponseData]"
+      },
       "EventMutationBody": {
         "properties": {
           "expected_version": {
@@ -12340,6 +14911,116 @@
           "message"
         ],
         "title": "ExecuteResponseData"
+      },
+      "GeneratePlanParams": {
+        "properties": {
+          "cleaning_buffer_minutes": {
+            "type": "integer",
+            "title": "Cleaning Buffer Minutes",
+            "default": 180
+          },
+          "max_distance_km": {
+            "type": "number",
+            "title": "Max Distance Km",
+            "default": 15.0
+          },
+          "solver_timeout_sec": {
+            "type": "integer",
+            "title": "Solver Timeout Sec",
+            "default": 10
+          },
+          "weights": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "number"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weights"
+          },
+          "allow_split_contingents": {
+            "type": "boolean",
+            "title": "Allow Split Contingents",
+            "default": true
+          }
+        },
+        "type": "object",
+        "title": "GeneratePlanParams"
+      },
+      "GeneratePlanRequest": {
+        "properties": {
+          "kinds": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Kinds"
+          },
+          "params": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GeneratePlanParams"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "kind": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kind"
+          },
+          "cleaning_buffer_minutes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cleaning Buffer Minutes"
+          },
+          "max_distance_km": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Distance Km"
+          },
+          "weights": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "number"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weights"
+          }
+        },
+        "type": "object",
+        "title": "GeneratePlanRequest"
       },
       "GenerateTokenBody": {
         "properties": {
@@ -13026,6 +15707,38 @@
         ],
         "title": "ParticipantUpdateBody"
       },
+      "PlansResponseData": {
+        "properties": {
+          "plans": {
+            "items": {
+              "$ref": "#/components/schemas/AccommodationPlanSchema"
+            },
+            "type": "array",
+            "title": "Plans"
+          },
+          "budget_ceiling_inr": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Budget Ceiling Inr"
+          },
+          "is_budget_unset": {
+            "type": "boolean",
+            "title": "Is Budget Unset",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "plans"
+        ],
+        "title": "PlansResponseData"
+      },
       "QuarantineIssueItem": {
         "properties": {
           "id": {
@@ -13383,6 +16096,76 @@
         ],
         "title": "Severity"
       },
+      "ShortageGroupSchema": {
+        "properties": {
+          "reason_code": {
+            "type": "string",
+            "title": "Reason Code"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "affected_contingents": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Affected Contingents"
+          },
+          "criticality": {
+            "type": "string",
+            "title": "Criticality"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reason_code",
+          "title",
+          "count",
+          "description",
+          "affected_contingents",
+          "criticality"
+        ],
+        "title": "ShortageGroupSchema"
+      },
+      "ShortagesResponseData": {
+        "properties": {
+          "total_unplaced": {
+            "type": "integer",
+            "title": "Total Unplaced"
+          },
+          "grouped_by_reason": {
+            "items": {
+              "$ref": "#/components/schemas/ShortageGroupSchema"
+            },
+            "type": "array",
+            "title": "Grouped By Reason"
+          },
+          "unplaced_items": {
+            "items": {
+              "$ref": "#/components/schemas/UnplacedItemSchema"
+            },
+            "type": "array",
+            "title": "Unplaced Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total_unplaced",
+          "grouped_by_reason",
+          "unplaced_items"
+        ],
+        "title": "ShortagesResponseData"
+      },
       "SimulateIncidentBody": {
         "properties": {
           "incident_type": {
@@ -13416,6 +16199,24 @@
           "target_id"
         ],
         "title": "SimulateIncidentBody"
+      },
+      "SoftRelaxed": {
+        "properties": {
+          "constraint": {
+            "type": "string",
+            "title": "Constraint"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "constraint",
+          "reason"
+        ],
+        "title": "SoftRelaxed"
       },
       "StocktakeAdjustBody": {
         "properties": {
@@ -13502,6 +16303,39 @@
         ],
         "title": "SyncOfflineBody"
       },
+      "TimelinePointSchema": {
+        "properties": {
+          "timestamp": {
+            "type": "string",
+            "title": "Timestamp"
+          },
+          "confirmed_demand": {
+            "type": "integer",
+            "title": "Confirmed Demand"
+          },
+          "possible_demand": {
+            "type": "integer",
+            "title": "Possible Demand"
+          },
+          "cleaning_beds": {
+            "type": "integer",
+            "title": "Cleaning Beds"
+          },
+          "available_supply": {
+            "type": "integer",
+            "title": "Available Supply"
+          }
+        },
+        "type": "object",
+        "required": [
+          "timestamp",
+          "confirmed_demand",
+          "possible_demand",
+          "cleaning_beds",
+          "available_supply"
+        ],
+        "title": "TimelinePointSchema"
+      },
       "TokenConfirmBody": {
         "properties": {
           "value": {
@@ -13575,6 +16409,76 @@
         },
         "type": "object",
         "title": "UndoMergeBody"
+      },
+      "UnplacedItemSchema": {
+        "properties": {
+          "participant_id": {
+            "type": "string",
+            "title": "Participant Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "contingent_id": {
+            "type": "string",
+            "title": "Contingent Id"
+          },
+          "college": {
+            "type": "string",
+            "title": "College"
+          },
+          "blocking_reason": {
+            "type": "string",
+            "title": "Blocking Reason"
+          },
+          "accessibility_needed": {
+            "type": "boolean",
+            "title": "Accessibility Needed"
+          },
+          "housing_preference": {
+            "type": "string",
+            "title": "Housing Preference"
+          },
+          "gender": {
+            "type": "string",
+            "title": "Gender"
+          },
+          "arrival_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Arrival At"
+          },
+          "departure_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Departure At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "participant_id",
+          "name",
+          "contingent_id",
+          "college",
+          "blocking_reason",
+          "accessibility_needed",
+          "housing_preference",
+          "gender"
+        ],
+        "title": "UnplacedItemSchema"
       },
       "UpdateAssumptionsBody": {
         "properties": {
@@ -13833,6 +16737,82 @@
           "reason"
         ],
         "title": "VoidClaimBody"
+      },
+      "WhyNotResponseData": {
+        "properties": {
+          "participant_id": {
+            "type": "string",
+            "title": "Participant Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "contingent_id": {
+            "type": "string",
+            "title": "Contingent Id"
+          },
+          "plan_id": {
+            "type": "string",
+            "title": "Plan Id"
+          },
+          "blocking_requirement": {
+            "type": "string",
+            "title": "Blocking Requirement"
+          },
+          "blocking_reason_code": {
+            "type": "string",
+            "title": "Blocking Reason Code"
+          },
+          "missing_information": {
+            "type": "string",
+            "title": "Missing Information"
+          },
+          "rejected_options": {
+            "items": {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Rejected Options"
+          },
+          "counterfactual_impact": {
+            "type": "string",
+            "title": "Counterfactual Impact"
+          },
+          "counterfactual_runs": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Counterfactual Runs"
+          },
+          "verification_target": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Verification Target"
+          }
+        },
+        "type": "object",
+        "required": [
+          "participant_id",
+          "name",
+          "contingent_id",
+          "plan_id",
+          "blocking_requirement",
+          "blocking_reason_code",
+          "missing_information",
+          "rejected_options",
+          "counterfactual_impact",
+          "counterfactual_runs",
+          "verification_target"
+        ],
+        "title": "WhyNotResponseData"
       }
     }
   }
