@@ -108,6 +108,69 @@ export interface paths {
      */
     get: operations["get_plan_decision_card_api_v1_accommodation_decision_cards__plan_id__get"];
   };
+  "/api/v1/accommodation/plans/{id}/commit": {
+    /**
+     * Commit Candidate Plan Endpoint
+     * @description Commit candidate plan to LIVE via approvals workflow.
+     */
+    post: operations["commit_candidate_plan_endpoint_api_v1_accommodation_plans__id__commit_post"];
+  };
+  "/api/v1/accommodation/plans/live": {
+    /**
+     * Get Live Plan Endpoint
+     * @description Retrieve the currently operational LIVE accommodation plan.
+     */
+    get: operations["get_live_plan_endpoint_api_v1_accommodation_plans_live_get"];
+  };
+  "/api/v1/accommodation/plans/live/freeze": {
+    /**
+     * Freeze Live Plan Endpoint
+     * @description Freeze LIVE plan allocations ahead of festival commencement.
+     */
+    post: operations["freeze_live_plan_endpoint_api_v1_accommodation_plans_live_freeze_post"];
+  };
+  "/api/v1/accommodation/plans/live/allocate-incremental": {
+    /**
+     * Allocate Incremental Endpoint
+     * @description Incrementally allocate late arrivals while preserving all approved assignments.
+     */
+    post: operations["allocate_incremental_endpoint_api_v1_accommodation_plans_live_allocate_incremental_post"];
+  };
+  "/api/v1/accommodation/rooms/{id}": {
+    /**
+     * Update Room Endpoint
+     * @description Update room operational status, cleaning, or accessibility attributes via ChangeService.
+     */
+    patch: operations["update_room_endpoint_api_v1_accommodation_rooms__id__patch"];
+  };
+  "/api/v1/accommodation/rooms/{id}/cleaning-complete": {
+    /**
+     * Complete Cleaning Endpoint
+     * @description Mark housekeeping inspection complete, transitioning room status to READY.
+     */
+    post: operations["complete_cleaning_endpoint_api_v1_accommodation_rooms__id__cleaning_complete_post"];
+  };
+  "/api/v1/accommodation/properties/{id}": {
+    /**
+     * Update Property Endpoint
+     * @description Update external property pricing, transport windows, and verification flags via ChangeService.
+     */
+    patch: operations["update_property_endpoint_api_v1_accommodation_properties__id__patch"];
+  };
+  "/api/v1/accommodation/assignments/manual": {
+    /**
+     * Manual Assignment Endpoint
+     * @description Manually assign or move participant with mandatory reason and Director override enforcement.
+     */
+    post: operations["manual_assignment_endpoint_api_v1_accommodation_assignments_manual_post"];
+  };
+  "/api/v1/accommodation/repair": {
+    /**
+     * Repair Accommodation Endpoint
+     * @description Minimal-change repair engine: re-plans displaced participants while preserving unaffected stays.
+     */
+    post: operations["repair_accommodation_endpoint_api_v1_accommodation_repair_post"];
+  };
   "/api/v1/approvals": {
     /**
      * List Approvals
@@ -253,16 +316,65 @@ export interface paths {
   "/api/v1/checkin/board": {
     /**
      * Get Checkin Board
-     * @description Arrival desk board summarizing arrivals, checkin statuses, and pending counts.
+     * @description Real-time arrival desk board tracking pending arrivals, checked-in, and late arrivals.
      */
     get: operations["get_checkin_board_api_v1_checkin_board_get"];
   };
-  "/api/v1/checkin": {
+  "/api/v1/checkin/search": {
     /**
-     * Get Checkin Board
-     * @description Arrival desk board summarizing arrivals, checkin statuses, and pending counts.
+     * Search Participants Endpoint
+     * @description Rapid desk search by participant ID, name, email, or contingent code.
      */
-    get: operations["get_checkin_board_api_v1_checkin_get"];
+    get: operations["search_participants_endpoint_api_v1_checkin_search_get"];
+  };
+  "/api/v1/checkin/participant/{id}": {
+    /**
+     * Get Participant Detail Endpoint
+     * @description Retrieve participant check-in profile with room assignment, readiness, and alerts.
+     */
+    get: operations["get_participant_detail_endpoint_api_v1_checkin_participant__id__get"];
+  };
+  "/api/v1/checkin/verify-arrival": {
+    /**
+     * Checkin Endpoint
+     * @description Idempotent participant check-in with room cleaning readiness verification.
+     */
+    post: operations["checkin_endpoint_api_v1_checkin_verify_arrival_post"];
+  };
+  "/api/v1/checkin/checkin": {
+    /**
+     * Checkin Endpoint
+     * @description Idempotent participant check-in with room cleaning readiness verification.
+     */
+    post: operations["checkin_endpoint_api_v1_checkin_checkin_post"];
+  };
+  "/api/v1/checkin/checkout": {
+    /**
+     * Checkout Endpoint
+     * @description Check out participant, free bed, and trigger room cleaning countdown buffer.
+     */
+    post: operations["checkout_endpoint_api_v1_checkin_checkout_post"];
+  };
+  "/api/v1/checkin/participant/{id}/arrival": {
+    /**
+     * Update Arrival Endpoint
+     * @description Update participant arrival datetime, flagging curfew breaches.
+     */
+    patch: operations["update_arrival_endpoint_api_v1_checkin_participant__id__arrival_patch"];
+  };
+  "/api/v1/checkin/sync": {
+    /**
+     * Sync Offline Batch Endpoint
+     * @description Batch synchronize buffered offline desk operations with conflict explanations.
+     */
+    post: operations["sync_offline_batch_endpoint_api_v1_checkin_sync_post"];
+  };
+  "/api/v1/checkin/reallocations/suggestions": {
+    /**
+     * Get Reallocation Suggestions Endpoint
+     * @description Retrieve advisory bed reallocation suggestions generated by cancellations/no-shows.
+     */
+    get: operations["get_reallocation_suggestions_endpoint_api_v1_checkin_reallocations_suggestions_get"];
   };
   "/api/v1/commands/parse": {
     /**
@@ -410,38 +522,113 @@ export interface paths {
   };
   "/api/v1/finance/summary": {
     /**
-     * Get Finance Summary
-     * @description Returns festival financial overview: budget ceilings, external accommodation commitments, and cost breakdown.
+     * Get Finance Summary Endpoint
+     * @description Return budget gauge metrics, committed spend, projected spend, and budget-unset explanation.
      */
-    get: operations["get_finance_summary_api_v1_finance_summary_get"];
+    get: operations["get_finance_summary_endpoint_api_v1_finance_summary_get"];
   };
-  "/api/v1/finance": {
+  "/api/v1/finance/accommodation-spend": {
     /**
-     * Get Finance Summary
-     * @description Returns festival financial overview: budget ceilings, external accommodation commitments, and cost breakdown.
+     * Get Accommodation Spend Endpoint
+     * @description External accommodation spend broken down by external property from accommodation public contract.
      */
-    get: operations["get_finance_summary_api_v1_finance_get"];
+    get: operations["get_accommodation_spend_endpoint_api_v1_finance_accommodation_spend_get"];
+  };
+  "/api/v1/finance/vendor-settlements": {
+    /**
+     * Get Vendor Settlements Endpoint
+     * @description Vendor commercial settlements, balances due, payment milestones, and billing disputes.
+     */
+    get: operations["get_vendor_settlements_endpoint_api_v1_finance_vendor_settlements_get"];
+  };
+  "/api/v1/finance/vendor-settlements/{id}/pay": {
+    /**
+     * Record Payment Endpoint
+     * @description Record an advance or balance payment against a vendor settlement via ChangeService.
+     */
+    post: operations["record_payment_endpoint_api_v1_finance_vendor_settlements__id__pay_post"];
+  };
+  "/api/v1/finance/vendor-settlements/{id}/dispute": {
+    /**
+     * Open Dispute Endpoint
+     * @description Open a commercial billing dispute on a vendor settlement invoice.
+     */
+    post: operations["open_dispute_endpoint_api_v1_finance_vendor_settlements__id__dispute_post"];
+  };
+  "/api/v1/finance/merchandise-costs": {
+    /**
+     * Get Merchandise Costs Endpoint
+     * @description Summary of merchandise procurement costs, unit prices, and delivered quantities.
+     */
+    get: operations["get_merchandise_costs_endpoint_api_v1_finance_merchandise_costs_get"];
+  };
+  "/api/v1/finance/emergency-spend": {
+    /**
+     * Get Emergency Spend Endpoint
+     * @description Log of approved emergency expenditures with justifications and Director authorizations.
+     */
+    get: operations["get_emergency_spend_endpoint_api_v1_finance_emergency_spend_get"];
+    /**
+     * Propose Emergency Spend Endpoint
+     * @description Propose an emergency expenditure via ChangeService, subject to Director approval.
+     */
+    post: operations["propose_emergency_spend_endpoint_api_v1_finance_emergency_spend_post"];
+  };
+  "/api/v1/finance/budget-overrides-report": {
+    /**
+     * Get Overrides Report Endpoint
+     * @description Audit report of all financial and constraint overrides across all festival modules.
+     */
+    get: operations["get_overrides_report_endpoint_api_v1_finance_budget_overrides_report_get"];
+  };
+  "/api/v1/finance/overrides-report": {
+    /**
+     * Get Overrides Report Endpoint
+     * @description Audit report of all financial and constraint overrides across all festival modules.
+     */
+    get: operations["get_overrides_report_endpoint_api_v1_finance_overrides_report_get"];
+  };
+  "/api/v1/finance/budget/set": {
+    /**
+     * Set Budget Endpoint
+     * @description Set the external budget limit ceiling (Festival Director only).
+     */
+    post: operations["set_budget_endpoint_api_v1_finance_budget_set_post"];
   };
   "/api/v1/food/coverage": {
     /**
-     * Get Food Coverage
-     * @description Returns dietary coverage matrix across categories, meal slots, and venues.
+     * Get Food Coverage Endpoint
+     * @description Return 3D dietary coverage matrix (category x meal_slot x venue) with demand range for UNKNOWN.
      */
-    get: operations["get_food_coverage_api_v1_food_coverage_get"];
+    get: operations["get_food_coverage_endpoint_api_v1_food_coverage_get"];
   };
-  "/api/v1/food": {
+  "/api/v1/food/compliance-flags": {
     /**
-     * Get Food Coverage
-     * @description Returns dietary coverage matrix across categories, meal slots, and venues.
+     * Get Food Compliance Endpoint
+     * @description Return all menu-label mismatches and unverified dietary claims detected across menus.
      */
-    get: operations["get_food_coverage_api_v1_food_get"];
+    get: operations["get_food_compliance_endpoint_api_v1_food_compliance_flags_get"];
   };
   "/api/v1/food/compliance": {
     /**
-     * Get Food Compliance
-     * @description List food safety and dietary compliance issues and expiring certifications.
+     * Get Food Compliance Endpoint
+     * @description Return all menu-label mismatches and unverified dietary claims detected across menus.
      */
-    get: operations["get_food_compliance_api_v1_food_compliance_get"];
+    get: operations["get_food_compliance_endpoint_api_v1_food_compliance_get"];
+  };
+  "/api/v1/food/meal-slots": {
+    /**
+     * List Meal Slots Endpoint
+     * @description List all configured festival meal slots and vendor capacity distribution.
+     */
+    get: operations["list_meal_slots_endpoint_api_v1_food_meal_slots_get"];
+  };
+  "/api/v1/food/slots": {
+    /**
+     * List Meal Slots Endpoint
+     * @description List all configured festival meal slots and vendor capacity distribution.
+     */
+    get: operations["list_meal_slots_endpoint_api_v1_food_slots_get"];
   };
   "/api/v1/forecasting/crowd": {
     /**
@@ -456,6 +643,42 @@ export interface paths {
      * @description Predictive analytics and crowd flow forecasting across festival venues.
      */
     get: operations["get_crowd_forecasting_api_v1_forecasting_get"];
+  };
+  "/api/v1/forecasting/arrivals-queue": {
+    /**
+     * Get Arrivals And Checkin Queues
+     * @description Forecast arrival peaks and check-in queues using a discrete queue model.
+     * Strictly labels each series PROJECTION (data-derived) or ASSUMPTION (parameter-driven).
+     */
+    get: operations["get_arrivals_and_checkin_queues_api_v1_forecasting_arrivals_queue_get"];
+  };
+  "/api/v1/forecasting/demand-timeline": {
+    /**
+     * Get Multi Domain Demand Timeline
+     * @description Consolidated hourly multi-domain demand forecast for meals, accommodation, merchandise, equipment, volunteers.
+     */
+    get: operations["get_multi_domain_demand_timeline_api_v1_forecasting_demand_timeline_get"];
+  };
+  "/api/v1/forecasting/reports/{name}": {
+    /**
+     * Get Forecasting Report Endpoint
+     * @description Generate exportable structured analytical report for festival forecasting outputs.
+     */
+    get: operations["get_forecasting_report_endpoint_api_v1_forecasting_reports__name__get"];
+  };
+  "/api/v1/forecasting/bed-demand": {
+    /**
+     * Get Bed Demand Projection
+     * @description Bed demand forecast partitioned into confirmed vs possible demand against campus/external capacity.
+     */
+    get: operations["get_bed_demand_projection_api_v1_forecasting_bed_demand_get"];
+  };
+  "/api/v1/forecasting/resource-load": {
+    /**
+     * Get Resource Load Projection
+     * @description Equipment and volunteer load over timetable session schedules.
+     */
+    get: operations["get_resource_load_projection_api_v1_forecasting_resource_load_get"];
   };
   "/api/v1/impact/blast-radius": {
     /**
@@ -670,22 +893,62 @@ export interface paths {
   };
   "/api/v1/notifications/drafts": {
     /**
-     * List Notifications
-     * @description List operational notification drafts.
+     * List Drafts Endpoint
+     * @description List notification drafts with audience and approval status.
      */
-    get: operations["list_notifications_api_v1_notifications_drafts_get"];
-    /**
-     * Draft Notification
-     * @description Draft an operational notification via ChangeService.
-     */
-    post: operations["draft_notification_api_v1_notifications_drafts_post"];
+    get: operations["list_drafts_endpoint_api_v1_notifications_drafts_get"];
   };
-  "/api/v1/notifications": {
+  "/api/v1/notifications/drafts/{id}": {
     /**
-     * List Notifications
-     * @description List operational notification drafts.
+     * Get Draft Endpoint
+     * @description Get single notification draft details.
      */
-    get: operations["list_notifications_api_v1_notifications_get"];
+    get: operations["get_draft_endpoint_api_v1_notifications_drafts__id__get"];
+    /**
+     * Update Draft Endpoint
+     * @description Edit notification draft subject, body, or recipient before dispatch.
+     */
+    put: operations["update_draft_endpoint_api_v1_notifications_drafts__id__put"];
+    /**
+     * Update Draft Endpoint
+     * @description Edit notification draft subject, body, or recipient before dispatch.
+     */
+    patch: operations["update_draft_endpoint_api_v1_notifications_drafts__id__patch"];
+  };
+  "/api/v1/notifications/drafts/generate": {
+    /**
+     * Generate Drafts Endpoint
+     * @description Generate audience-targeted notification drafts from structured change data.
+     */
+    post: operations["generate_drafts_endpoint_api_v1_notifications_drafts_generate_post"];
+  };
+  "/api/v1/notifications/drafts/{id}/approve": {
+    /**
+     * Approve Draft Endpoint
+     * @description Approve a notification draft for sending.
+     */
+    post: operations["approve_draft_endpoint_api_v1_notifications_drafts__id__approve_post"];
+  };
+  "/api/v1/notifications/drafts/{id}/send": {
+    /**
+     * Send Draft Endpoint
+     * @description Mock-send a notification draft. Strictly requires prior approval.
+     */
+    post: operations["send_draft_endpoint_api_v1_notifications_drafts__id__send_post"];
+  };
+  "/api/v1/notifications/log": {
+    /**
+     * Get Log Endpoint
+     * @description Return the complete delivery audit log of dispatched notifications.
+     */
+    get: operations["get_log_endpoint_api_v1_notifications_log_get"];
+  };
+  "/api/v1/notifications/templates": {
+    /**
+     * List Templates Endpoint
+     * @description List available notification templates across the 5 audiences.
+     */
+    get: operations["list_templates_endpoint_api_v1_notifications_templates_get"];
   };
   "/api/v1/overrides": {
     /**
@@ -753,17 +1016,53 @@ export interface paths {
   };
   "/api/v1/premortem/resilience": {
     /**
-     * Get Premortem Analysis
+     * Get Premortem Resilience
      * @description Predictive festival resilience simulator and pre-mortem vulnerability rankings.
      */
-    get: operations["get_premortem_analysis_api_v1_premortem_resilience_get"];
+    get: operations["get_premortem_resilience_api_v1_premortem_resilience_get"];
   };
   "/api/v1/premortem": {
     /**
-     * Get Premortem Analysis
+     * Get Premortem Resilience
      * @description Predictive festival resilience simulator and pre-mortem vulnerability rankings.
      */
-    get: operations["get_premortem_analysis_api_v1_premortem_get"];
+    get: operations["get_premortem_resilience_api_v1_premortem_get"];
+  };
+  "/api/v1/premortem/timeline": {
+    /**
+     * Get Hourly Timeline
+     * @description Hourly scrubber across festival window computing bed occupancy, food demand,
+     * venue utilization, equipment, volunteers, transport and module risks.
+     */
+    get: operations["get_hourly_timeline_api_v1_premortem_timeline_get"];
+  };
+  "/api/v1/premortem/disruptions/run": {
+    /**
+     * Run Targeted Disruption Endpoint
+     * @description Run a single targeted disruption in an isolated scenario sandbox using the impact engine.
+     */
+    post: operations["run_targeted_disruption_endpoint_api_v1_premortem_disruptions_run_post"];
+  };
+  "/api/v1/premortem/disruptions/multi-run": {
+    /**
+     * Run Multi Disruptions Endpoint
+     * @description Run seeded multi-disruption Monte Carlo / combinatorial stress test in scenario sandboxes.
+     */
+    post: operations["run_multi_disruptions_endpoint_api_v1_premortem_disruptions_multi_run_post"];
+  };
+  "/api/v1/premortem/spofs": {
+    /**
+     * Get Single Points Of Failure
+     * @description Returns detected Single Points of Failure across all festival resources.
+     */
+    get: operations["get_single_points_of_failure_api_v1_premortem_spofs_get"];
+  };
+  "/api/v1/premortem/scenarios": {
+    /**
+     * Get Premortem Scenarios History
+     * @description Returns history of simulated pre-mortem scenarios.
+     */
+    get: operations["get_premortem_scenarios_history_api_v1_premortem_scenarios_get"];
   };
   "/api/v1/reconciliation/waterfall": {
     /**
@@ -1146,12 +1445,84 @@ export interface paths {
      */
     get: operations["get_verification_history_for_field_api_v1_unknowns_history__entity_type___entity_id___field__get"];
   };
+  "/api/v1/unknowns/ranking": {
+    /**
+     * Get Value Of Information Ranking
+     * @description Value-of-Information (VOI) ranking across unknown field groups.
+     * Simulates sandbox outcomes and ranks groups by operational improvement per confirmation.
+     */
+    get: operations["get_value_of_information_ranking_api_v1_unknowns_ranking_get"];
+  };
+  "/api/v1/unknowns/confirmation-requests": {
+    /**
+     * Create Batched Confirmation Request
+     * @description Generate minimal confirmation requests batched by contingent leader or desk volunteer.
+     */
+    post: operations["create_batched_confirmation_request_api_v1_unknowns_confirmation_requests_post"];
+  };
+  "/api/v1/unknowns/why-not/{participant_id}": {
+    /**
+     * Get Participant Why Not Explanation
+     * @description Diagnostic explanation extending Why-Not with simulated counterfactual predictions:
+     * 'What confirming field X would change for this participant'.
+     */
+    get: operations["get_participant_why_not_explanation_api_v1_unknowns_why_not__participant_id__get"];
+  };
   "/api/v1/vendors": {
     /**
-     * List Vendors
-     * @description List festival food vendors with hygiene certificate status and capacity.
+     * List Vendors Endpoint
+     * @description List all 14 commercial catering vendors with operating details and compliance status.
      */
-    get: operations["list_vendors_api_v1_vendors_get"];
+    get: operations["list_vendors_endpoint_api_v1_vendors_get"];
+  };
+  "/api/v1/vendors/compliance": {
+    /**
+     * Get Compliance Endpoint
+     * @description Return vendor hygiene certificate compliance breakdown and menu-label mismatches.
+     */
+    get: operations["get_compliance_endpoint_api_v1_vendors_compliance_get"];
+  };
+  "/api/v1/vendors/reports/{report_name}": {
+    /**
+     * Download Vendor Report Endpoint
+     * @description Download vendor coverage or compliance reports as CSV.
+     */
+    get: operations["download_vendor_report_endpoint_api_v1_vendors_reports__report_name__get"];
+  };
+  "/api/v1/vendors/{id}": {
+    /**
+     * Get Vendor Detail Endpoint
+     * @description Get detailed profile for a specific vendor including menu items, assignments, and flags.
+     */
+    get: operations["get_vendor_detail_endpoint_api_v1_vendors__id__get"];
+  };
+  "/api/v1/vendors/{id}/shutdown-analysis": {
+    /**
+     * Shutdown Impact Endpoint
+     * @description Evaluate the 10-step emergency vendor shutdown response (Feature 7).
+     */
+    post: operations["shutdown_impact_endpoint_api_v1_vendors__id__shutdown_analysis_post"];
+  };
+  "/api/v1/vendors/{id}/shutdown-impact": {
+    /**
+     * Shutdown Impact Endpoint
+     * @description Evaluate the 10-step emergency vendor shutdown response (Feature 7).
+     */
+    post: operations["shutdown_impact_endpoint_api_v1_vendors__id__shutdown_impact_post"];
+  };
+  "/api/v1/vendors/{id}/shutdown-execute": {
+    /**
+     * Execute Shutdown Endpoint
+     * @description Execute emergency vendor shutdown via ChangeService, reassigning slots and staging notification drafts.
+     */
+    post: operations["execute_shutdown_endpoint_api_v1_vendors__id__shutdown_execute_post"];
+  };
+  "/api/v1/vendors/{id}/shutdown": {
+    /**
+     * Execute Shutdown Endpoint
+     * @description Execute emergency vendor shutdown via ChangeService, reassigning slots and staging notification drafts.
+     */
+    post: operations["execute_shutdown_endpoint_api_v1_vendors__id__shutdown_post"];
   };
   "/api/v1/venues": {
     /** Get All Venues */
@@ -1222,6 +1593,38 @@ export interface components {
       /** Created At */
       created_at: string;
     };
+    /** AccommodationSpendProperty */
+    AccommodationSpendProperty: {
+      /** Property Id */
+      property_id: string;
+      /** Name */
+      name: string;
+      /** Property Name */
+      property_name?: string | null;
+      /** Capacity Beds */
+      capacity_beds: number;
+      /** Booked Beds */
+      booked_beds: number;
+      /** Nights */
+      nights: number;
+      /** Rate Per Bed Night Inr */
+      rate_per_bed_night_inr: number;
+      /** Total Spend Inr */
+      total_spend_inr: number;
+      /** Total Cost Inr */
+      total_cost_inr?: number | null;
+      /** Contract Status */
+      contract_status: string;
+      /** Payment Status */
+      payment_status: string;
+    };
+    /** AccommodationSpendResponseData */
+    AccommodationSpendResponseData: {
+      /** Properties */
+      properties: components["schemas"]["AccommodationSpendProperty"][];
+      /** Total External Spend Inr */
+      total_external_spend_inr: number;
+    };
     /** AlternativeRejected */
     AlternativeRejected: {
       /** Option */
@@ -1244,6 +1647,15 @@ export interface components {
       payload: {
         [key: string]: unknown;
       };
+    };
+    /** ArrivalUpdateRequest */
+    ArrivalUpdateRequest: {
+      /** Updated Arrival At */
+      updated_arrival_at: string;
+      /** Delay Reason */
+      delay_reason?: string | null;
+      /** Transport Mode */
+      transport_mode?: string | null;
     };
     /** AssignShiftBody */
     AssignShiftBody: {
@@ -1347,6 +1759,42 @@ export interface components {
        */
       dry_run?: boolean;
     };
+    /** BackupCapacityCheck */
+    BackupCapacityCheck: {
+      /** Total Replacement Capacity */
+      total_replacement_capacity: number;
+      /** Required Capacity */
+      required_capacity: number;
+      /**
+       * Deficit
+       * @default 0
+       */
+      deficit?: number;
+      /** Can Absorb Load */
+      can_absorb_load: boolean;
+      /** Warning */
+      warning?: string | null;
+    };
+    /** BatchConfirmationRequestBody */
+    BatchConfirmationRequestBody: {
+      /**
+       * Target Type
+       * @default CONTINGENT_LEADER
+       */
+      target_type?: string;
+      /** Contingent Id */
+      contingent_id?: string | null;
+      /**
+       * Group Id
+       * @default housing_gender
+       */
+      group_id?: string | null;
+      /**
+       * Expires In Minutes
+       * @default 1440
+       */
+      expires_in_minutes?: number;
+    };
     /** Body_upload_import_file_api_v1_imports_post */
     Body_upload_import_file_api_v1_imports_post: {
       /** File */
@@ -1409,11 +1857,58 @@ export interface components {
       /** Warnings */
       warnings?: string[];
     };
+    /** CheckinRequest */
+    CheckinRequest: {
+      /** Client Op Id */
+      client_op_id?: string | null;
+      /** Participant Id */
+      participant_id: string;
+      /** Wristband Code */
+      wristband_code?: string | null;
+      /** Verified Fields */
+      verified_fields?: {
+        [key: string]: unknown;
+      } | null;
+      /** Desk Operator */
+      desk_operator?: string | null;
+      /** Override Room Id */
+      override_room_id?: string | null;
+    };
+    /** CheckoutRequest */
+    CheckoutRequest: {
+      /** Client Op Id */
+      client_op_id?: string | null;
+      /** Participant Id */
+      participant_id: string;
+      /** Bed Id */
+      bed_id?: string | null;
+      /** Checkout Notes */
+      checkout_notes?: string | null;
+    };
+    /** CleaningCompleteRequest */
+    CleaningCompleteRequest: {
+      /** Expected Version */
+      expected_version?: number | null;
+      /** Inspected By */
+      inspected_by?: string | null;
+      /** Notes */
+      notes?: string | null;
+    };
     /**
      * CommandIntent
      * @enum {string}
      */
     CommandIntent: "show_impact" | "find_accommodation_for_unplaced" | "affected_events_by_equipment" | "alternative_vendors_for_diet" | "list_late_arrivals" | "query" | "navigate";
+    /** CommitPlanRequest */
+    CommitPlanRequest: {
+      /**
+       * Reason
+       * @default Commit candidate plan to live operations
+       */
+      reason?: string | null;
+      /** Override Budget Rationale */
+      override_budget_rationale?: string | null;
+    };
     /** CommitScenarioBody */
     CommitScenarioBody: {
       /** Reason */
@@ -1767,6 +2262,29 @@ export interface components {
        */
       reason: string;
     };
+    /** DeliveryLogSchema */
+    DeliveryLogSchema: {
+      /** Id */
+      id: string;
+      /** Draft Id */
+      draft_id: string;
+      /** Audience */
+      audience: string;
+      /** Recipient */
+      recipient: string;
+      /** Channel */
+      channel: string;
+      /** Subject */
+      subject?: string | null;
+      /** Body */
+      body: string;
+      /** Sent At */
+      sent_at: string;
+      /** Status */
+      status: string;
+      /** Provider */
+      provider: string;
+    };
     /** DemandTimelineResponseData */
     DemandTimelineResponseData: {
       /** Total Participants Requesting */
@@ -1790,21 +2308,68 @@ export interface components {
       /** Timeline */
       timeline: components["schemas"]["TimelinePointSchema"][];
     };
-    /** DraftNotificationBody */
-    DraftNotificationBody: {
-      /**
-       * Channel
-       * @default SMS
-       */
-      channel?: string;
-      /** Recipient */
-      recipient: string;
+    /** DietaryCoverageSummary */
+    DietaryCoverageSummary: {
+      /** On Site Headcount */
+      on_site_headcount: number;
+      /** Valid Aggregate Capacity */
+      valid_aggregate_capacity: number;
+      /** Aggregate Shortfall */
+      aggregate_shortfall: number;
+      /** Zero Coverage Categories */
+      zero_coverage_categories?: string[];
+      /** Unknown Dietary Headcount */
+      unknown_dietary_headcount: number;
+    };
+    /** DietaryMatrixCell */
+    DietaryMatrixCell: {
+      /** Meal Slot */
+      meal_slot: string;
+      /** Date */
+      date: string;
+      /** Category */
+      category: string;
+      /** Demand Confirmed */
+      demand_confirmed: number;
+      /** Demand Max With Unknown */
+      demand_max_with_unknown: number;
+      /** Valid Capacity */
+      valid_capacity: number;
+      /** Deficit */
+      deficit: number;
+      /** Is Zero Coverage */
+      is_zero_coverage: boolean;
+      /** Active Vendors */
+      active_vendors?: string[];
+    };
+    /** EditDraftRequest */
+    EditDraftRequest: {
       /** Subject */
       subject?: string | null;
       /** Body */
-      body: string;
+      body?: string | null;
+      /** Channel */
+      channel?: string | null;
+      /** Recipient */
+      recipient?: string | null;
+    };
+    /** EmergencySpendRequest */
+    EmergencySpendRequest: {
+      /** Description */
+      description?: string | null;
+      /** Title */
+      title?: string | null;
+      /** Amount Inr */
+      amount_inr: number;
+      /**
+       * Category
+       * @default VENDOR_BACKUP
+       */
+      category?: string;
       /** Reason */
       reason?: string | null;
+      /** Justification */
+      justification?: string | null;
     };
     /** EntityRef */
     EntityRef: {
@@ -1814,6 +2379,16 @@ export interface components {
       id: string;
       /** Label */
       label: string;
+    };
+    /** Envelope[AccommodationSpendResponseData] */
+    Envelope_AccommodationSpendResponseData_: {
+      data: components["schemas"]["AccommodationSpendResponseData"];
+      /** Meta */
+      meta?: {
+        [key: string]: unknown;
+      };
+      /** Warnings */
+      warnings?: string[];
     };
     /** Envelope[Any] */
     Envelope_Any_: {
@@ -1886,6 +2461,16 @@ export interface components {
       /** Warnings */
       warnings?: string[];
     };
+    /** Envelope[DeliveryLogSchema] */
+    Envelope_DeliveryLogSchema_: {
+      data: components["schemas"]["DeliveryLogSchema"];
+      /** Meta */
+      meta?: {
+        [key: string]: unknown;
+      };
+      /** Warnings */
+      warnings?: string[];
+    };
     /** Envelope[DemandTimelineResponseData] */
     Envelope_DemandTimelineResponseData_: {
       data: components["schemas"]["DemandTimelineResponseData"];
@@ -1912,6 +2497,26 @@ export interface components {
     /** Envelope[ExecuteResponseData] */
     Envelope_ExecuteResponseData_: {
       data: components["schemas"]["ExecuteResponseData"];
+      /** Meta */
+      meta?: {
+        [key: string]: unknown;
+      };
+      /** Warnings */
+      warnings?: string[];
+    };
+    /** Envelope[FinanceSummaryData] */
+    Envelope_FinanceSummaryData_: {
+      data: components["schemas"]["FinanceSummaryData"];
+      /** Meta */
+      meta?: {
+        [key: string]: unknown;
+      };
+      /** Warnings */
+      warnings?: string[];
+    };
+    /** Envelope[FoodCoverageResponseData] */
+    Envelope_FoodCoverageResponseData_: {
+      data: components["schemas"]["FoodCoverageResponseData"];
       /** Meta */
       meta?: {
         [key: string]: unknown;
@@ -1956,6 +2561,38 @@ export interface components {
       data: {
           [key: string]: unknown;
         }[];
+      /** Meta */
+      meta?: {
+        [key: string]: unknown;
+      };
+      /** Warnings */
+      warnings?: string[];
+    };
+    /** Envelope[List[MealSlotSchema]] */
+    Envelope_List_MealSlotSchema__: {
+      /** Data */
+      data: components["schemas"]["MealSlotSchema"][];
+      /** Meta */
+      meta?: {
+        [key: string]: unknown;
+      };
+      /** Warnings */
+      warnings?: string[];
+    };
+    /** Envelope[List[TemplateSchema]] */
+    Envelope_List_TemplateSchema__: {
+      /** Data */
+      data: components["schemas"]["TemplateSchema"][];
+      /** Meta */
+      meta?: {
+        [key: string]: unknown;
+      };
+      /** Warnings */
+      warnings?: string[];
+    };
+    /** Envelope[NotificationDraftSchema] */
+    Envelope_NotificationDraftSchema_: {
+      data: components["schemas"]["NotificationDraftSchema"];
       /** Meta */
       meta?: {
         [key: string]: unknown;
@@ -2016,6 +2653,36 @@ export interface components {
     /** Envelope[ShortagesResponseData] */
     Envelope_ShortagesResponseData_: {
       data: components["schemas"]["ShortagesResponseData"];
+      /** Meta */
+      meta?: {
+        [key: string]: unknown;
+      };
+      /** Warnings */
+      warnings?: string[];
+    };
+    /** Envelope[SyncBatchResponseData] */
+    Envelope_SyncBatchResponseData_: {
+      data: components["schemas"]["SyncBatchResponseData"];
+      /** Meta */
+      meta?: {
+        [key: string]: unknown;
+      };
+      /** Warnings */
+      warnings?: string[];
+    };
+    /** Envelope[VendorDetailSchema] */
+    Envelope_VendorDetailSchema_: {
+      data: components["schemas"]["VendorDetailSchema"];
+      /** Meta */
+      meta?: {
+        [key: string]: unknown;
+      };
+      /** Warnings */
+      warnings?: string[];
+    };
+    /** Envelope[VendorShutdownAnalysisResult] */
+    Envelope_VendorShutdownAnalysisResult_: {
+      data: components["schemas"]["VendorShutdownAnalysisResult"];
       /** Meta */
       meta?: {
         [key: string]: unknown;
@@ -2095,6 +2762,68 @@ export interface components {
       message: string;
       /** Warnings */
       warnings?: string[];
+    };
+    /** FinanceSummaryData */
+    FinanceSummaryData: {
+      /** External Budget Inr */
+      external_budget_inr?: number | null;
+      /** External Budget Ceiling Inr */
+      external_budget_ceiling_inr?: number | null;
+      /** Budget Status */
+      budget_status: string;
+      /** Budget Explanation */
+      budget_explanation: string;
+      /** Total Spend Committed Inr */
+      total_spend_committed_inr: number;
+      /** Total Spend Projected Inr */
+      total_spend_projected_inr: number;
+      /** Cost Variance Inr */
+      cost_variance_inr: number;
+      /** Variance Inr */
+      variance_inr?: number | null;
+      /** Budget Utilization Pct */
+      budget_utilization_pct?: number | null;
+      /** Breakdown */
+      breakdown: {
+        [key: string]: number;
+      };
+    };
+    /** FoodCoverageResponseData */
+    FoodCoverageResponseData: {
+      /** Date */
+      date: string;
+      /** Categories */
+      categories: string[];
+      /** Meal Slots */
+      meal_slots: string[];
+      summary: components["schemas"]["DietaryCoverageSummary"];
+      /** Matrix */
+      matrix: components["schemas"]["DietaryMatrixCell"][];
+      /** Critical Alerts */
+      critical_alerts?: {
+          [key: string]: unknown;
+        }[];
+    };
+    /** FreezePlanRequest */
+    FreezePlanRequest: {
+      /**
+       * Reason
+       * @default Freeze live plan allocations
+       */
+      reason?: string | null;
+    };
+    /** GenerateDraftsRequest */
+    GenerateDraftsRequest: {
+      /** Event Type */
+      event_type: string;
+      /** Change Set Id */
+      change_set_id?: string | null;
+      /** Incident Id */
+      incident_id?: string | null;
+      /** Context */
+      context?: {
+        [key: string]: unknown;
+      };
     };
     /** GeneratePlanParams */
     GeneratePlanParams: {
@@ -2241,6 +2970,13 @@ export interface components {
         [key: string]: unknown;
       };
     };
+    /** IncrementalAllocateRequest */
+    IncrementalAllocateRequest: {
+      /** Participant Ids */
+      participant_ids?: string[] | null;
+      /** Contingent Id */
+      contingent_id?: string | null;
+    };
     /** IssueItemBody */
     IssueItemBody: {
       /** Participant Id */
@@ -2289,6 +3025,44 @@ export interface components {
       /** Password */
       password: string;
     };
+    /** ManualAssignRequest */
+    ManualAssignRequest: {
+      /** Participant Id */
+      participant_id: string;
+      /** Target Bed Key */
+      target_bed_key: string;
+      /** Target Room Id */
+      target_room_id?: string | null;
+      /** Target Property Id */
+      target_property_id?: string | null;
+      /** Reason */
+      reason: string;
+      /**
+       * Override Hard Constraint
+       * @default false
+       */
+      override_hard_constraint?: boolean;
+      /** Expected Version */
+      expected_version?: number | null;
+    };
+    /** MealSlotSchema */
+    MealSlotSchema: {
+      /** Id */
+      id: string;
+      /** Name */
+      name: string;
+      /** Date */
+      date: string;
+      /** Start Time */
+      start_time: string;
+      /** End Time */
+      end_time: string;
+      /**
+       * Assigned Vendors Count
+       * @default 0
+       */
+      assigned_vendors_count?: number;
+    };
     /** MergeRequestBody */
     MergeRequestBody: {
       /** Expected Version */
@@ -2304,6 +3078,57 @@ export interface components {
       payload: {
         [key: string]: unknown;
       };
+    };
+    /** NotificationDraftSchema */
+    NotificationDraftSchema: {
+      /** Id */
+      id: string;
+      /** Audience */
+      audience: string;
+      /** Channel */
+      channel: string;
+      /** Recipient */
+      recipient: string;
+      /** Subject */
+      subject?: string | null;
+      /** Body */
+      body: string;
+      /** Status */
+      status: string;
+      /** Requires Approval */
+      requires_approval: boolean;
+      /** Template Key */
+      template_key?: string | null;
+      /** Related Change Set Id */
+      related_change_set_id?: string | null;
+      /** Related Incident Id */
+      related_incident_id?: string | null;
+      /** Created At */
+      created_at: string;
+    };
+    /** OfflineOperation */
+    OfflineOperation: {
+      /** Client Op Id */
+      client_op_id: string;
+      /** Op Type */
+      op_type: string;
+      /** Participant Id */
+      participant_id: string;
+      /** Timestamp */
+      timestamp?: string | null;
+      /** Payload */
+      payload?: {
+        [key: string]: unknown;
+      } | null;
+    };
+    /** OpenDisputeRequest */
+    OpenDisputeRequest: {
+      /** Amount Inr */
+      amount_inr?: number | null;
+      /** Disputed Amount Inr */
+      disputed_amount_inr?: number | null;
+      /** Reason */
+      reason: string;
     };
     /** Page[Dict[str, Any]] */
     Page_Dict_str__Any__: {
@@ -2428,6 +3253,31 @@ export interface components {
        */
       is_budget_unset?: boolean;
     };
+    /** PropertyUpdateRequest */
+    PropertyUpdateRequest: {
+      /** Expected Version */
+      expected_version?: number | null;
+      /** Beds */
+      beds?: number | null;
+      /** Cost Per Bed Night */
+      cost_per_bed_night?: number | null;
+      /** Transport Availability */
+      transport_availability?: string | null;
+      /** Transport Limited */
+      transport_limited?: boolean | null;
+      /** Transport Windows */
+      transport_windows?: string | null;
+      /** Safety Info */
+      safety_info?: string | null;
+      /** Accessibility Verified */
+      accessibility_verified?: boolean | null;
+      /** Gender Suitability Verified */
+      gender_suitability_verified?: boolean | null;
+      /** Status */
+      status?: string | null;
+      /** Reason */
+      reason?: string | null;
+    };
     /** QuarantineIssueItem */
     QuarantineIssueItem: {
       /** Id */
@@ -2451,6 +3301,31 @@ export interface components {
        */
       created_at: string;
     };
+    /** RankedReplacement */
+    RankedReplacement: {
+      /** Vendor Id */
+      vendor_id: string;
+      /** Vendor Name */
+      vendor_name: string;
+      /** Spare Capacity */
+      spare_capacity: number;
+      /** Dietary Match */
+      dietary_match: string;
+      /** Compliance Status */
+      compliance_status: string;
+      /** Operating Hours */
+      operating_hours: string;
+      /** Can Absorb Load */
+      can_absorb_load: boolean;
+      /** Rate Per Meal Inr */
+      rate_per_meal_inr: number;
+      /** Cost Delta Inr */
+      cost_delta_inr: number;
+      /** Rank */
+      rank: number;
+      /** Rationale */
+      rationale: string;
+    };
     /** RecordMovementBody */
     RecordMovementBody: {
       /** Expected Version */
@@ -2467,10 +3342,39 @@ export interface components {
         [key: string]: unknown;
       };
     };
+    /** RecordPaymentRequest */
+    RecordPaymentRequest: {
+      /** Amount Inr */
+      amount_inr: number;
+      /** Payment Reference */
+      payment_reference?: string | null;
+      /** Payment Method */
+      payment_method?: string | null;
+      /** Reference Number */
+      reference_number?: string | null;
+      /** Notes */
+      notes?: string | null;
+    };
     /** RefreshRequest */
     RefreshRequest: {
       /** Refresh Token */
       refresh_token: string;
+    };
+    /** RepairPlanRequest */
+    RepairPlanRequest: {
+      /** Plan Id */
+      plan_id?: string | null;
+      /** Closed Block */
+      closed_block?: string | null;
+      /** Closed Room Ids */
+      closed_room_ids?: string[] | null;
+      /** Closed Property Id */
+      closed_property_id?: string | null;
+      /**
+       * Strategy
+       * @default MINIMAL_CHANGE
+       */
+      strategy?: string;
     };
     /** ReplaceShiftBody */
     ReplaceShiftBody: {
@@ -2487,6 +3391,60 @@ export interface components {
       payload: {
         [key: string]: unknown;
       };
+    };
+    /** RoomUpdateRequest */
+    RoomUpdateRequest: {
+      /** Expected Version */
+      expected_version?: number | null;
+      /** Status */
+      status?: string | null;
+      /** Cleaning Status */
+      cleaning_status?: string | null;
+      /** Accessible */
+      accessible?: boolean | null;
+      /** Gender Class */
+      gender_class?: string | null;
+      /** Capacity */
+      capacity?: number | null;
+      /** Floor */
+      floor?: number | null;
+      /** Block */
+      block?: string | null;
+      /** Safety Info */
+      safety_info?: string | null;
+      /** Reason */
+      reason?: string | null;
+    };
+    /** RunDisruptionBody */
+    RunDisruptionBody: {
+      /** Disruption Type */
+      disruption_type: string;
+      /** Target Entity Id */
+      target_entity_id?: string | null;
+      /** Parameters */
+      parameters?: {
+        [key: string]: unknown;
+      } | null;
+    };
+    /** RunMultiDisruptionsBody */
+    RunMultiDisruptionsBody: {
+      /**
+       * Seed
+       * @default 42
+       */
+      seed?: number;
+      /**
+       * Disruption Count
+       * @default 3
+       */
+      disruption_count?: number;
+      /**
+       * Intensity
+       * @default HIGH
+       */
+      intensity?: string;
+      /** Disruption Types */
+      disruption_types?: string[] | null;
     };
     /** ScanQrBody */
     ScanQrBody: {
@@ -2575,6 +3533,13 @@ export interface components {
       /** Expected Version */
       expected_version?: number | null;
     };
+    /** SetBudgetRequest */
+    SetBudgetRequest: {
+      /** Budget Inr */
+      budget_inr: number;
+      /** Reason */
+      reason: string;
+    };
     /**
      * Severity
      * @enum {integer}
@@ -2659,12 +3624,58 @@ export interface components {
        */
       raw_text?: string;
     };
+    /** SyncBatchRequest */
+    SyncBatchRequest: {
+      /** Device Id */
+      device_id?: string | null;
+      /** Sync Batch Id */
+      sync_batch_id: string;
+      /** Operations */
+      operations: components["schemas"]["OfflineOperation"][];
+    };
+    /** SyncBatchResponseData */
+    SyncBatchResponseData: {
+      /** Batch Id */
+      batch_id: string;
+      /** Processed Count */
+      processed_count: number;
+      /** Applied Count */
+      applied_count: number;
+      /** Duplicate Count */
+      duplicate_count: number;
+      /** Conflict Count */
+      conflict_count: number;
+      /** Results */
+      results: components["schemas"]["SyncOperationResult"][];
+    };
     /** SyncOfflineBody */
     SyncOfflineBody: {
       /** Operations */
       operations: {
           [key: string]: unknown;
         }[];
+    };
+    /** SyncOperationResult */
+    SyncOperationResult: {
+      /** Client Op Id */
+      client_op_id: string;
+      /** Status */
+      status: string;
+      /** Message */
+      message: string;
+    };
+    /** TemplateSchema */
+    TemplateSchema: {
+      /** Key */
+      key: string;
+      /** Audience */
+      audience: string;
+      /** Channel */
+      channel: string;
+      /** Title */
+      title: string;
+      /** Body Template */
+      body_template: string;
     };
     /** TimelinePointSchema */
     TimelinePointSchema: {
@@ -2761,6 +3772,101 @@ export interface components {
       input?: unknown;
       /** Context */
       ctx?: Record<string, never>;
+    };
+    /** VendorDetailSchema */
+    VendorDetailSchema: {
+      /** Id */
+      id: string;
+      /** Name */
+      name: string;
+      /** Status */
+      status: string;
+      /** Menu Description */
+      menu_description?: string | null;
+      /** Dietary Options */
+      dietary_options?: string | null;
+      /** Declared Categories */
+      declared_categories?: string[];
+      /** Unverified Categories */
+      unverified_categories?: string[];
+      /** Hours */
+      hours?: string | null;
+      /** Capacity */
+      capacity?: number | null;
+      /** Hygiene Certificate Expiry */
+      hygiene_certificate_expiry?: string | null;
+      /** Compliance Status */
+      compliance_status: string;
+      /** Payment Terms */
+      payment_terms?: string | null;
+      /**
+       * Base Rate Per Meal Inr
+       * @default 180
+       */
+      base_rate_per_meal_inr?: number;
+      /** Contact Phone */
+      contact_phone?: string | null;
+      /** Assignments */
+      assignments?: {
+          [key: string]: unknown;
+        }[];
+      /** Compliance Flags */
+      compliance_flags?: {
+          [key: string]: unknown;
+        }[];
+    };
+    /** VendorShutdownAnalysisRequest */
+    VendorShutdownAnalysisRequest: {
+      /** From Time */
+      from_time?: string | null;
+      /** Reason */
+      reason?: string | null;
+    };
+    /** VendorShutdownAnalysisResult */
+    VendorShutdownAnalysisResult: {
+      /** Vendor Id */
+      vendor_id: string;
+      /** Vendor Name */
+      vendor_name: string;
+      /** From Time */
+      from_time: string;
+      /** Affected Locations */
+      affected_locations: string[];
+      /** Affected Meal Slots */
+      affected_meal_slots: string[];
+      /** Lost Capacity */
+      lost_capacity: number;
+      /** Dietary Gaps */
+      dietary_gaps: {
+          [key: string]: unknown;
+        }[];
+      /** Ranked Replacements */
+      ranked_replacements: components["schemas"]["RankedReplacement"][];
+      /** Replacement Candidates */
+      replacement_candidates?: components["schemas"]["RankedReplacement"][];
+      backup_capacity_check: components["schemas"]["BackupCapacityCheck"];
+      /** Cost Change Inr */
+      cost_change_inr: number;
+      /** Recommendation */
+      recommendation: string;
+      /** Notification Drafts */
+      notification_drafts: {
+          [key: string]: unknown;
+        }[];
+    };
+    /** VendorShutdownExecuteRequest */
+    VendorShutdownExecuteRequest: {
+      /** From Time */
+      from_time?: string | null;
+      /** Reason */
+      reason: string;
+      /** Replacement Vendor Id */
+      replacement_vendor_id?: string | null;
+      /**
+       * Dispatch Notifications
+       * @default true
+       */
+      dispatch_notifications?: boolean;
     };
     /** VenueMutationBody */
     VenueMutationBody: {
@@ -3287,6 +4393,283 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["Envelope_DecisionCard_"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Commit Candidate Plan Endpoint
+   * @description Commit candidate plan to LIVE via approvals workflow.
+   */
+  commit_candidate_plan_endpoint_api_v1_accommodation_plans__id__commit_post: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+      path: {
+        id: string;
+      };
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["CommitPlanRequest"] | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Live Plan Endpoint
+   * @description Retrieve the currently operational LIVE accommodation plan.
+   */
+  get_live_plan_endpoint_api_v1_accommodation_plans_live_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Freeze Live Plan Endpoint
+   * @description Freeze LIVE plan allocations ahead of festival commencement.
+   */
+  freeze_live_plan_endpoint_api_v1_accommodation_plans_live_freeze_post: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["FreezePlanRequest"] | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Allocate Incremental Endpoint
+   * @description Incrementally allocate late arrivals while preserving all approved assignments.
+   */
+  allocate_incremental_endpoint_api_v1_accommodation_plans_live_allocate_incremental_post: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["IncrementalAllocateRequest"] | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Update Room Endpoint
+   * @description Update room operational status, cleaning, or accessibility attributes via ChangeService.
+   */
+  update_room_endpoint_api_v1_accommodation_rooms__id__patch: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+      path: {
+        id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RoomUpdateRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Complete Cleaning Endpoint
+   * @description Mark housekeeping inspection complete, transitioning room status to READY.
+   */
+  complete_cleaning_endpoint_api_v1_accommodation_rooms__id__cleaning_complete_post: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+      path: {
+        id: string;
+      };
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["CleaningCompleteRequest"] | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Update Property Endpoint
+   * @description Update external property pricing, transport windows, and verification flags via ChangeService.
+   */
+  update_property_endpoint_api_v1_accommodation_properties__id__patch: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+      path: {
+        id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PropertyUpdateRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Manual Assignment Endpoint
+   * @description Manually assign or move participant with mandatory reason and Director override enforcement.
+   */
+  manual_assignment_endpoint_api_v1_accommodation_assignments_manual_post: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ManualAssignRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Repair Accommodation Endpoint
+   * @description Minimal-change repair engine: re-plans displaced participants while preserving unaffected stays.
+   */
+  repair_accommodation_endpoint_api_v1_accommodation_repair_post: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RepairPlanRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
         };
       };
       /** @description Validation Error */
@@ -3895,7 +5278,7 @@ export interface operations {
   };
   /**
    * Get Checkin Board
-   * @description Arrival desk board summarizing arrivals, checkin statuses, and pending counts.
+   * @description Real-time arrival desk board tracking pending arrivals, checked-in, and late arrivals.
    */
   get_checkin_board_api_v1_checkin_board_get: {
     parameters: {
@@ -3919,10 +5302,220 @@ export interface operations {
     };
   };
   /**
-   * Get Checkin Board
-   * @description Arrival desk board summarizing arrivals, checkin statuses, and pending counts.
+   * Search Participants Endpoint
+   * @description Rapid desk search by participant ID, name, email, or contingent code.
    */
-  get_checkin_board_api_v1_checkin_get: {
+  search_participants_endpoint_api_v1_checkin_search_get: {
+    parameters: {
+      query: {
+        /** @description Search query string */
+        q: string;
+      };
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_List_Dict_str__Any___"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Participant Detail Endpoint
+   * @description Retrieve participant check-in profile with room assignment, readiness, and alerts.
+   */
+  get_participant_detail_endpoint_api_v1_checkin_participant__id__get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Checkin Endpoint
+   * @description Idempotent participant check-in with room cleaning readiness verification.
+   */
+  checkin_endpoint_api_v1_checkin_verify_arrival_post: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CheckinRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Checkin Endpoint
+   * @description Idempotent participant check-in with room cleaning readiness verification.
+   */
+  checkin_endpoint_api_v1_checkin_checkin_post: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CheckinRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Checkout Endpoint
+   * @description Check out participant, free bed, and trigger room cleaning countdown buffer.
+   */
+  checkout_endpoint_api_v1_checkin_checkout_post: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CheckoutRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Update Arrival Endpoint
+   * @description Update participant arrival datetime, flagging curfew breaches.
+   */
+  update_arrival_endpoint_api_v1_checkin_participant__id__arrival_patch: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+      path: {
+        id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ArrivalUpdateRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Sync Offline Batch Endpoint
+   * @description Batch synchronize buffered offline desk operations with conflict explanations.
+   */
+  sync_offline_batch_endpoint_api_v1_checkin_sync_post: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SyncBatchRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_SyncBatchResponseData_"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Reallocation Suggestions Endpoint
+   * @description Retrieve advisory bed reallocation suggestions generated by cancellations/no-shows.
+   */
+  get_reallocation_suggestions_endpoint_api_v1_checkin_reallocations_suggestions_get: {
     parameters: {
       header?: {
         authorization?: string | null;
@@ -4652,10 +6245,60 @@ export interface operations {
     };
   };
   /**
-   * Get Finance Summary
-   * @description Returns festival financial overview: budget ceilings, external accommodation commitments, and cost breakdown.
+   * Get Finance Summary Endpoint
+   * @description Return budget gauge metrics, committed spend, projected spend, and budget-unset explanation.
    */
-  get_finance_summary_api_v1_finance_summary_get: {
+  get_finance_summary_endpoint_api_v1_finance_summary_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_FinanceSummaryData_"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Accommodation Spend Endpoint
+   * @description External accommodation spend broken down by external property from accommodation public contract.
+   */
+  get_accommodation_spend_endpoint_api_v1_finance_accommodation_spend_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_AccommodationSpendResponseData_"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Vendor Settlements Endpoint
+   * @description Vendor commercial settlements, balances due, payment milestones, and billing disputes.
+   */
+  get_vendor_settlements_endpoint_api_v1_finance_vendor_settlements_get: {
     parameters: {
       header?: {
         authorization?: string | null;
@@ -4677,10 +6320,76 @@ export interface operations {
     };
   };
   /**
-   * Get Finance Summary
-   * @description Returns festival financial overview: budget ceilings, external accommodation commitments, and cost breakdown.
+   * Record Payment Endpoint
+   * @description Record an advance or balance payment against a vendor settlement via ChangeService.
    */
-  get_finance_summary_api_v1_finance_get: {
+  record_payment_endpoint_api_v1_finance_vendor_settlements__id__pay_post: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+      path: {
+        id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RecordPaymentRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Open Dispute Endpoint
+   * @description Open a commercial billing dispute on a vendor settlement invoice.
+   */
+  open_dispute_endpoint_api_v1_finance_vendor_settlements__id__dispute_post: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+      path: {
+        id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["OpenDisputeRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Merchandise Costs Endpoint
+   * @description Summary of merchandise procurement costs, unit prices, and delivered quantities.
+   */
+  get_merchandise_costs_endpoint_api_v1_finance_merchandise_costs_get: {
     parameters: {
       header?: {
         authorization?: string | null;
@@ -4702,10 +6411,10 @@ export interface operations {
     };
   };
   /**
-   * Get Food Coverage
-   * @description Returns dietary coverage matrix across categories, meal slots, and venues.
+   * Get Emergency Spend Endpoint
+   * @description Log of approved emergency expenditures with justifications and Director authorizations.
    */
-  get_food_coverage_api_v1_food_coverage_get: {
+  get_emergency_spend_endpoint_api_v1_finance_emergency_spend_get: {
     parameters: {
       header?: {
         authorization?: string | null;
@@ -4727,10 +6436,40 @@ export interface operations {
     };
   };
   /**
-   * Get Food Coverage
-   * @description Returns dietary coverage matrix across categories, meal slots, and venues.
+   * Propose Emergency Spend Endpoint
+   * @description Propose an emergency expenditure via ChangeService, subject to Director approval.
    */
-  get_food_coverage_api_v1_food_get: {
+  propose_emergency_spend_endpoint_api_v1_finance_emergency_spend_post: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["EmergencySpendRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Overrides Report Endpoint
+   * @description Audit report of all financial and constraint overrides across all festival modules.
+   */
+  get_overrides_report_endpoint_api_v1_finance_budget_overrides_report_get: {
     parameters: {
       header?: {
         authorization?: string | null;
@@ -4752,10 +6491,10 @@ export interface operations {
     };
   };
   /**
-   * Get Food Compliance
-   * @description List food safety and dietary compliance issues and expiring certifications.
+   * Get Overrides Report Endpoint
+   * @description Audit report of all financial and constraint overrides across all festival modules.
    */
-  get_food_compliance_api_v1_food_compliance_get: {
+  get_overrides_report_endpoint_api_v1_finance_overrides_report_get: {
     parameters: {
       header?: {
         authorization?: string | null;
@@ -4766,6 +6505,177 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Set Budget Endpoint
+   * @description Set the external budget limit ceiling (Festival Director only).
+   */
+  set_budget_endpoint_api_v1_finance_budget_set_post: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SetBudgetRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Food Coverage Endpoint
+   * @description Return 3D dietary coverage matrix (category x meal_slot x venue) with demand range for UNKNOWN.
+   */
+  get_food_coverage_endpoint_api_v1_food_coverage_get: {
+    parameters: {
+      query?: {
+        /** @description Target festival date (YYYY-MM-DD), defaults to 2026-10-31 */
+        date?: string | null;
+        /** @description Filter by slot (BREAKFAST, LUNCH, SNACKS, DINNER, LATE_NIGHT) */
+        meal_slot?: string | null;
+        /** @description Filter by venue */
+        venue_id?: string | null;
+      };
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_FoodCoverageResponseData_"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Food Compliance Endpoint
+   * @description Return all menu-label mismatches and unverified dietary claims detected across menus.
+   */
+  get_food_compliance_endpoint_api_v1_food_compliance_flags_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Food Compliance Endpoint
+   * @description Return all menu-label mismatches and unverified dietary claims detected across menus.
+   */
+  get_food_compliance_endpoint_api_v1_food_compliance_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * List Meal Slots Endpoint
+   * @description List all configured festival meal slots and vendor capacity distribution.
+   */
+  list_meal_slots_endpoint_api_v1_food_meal_slots_get: {
+    parameters: {
+      query?: {
+        /** @description Filter by date (YYYY-MM-DD) */
+        date?: string | null;
+      };
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_List_MealSlotSchema__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * List Meal Slots Endpoint
+   * @description List all configured festival meal slots and vendor capacity distribution.
+   */
+  list_meal_slots_endpoint_api_v1_food_slots_get: {
+    parameters: {
+      query?: {
+        /** @description Filter by date (YYYY-MM-DD) */
+        date?: string | null;
+      };
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_List_MealSlotSchema__"];
         };
       };
       /** @description Validation Error */
@@ -4806,6 +6716,148 @@ export interface operations {
    * @description Predictive analytics and crowd flow forecasting across festival venues.
    */
   get_crowd_forecasting_api_v1_forecasting_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Arrivals And Checkin Queues
+   * @description Forecast arrival peaks and check-in queues using a discrete queue model.
+   * Strictly labels each series PROJECTION (data-derived) or ASSUMPTION (parameter-driven).
+   */
+  get_arrivals_and_checkin_queues_api_v1_forecasting_arrivals_queue_get: {
+    parameters: {
+      query?: {
+        desks_open?: number;
+        service_rate_per_min?: number | null;
+        start_time?: string | null;
+        end_time?: string | null;
+      };
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Multi Domain Demand Timeline
+   * @description Consolidated hourly multi-domain demand forecast for meals, accommodation, merchandise, equipment, volunteers.
+   */
+  get_multi_domain_demand_timeline_api_v1_forecasting_demand_timeline_get: {
+    parameters: {
+      query?: {
+        start_time?: string | null;
+        end_time?: string | null;
+      };
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Forecasting Report Endpoint
+   * @description Generate exportable structured analytical report for festival forecasting outputs.
+   */
+  get_forecasting_report_endpoint_api_v1_forecasting_reports__name__get: {
+    parameters: {
+      query?: {
+        format?: string;
+      };
+      header?: {
+        authorization?: string | null;
+      };
+      path: {
+        name: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Bed Demand Projection
+   * @description Bed demand forecast partitioned into confirmed vs possible demand against campus/external capacity.
+   */
+  get_bed_demand_projection_api_v1_forecasting_bed_demand_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Resource Load Projection
+   * @description Equipment and volunteer load over timetable session schedules.
+   */
+  get_resource_load_projection_api_v1_forecasting_resource_load_get: {
     parameters: {
       header?: {
         authorization?: string | null;
@@ -5731,16 +7783,18 @@ export interface operations {
     };
   };
   /**
-   * List Notifications
-   * @description List operational notification drafts.
+   * List Drafts Endpoint
+   * @description List notification drafts with audience and approval status.
    */
-  list_notifications_api_v1_notifications_drafts_get: {
+  list_drafts_endpoint_api_v1_notifications_drafts_get: {
     parameters: {
       query?: {
-        channel?: string | null;
+        /** @description Filter by audience (contingent_leaders, volunteers, vendors, accommodation_coordinators, event_organisers) */
+        audience?: string | null;
+        /** @description Filter by status (DRAFT, PENDING_APPROVAL, APPROVED, SENT, REJECTED) */
         status?: string | null;
-        page?: number;
-        page_size?: number;
+        /** @description Filter by channel (SMS, APP, EMAIL, WHATSAPP) */
+        channel?: string | null;
       };
       header?: {
         authorization?: string | null;
@@ -5762,24 +7816,117 @@ export interface operations {
     };
   };
   /**
-   * Draft Notification
-   * @description Draft an operational notification via ChangeService.
+   * Get Draft Endpoint
+   * @description Get single notification draft details.
    */
-  draft_notification_api_v1_notifications_drafts_post: {
+  get_draft_endpoint_api_v1_notifications_drafts__id__get: {
     parameters: {
       header?: {
-        "Idempotency-Key"?: string | null;
+        authorization?: string | null;
+      };
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_NotificationDraftSchema_"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Update Draft Endpoint
+   * @description Edit notification draft subject, body, or recipient before dispatch.
+   */
+  update_draft_endpoint_api_v1_notifications_drafts__id__put: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+      path: {
+        id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["EditDraftRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_NotificationDraftSchema_"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Update Draft Endpoint
+   * @description Edit notification draft subject, body, or recipient before dispatch.
+   */
+  update_draft_endpoint_api_v1_notifications_drafts__id__patch: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+      path: {
+        id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["EditDraftRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_NotificationDraftSchema_"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Generate Drafts Endpoint
+   * @description Generate audience-targeted notification drafts from structured change data.
+   */
+  generate_drafts_endpoint_api_v1_notifications_drafts_generate_post: {
+    parameters: {
+      header?: {
         authorization?: string | null;
       };
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["DraftNotificationBody"];
+        "application/json": components["schemas"]["GenerateDraftsRequest"];
       };
     };
     responses: {
       /** @description Successful Response */
-      201: {
+      200: {
         content: {
           "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
         };
@@ -5793,17 +7940,67 @@ export interface operations {
     };
   };
   /**
-   * List Notifications
-   * @description List operational notification drafts.
+   * Approve Draft Endpoint
+   * @description Approve a notification draft for sending.
    */
-  list_notifications_api_v1_notifications_get: {
+  approve_draft_endpoint_api_v1_notifications_drafts__id__approve_post: {
     parameters: {
-      query?: {
-        channel?: string | null;
-        status?: string | null;
-        page?: number;
-        page_size?: number;
+      header?: {
+        authorization?: string | null;
       };
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Send Draft Endpoint
+   * @description Mock-send a notification draft. Strictly requires prior approval.
+   */
+  send_draft_endpoint_api_v1_notifications_drafts__id__send_post: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_DeliveryLogSchema_"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Log Endpoint
+   * @description Return the complete delivery audit log of dispatched notifications.
+   */
+  get_log_endpoint_api_v1_notifications_log_get: {
+    parameters: {
       header?: {
         authorization?: string | null;
       };
@@ -5813,6 +8010,31 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * List Templates Endpoint
+   * @description List available notification templates across the 5 audiences.
+   */
+  list_templates_endpoint_api_v1_notifications_templates_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_List_TemplateSchema__"];
         };
       };
       /** @description Validation Error */
@@ -6141,10 +8363,10 @@ export interface operations {
     };
   };
   /**
-   * Get Premortem Analysis
+   * Get Premortem Resilience
    * @description Predictive festival resilience simulator and pre-mortem vulnerability rankings.
    */
-  get_premortem_analysis_api_v1_premortem_resilience_get: {
+  get_premortem_resilience_api_v1_premortem_resilience_get: {
     parameters: {
       header?: {
         authorization?: string | null;
@@ -6166,10 +8388,151 @@ export interface operations {
     };
   };
   /**
-   * Get Premortem Analysis
+   * Get Premortem Resilience
    * @description Predictive festival resilience simulator and pre-mortem vulnerability rankings.
    */
-  get_premortem_analysis_api_v1_premortem_get: {
+  get_premortem_resilience_api_v1_premortem_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Hourly Timeline
+   * @description Hourly scrubber across festival window computing bed occupancy, food demand,
+   * venue utilization, equipment, volunteers, transport and module risks.
+   */
+  get_hourly_timeline_api_v1_premortem_timeline_get: {
+    parameters: {
+      query?: {
+        start_time?: string | null;
+        end_time?: string | null;
+        step_hours?: number;
+      };
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Run Targeted Disruption Endpoint
+   * @description Run a single targeted disruption in an isolated scenario sandbox using the impact engine.
+   */
+  run_targeted_disruption_endpoint_api_v1_premortem_disruptions_run_post: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RunDisruptionBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Run Multi Disruptions Endpoint
+   * @description Run seeded multi-disruption Monte Carlo / combinatorial stress test in scenario sandboxes.
+   */
+  run_multi_disruptions_endpoint_api_v1_premortem_disruptions_multi_run_post: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RunMultiDisruptionsBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Single Points Of Failure
+   * @description Returns detected Single Points of Failure across all festival resources.
+   */
+  get_single_points_of_failure_api_v1_premortem_spofs_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Premortem Scenarios History
+   * @description Returns history of simulated pre-mortem scenarios.
+   */
+  get_premortem_scenarios_history_api_v1_premortem_scenarios_get: {
     parameters: {
       header?: {
         authorization?: string | null;
@@ -7825,18 +10188,302 @@ export interface operations {
     };
   };
   /**
-   * List Vendors
-   * @description List festival food vendors with hygiene certificate status and capacity.
+   * Get Value Of Information Ranking
+   * @description Value-of-Information (VOI) ranking across unknown field groups.
+   * Simulates sandbox outcomes and ranks groups by operational improvement per confirmation.
    */
-  list_vendors_api_v1_vendors_get: {
+  get_value_of_information_ranking_api_v1_unknowns_ranking_get: {
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+    };
+  };
+  /**
+   * Create Batched Confirmation Request
+   * @description Generate minimal confirmation requests batched by contingent leader or desk volunteer.
+   */
+  create_batched_confirmation_request_api_v1_unknowns_confirmation_requests_post: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["BatchConfirmationRequestBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Participant Why Not Explanation
+   * @description Diagnostic explanation extending Why-Not with simulated counterfactual predictions:
+   * 'What confirming field X would change for this participant'.
+   */
+  get_participant_why_not_explanation_api_v1_unknowns_why_not__participant_id__get: {
+    parameters: {
+      path: {
+        participant_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * List Vendors Endpoint
+   * @description List all 14 commercial catering vendors with operating details and compliance status.
+   */
+  list_vendors_endpoint_api_v1_vendors_get: {
     parameters: {
       query?: {
+        /** @description Filter by status (ACTIVE, SUSPENDED, SHUT_DOWN) */
         status?: string | null;
-        page?: number;
-        page_size?: number;
+        /** @description Filter by declared dietary option */
+        dietary_option?: string | null;
+        /** @description Filter by validity (VALID_THROUGHOUT, EXPIRES_DURING_FESTIVAL, EXPIRED) */
+        compliance_status?: string | null;
       };
       header?: {
         authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Compliance Endpoint
+   * @description Return vendor hygiene certificate compliance breakdown and menu-label mismatches.
+   */
+  get_compliance_endpoint_api_v1_vendors_compliance_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Download Vendor Report Endpoint
+   * @description Download vendor coverage or compliance reports as CSV.
+   */
+  download_vendor_report_endpoint_api_v1_vendors_reports__report_name__get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+      path: {
+        report_name: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Vendor Detail Endpoint
+   * @description Get detailed profile for a specific vendor including menu items, assignments, and flags.
+   */
+  get_vendor_detail_endpoint_api_v1_vendors__id__get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_VendorDetailSchema_"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Shutdown Impact Endpoint
+   * @description Evaluate the 10-step emergency vendor shutdown response (Feature 7).
+   */
+  shutdown_impact_endpoint_api_v1_vendors__id__shutdown_analysis_post: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+      path: {
+        id: string;
+      };
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["VendorShutdownAnalysisRequest"] | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_VendorShutdownAnalysisResult_"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Shutdown Impact Endpoint
+   * @description Evaluate the 10-step emergency vendor shutdown response (Feature 7).
+   */
+  shutdown_impact_endpoint_api_v1_vendors__id__shutdown_impact_post: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+      path: {
+        id: string;
+      };
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["VendorShutdownAnalysisRequest"] | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_VendorShutdownAnalysisResult_"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Execute Shutdown Endpoint
+   * @description Execute emergency vendor shutdown via ChangeService, reassigning slots and staging notification drafts.
+   */
+  execute_shutdown_endpoint_api_v1_vendors__id__shutdown_execute_post: {
+    parameters: {
+      header?: {
+        "Idempotency-Key"?: string | null;
+        authorization?: string | null;
+      };
+      path: {
+        id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["VendorShutdownExecuteRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Execute Shutdown Endpoint
+   * @description Execute emergency vendor shutdown via ChangeService, reassigning slots and staging notification drafts.
+   */
+  execute_shutdown_endpoint_api_v1_vendors__id__shutdown_post: {
+    parameters: {
+      header?: {
+        "Idempotency-Key"?: string | null;
+        authorization?: string | null;
+      };
+      path: {
+        id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["VendorShutdownExecuteRequest"];
       };
     };
     responses: {
