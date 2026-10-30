@@ -1,0 +1,32 @@
+file: vendors.csv
+entity: vendor
+target_table: vendor
+id_prefix: vnd_
+primary_key: id
+columns:
+  vendor_id:
+    canonical: id
+    synonyms: [vendor_id, vid, code]
+  vendor_name:
+    canonical: name
+    synonyms: [vendor_name, name, stall_name]
+  menu:
+    canonical: menu_description
+    synonyms: [menu, menu_description, cuisine]
+  dietary_options:
+    canonical: dietary_options
+    synonyms: [dietary_options, diet, dietary_tags]
+  hygiene_certificate_expiry:
+    canonical: hygiene_certificate_expiry
+    synonyms: [hygiene_certificate_expiry, cert_expiry, hygiene_valid_to]
+    type: date
+  hours:
+    canonical: hours
+    synonyms: [hours, operating_hours, timing]
+  capacity:
+    canonical: capacity
+    synonyms: [capacity, max_meals, meal_capacity]
+    type: integer
+  payment_terms:
+    canonical: payment_terms
+    synonyms: [payment_terms, terms, contract_type]

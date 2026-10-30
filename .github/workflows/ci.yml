@@ -1,0 +1,86 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop, "p*/**" ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  backend:
+    name: Backend Lint & Test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
+
+      - name: Lint with ruff
+        run: |
+          ruff check backend
+
+      - name: Run Pytest
+        env:
+          DATABASE_URL: sqlite:///./test.db
+          AUTH_DISABLED: "true"
+          JWT_SECRET: test-ci-secret-key-32-bytes-minimum
+          QR_SECRET: test-qr-ci-secret
+        run: |
+          pytest -v backend/tests
+
+  frontend:
+    name: Frontend Typecheck, Test & Gen-types Drift Check
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python for OpenAPI spec export
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install Frontend Dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: TypeScript Check
+        working-directory: frontend
+        run: npm run typecheck
+
+      - name: Vitest Run
+        working-directory: frontend
+        run: npm run test
+
+      - name: Gen-types Drift Check
+        run: |
+          python scripts/export_openapi.py --output frontend/openapi.json
+          cd frontend && npm run gen-types:ci
+          git diff --exit-code src/types/generated.ts

@@ -1,0 +1,15 @@
+vendor_id,vendor_name,menu,dietary_options,hygiene_certificate_expiry,hours,capacity,payment_terms,cert_status,cap,label_flag
+VND01,Vendor A,North Indian,vegetarian,2026-10-31,07:00-23:00,264,minimum guarantee,EXPIRES DURING FEST,264,
+VND02,Vendor B,South Indian,vegetarian;gluten-free,2026-10-31,07:00-23:00,180,50% advance; balance actuals,EXPIRES DURING FEST,180,
+VND03,Vendor C,Chaat,vegetarian;halal,2026-11-10,07:00-23:00,361,50% advance; balance actuals,valid through fest,361,
+VND04,Vendor D,Breakfast,non-vegetarian;halal,2026-10-31,10:00-16:00,189,minimum guarantee,EXPIRES DURING FEST,189,
+VND05,Vendor E,Beverages,vegetarian,2026-09-29,07:00-23:00,266,50% advance; balance actuals,EXPIRED before fest,266,
+VND06,Vendor F,Snacks,non-vegetarian;halal,2027-10-29,07:00-23:00,213,per item sold,valid through fest,213,
+VND07,Vendor G,Continental,non-vegetarian;halal,2026-10-31,07:00-23:00,371,minimum guarantee,EXPIRES DURING FEST,371,
+VND08,Vendor H,Desserts,vegetarian;vegan,2026-09-29,10:00-16:00,302,50% advance; balance actuals,EXPIRED before fest,302,
+VND09,Vendor I,Jain thali,vegetarian,2027-10-29,07:00-23:00,369,per item sold,valid through fest,369,menu says Jain thali but dietary_options has no jain tag: confirm with vendor
+VND10,Vendor J,Halal biryani,non-vegetarian;halal,2027-10-29,07:00-23:00,231,per item sold,valid through fest,231,
+VND11,Vendor K,Vegan bowls,non-vegetarian;halal,2026-09-29,07:00-23:00,384,50% advance; balance actuals,EXPIRED before fest,384,menu says vegan but dietary_options does not list vegan (and lists non-vegetarian)
+VND12,Vendor L,Pizza,vegetarian,2027-10-29,10:00-16:00,144,minimum guarantee,valid through fest,144,
+VND13,Vendor M,Sandwiches,vegetarian;jain,2026-09-29,07:00-23:00,227,50% advance; balance actuals,EXPIRED before fest,227,
+VND14,Vendor N,Fruit counter,vegetarian;halal,2027-10-29,07:00-23:00,272,50% advance; balance actuals,valid through fest,272,

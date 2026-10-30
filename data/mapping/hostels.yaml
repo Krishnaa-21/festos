@@ -1,0 +1,31 @@
+file: hostels.csv
+entity: room
+target_table: room
+id_prefix: rm_
+primary_key: id
+columns:
+  room_id:
+    canonical: id
+    synonyms: [room_id, room, code]
+  block:
+    canonical: block
+    synonyms: [block, hostel_block, building]
+  floor:
+    canonical: floor
+    synonyms: [floor, level]
+    type: integer
+  gender:
+    canonical: gender_class
+    synonyms: [gender, gender_class, hostel_type]
+    normalizer: gender_block
+  capacity:
+    canonical: capacity
+    synonyms: [capacity, beds, bed_count]
+    type: integer
+  accessibility:
+    canonical: accessibility
+    synonyms: [accessibility, accessible, is_accessible]
+    normalizer: tri
+  status:
+    canonical: status
+    synonyms: [status, room_status]

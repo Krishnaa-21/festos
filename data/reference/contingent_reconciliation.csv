@@ -1,0 +1,39 @@
+college,contingent_id,leader,escort,strength_declared,preferences,declared,actual_in_file,diff,leader_in_participant_file,escort_in_participant_file
+IIM Indore,C01,Aditi Gupta,Naman Joshi,6,no preference,6,6,0,False,False
+IIM Kozhikode,C02,Ananya Mehta,Nidhi Iyer,101,no preference,101,102,1,False,False
+IIM Shillong,C03,Arjun Rao,Raghav Das,116,no preference,116,117,1,False,False
+IIM Ranchi,C04,Diya Khan,Riya Kapoor,47,ground floor if possible,47,47,0,False,False
+IIM Rohtak,C05,Ishaan Nair,Saanvi Malhotra,107,low cost,107,99,-8,True,False
+IIM Udaipur,C06,Kavya Joshi,Sarthak Bose,98,keep together; near venue,98,98,0,False,False
+IIT Indore,C07,Meera Iyer,Shreya Sharma,137,low cost,137,137,0,False,True
+IIT Bombay,C08,Naman Das,Tanvi Verma,45,no preference,45,45,0,False,False
+IIT Delhi,C09,Nidhi Kapoor,Varun Patel,79,no preference,79,84,5,False,False
+IIT Kanpur,C10,Raghav Malhotra,Vansh Singh,29,keep together; near venue,29,29,0,False,False
+NIT Trichy,C11,Riya Bose,Yash Gupta,101,low cost,101,101,0,False,False
+NIT Warangal,C12,Saanvi Sharma,Zoya Mehta,42,quiet rooms,42,42,0,True,False
+NIT Surat,C13,Sarthak Verma,Aarav Rao,59,keep together; near venue,59,59,0,False,False
+BITS Pilani,C14,Shreya Patel,Aditi Khan,56,low cost,56,56,0,False,False
+VIT Vellore,C15,Tanvi Singh,Ananya Nair,132,keep together; near venue,132,132,0,False,False
+Christ University,C16,Varun Gupta,Arjun Joshi,46,low cost,46,46,0,False,False
+Symbiosis Pune,C17,Vansh Mehta,Diya Iyer,138,keep together; near venue,138,138,0,False,False
+NMIMS Mumbai,C18,Yash Rao,Ishaan Das,19,quiet rooms,19,14,-5,False,False
+Delhi University,C19,Zoya Khan,Kavya Kapoor,28,keep together; near venue,28,28,0,False,False
+Mumbai University,C20,Aarav Nair,Meera Malhotra,69,low cost,69,69,0,False,False
+St Xavier’s Mumbai,C21,Aditi Joshi,Naman Bose,96,quiet rooms,96,96,0,False,False
+Manipal University,C22,Ananya Iyer,Nidhi Sharma,84,same floor,84,84,0,True,False
+Amity Noida,C23,Arjun Das,Raghav Verma,53,keep together; near venue,53,53,0,False,False
+Ashoka University,C24,Diya Kapoor,Riya Patel,43,keep together; near venue,43,43,0,False,True
+SRCC,C25,Ishaan Malhotra,Saanvi Singh,131,same floor,131,131,0,False,False
+Lady Shri Ram College,C26,Kavya Bose,Sarthak Gupta,126,ground floor if possible,126,126,0,False,False
+Hansraj College,C27,Meera Sharma,Shreya Mehta,45,no preference,45,52,7,False,False
+Fergusson College,C28,Naman Verma,Tanvi Rao,60,no preference,60,60,0,False,False
+St Joseph’s Bangalore,C29,Nidhi Patel,Varun Khan,62,ground floor if possible,62,62,0,False,False
+XIMB,C30,Raghav Singh,Vansh Nair,117,low cost,117,117,0,False,True
+MICA Ahmedabad,C31,Riya Gupta,Yash Joshi,124,low cost,124,124,0,False,False
+SCMS Pune,C32,Saanvi Mehta,Zoya Iyer,43,keep together; near venue,43,36,-7,False,False
+Christ Delhi,C33,Sarthak Rao,Aarav Das,102,no preference,102,102,0,False,False
+Flame University,C34,Shreya Khan,Aditi Kapoor,90,quiet rooms,90,90,0,False,False
+BML Munjal University,C35,Tanvi Nair,Ananya Malhotra,60,low cost,60,60,0,False,False
+Jaipuria Institute,C36,Varun Joshi,Arjun Bose,44,same floor,44,44,0,False,False
+MIT-WPU,C37,Vansh Iyer,Diya Sharma,20,quiet rooms,20,20,0,False,False
+Jain University,C38,Yash Das,Ishaan Verma,87,quiet rooms,87,87,0,False,False

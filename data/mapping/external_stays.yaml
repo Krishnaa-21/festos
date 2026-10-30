@@ -1,0 +1,27 @@
+file: external_stays.csv
+entity: external_property
+target_table: external_property
+id_prefix: ext_
+primary_key: id
+columns:
+  property_id:
+    canonical: id
+    synonyms: [property_id, pid, ext_id]
+  property_name:
+    canonical: name
+    synonyms: [property_name, hotel_name, name]
+  beds:
+    canonical: beds
+    synonyms: [beds, capacity, total_beds]
+    type: integer
+  cost_per_bed_per_night:
+    canonical: cost_per_bed_night
+    synonyms: [cost_per_bed_per_night, cost_per_bed_night, price_per_bed, rate]
+    type: float
+  distance_km:
+    canonical: distance_km
+    synonyms: [distance_km, distance, dist_km]
+    type: float
+  transport_availability:
+    canonical: transport_availability
+    synonyms: [transport_availability, transport, shuttle]

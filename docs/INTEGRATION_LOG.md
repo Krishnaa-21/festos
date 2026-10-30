@@ -1,0 +1,423 @@
+# FestOS Integration Log
+
+Append an entry here after each merged prompt or feature branch.
+
+Format:
+- **Date**: YYYY-MM-DD
+- **Prompt / Feature**: e.g. P1/01-foundation
+- **Author / Owner**: P1 | P2 | P3
+- **Endpoints Added**: list of paths
+- **Public Functions Added**: module public contracts
+- **Breaking Changes / Schema Migrations**: notes for teammates
+- **Action Required**: commands to run after pulling
+
+---
+
+## Log Entries
+
+### 2026-10-30: P1/01-foundation (Interface-First Foundation)
+- **Author**: P1 Lead
+- **Branch**: `p1/01-foundation`
+- **Endpoints Added**:
+  - `GET /health`
+  - `GET /api/v1/meta`
+  - `POST /api/v1/_example/items`
+- **Public Functions Added**:
+  - `services/<module>/public.py` for all 32 modules with `summary`, `risks`, and `dependents`
+- **Breaking Changes / Schema Migrations**:
+  - Initial foundation schema created (all canonical models, unique merch claim, stay assignment constraints, append-only audit).
+  - No database migration required; use `make reset` or `python -m app.seed reset`.
+- **Action Required**:
+  - Run `make setup` or `pip install -r backend/requirements.txt`
+  - Run `python -m app.seed load`
+
+### 2026-10-30: P2/02-import (Raw Data Pack Ingestion & Quality Engine)
+- **Author**: P2 Lead
+- **Branch**: `p2/02-import`
+- **Endpoints Added**:
+  - `POST /api/v1/imports` (Multipart upload with tolerant CSV parser and dry-run)
+  - `GET /api/v1/imports` (Paginated import batch history)
+  - `GET /api/v1/imports/{id}` (Batch detail and status)
+  - `GET /api/v1/imports/{id}/issues` (Quarantine rows with reason codes)
+  - `POST /api/v1/imports/{id}/promote` (Atomic transfer to canonical tables via ChangeService)
+  - `GET /api/v1/data-quality` (Full data quality report, reconciliation summary, JSON/CSV export)
+  - `GET /api/v1/assumptions` (List assumptions with typed parsing and filter)
+  - `GET /api/v1/assumptions/{key}` (Get single assumption)
+  - `PUT /api/v1/assumptions/{key}` (Audited update via ChangeService)
+  - `GET /api/v1/assumptions/{key}/history` (Assumption audit history)
+  - `GET /api/v1/assumptions/{key}/dependents` (Preview dependent modules)
+- **Public Functions Added**:
+  - `services/imports/public.py`: `summary`, `risks` (unresolved quarantine, UNKNOWN gender/diet bottlenecks), `dependents`
+  - `services/assumptions/public.py`: `summary`, `risks` (cleaning buffer tight, minor threshold lax, placeholder assumptions), `dependents`
+  - `services/assumptions/service.py`: `get_assumption(key)` with in-memory caching and ChangeService-driven invalidation
+- **Breaking Changes / Schema Migrations**:
+  - Added operational models `ImportBatchMetadata` and `StagedRecord` in `app.models.ops`.
+  - Raw rows are preserved byte-for-byte in `raw_record`; invalid intervals routed to `quarantine_row`.
+  - Re-imports are idempotent based on SHA-256 batch content hash.
+- **Action Required**:
+  - Run `make reset` or `python -m app.seed reset` (runs seeder order 10, importing and promoting all 11 raw CSVs).
+### 2026-10-30: P3/03-security-ui (Security, RBAC, Masking, Audit Hardening, Approvals, & Ops-Centre UI)
+- **Author**: P3 Lead
+- **Branch**: `p3/03-security-ui`
+- **Endpoints Added**:
+  - `POST /api/v1/auth/login` (JWT token issuance, argon2/bcrypt hashing, 5-attempt/15m lockout)
+  - `POST /api/v1/auth/refresh`
+  - `GET /api/v1/auth/me`
+  - `GET /api/v1/auth/permissions` (Full RBAC matrix & caller permissions)
+  - `POST /api/v1/auth/break-glass` (Emergency 15-min field elevation, mandatory reason, fully audited)
+  - `GET /api/v1/auth/break-glass` (Active break-glass grants list)
+  - `GET /api/v1/audit/events` (Paged, filtered, masked query API)
+  - `GET /api/v1/audit/timeline/{entity_type}/{entity_id}` (Chronological entity history)
+  - `GET /api/v1/audit/verify` (Cryptographic SHA-256 hash-chain verification)
+  - `GET /api/v1/audit/export/csv` (CSV streaming respecting role field masking and export permissions)
+  - `GET /api/v1/approvals` (Paged approval requests)
+  - `GET /api/v1/approvals/policies` (Configured risk categories & approver role matrix)
+  - `GET /api/v1/approvals/{id}`
+  - `POST /api/v1/approvals/{id}/approve` (Executes pending ChangeSet on sign-off)
+  - `POST /api/v1/approvals/{id}/reject` (Marks change rejected with mandatory reason)
+  - `GET /api/v1/overrides` (Override register query API)
+  - `POST /api/v1/overrides` (Records override with mandatory justification)
+  - `GET /api/v1/overrides/{id}`
+- **Public Functions Added / Hardened**:
+  - `app/core/rbac.py`: Full RBAC matrix for all 9 roles, `has_permission`, `check_permission`, `get_role_permissions`, `get_all_permissions_matrix`
+  - `app/core/masking.py`: `mask_fields(model, actor, entity_key, session)` supporting role exemptions and active break-glass checks; partial phone/email masking; `mask_log_message`; `export_allowed` decorator
+  - `app/core/audit.py`: Append-only audit logging with SHA-256 hash chaining (`prev_hash`, `current_hash`), `verify_chain`
+  - `app/core/overrides.py`: `record(...)` with mandatory reason validation
+  - `app/core/approvals.py`: Configurable `APPROVAL_POLICIES`, `require(...)`, `approve_request(...)`, `reject_request(...)`
+  - `app/services/{auth,audit,approvals,overrides}/public.py`: Implemented real read-only summary, risks, dependents contracts
+  - `app/seed/users.py`: Seeder (order 20) provisioning 9 primary role accounts and extra volunteers with bcrypt hashes (documented in `docs/TEST_CREDENTIALS.md`)
+- **Frontend Components & Shell**:
+  - UI tokens & dark ops-centre theme (with light theme option) and HSL color palette
+  - UI components in `src/components/ui`: `Button`, `Card`, `Badge` (severity icons + status + Tri-state YES/NO/UNKNOWN with distinct icons), `DataTable` (paged, sorted, virtualized/skeletons), `Modal`, `Drawer`, `ConfirmWithReason` (mandatory reason), `MaskedField` (click triggers emergency break-glass elevation), `WhyCard`, `Toast`, `Tabs`, `EmptyState`, `Skeleton`, `KpiTile`, `SeverityPill`, `ErrorBoundary`
+  - `AppShell`: Permission-filtered sidebar per Section 18, operational clock, user profile menu, approvals bell with pending count badge, command bar with `/` shortcut, `g` then `o` overview navigation
+  - `LoginPage`: Integrated login with quick role switcher for demonstration
+  - `AuditPage`: Audit timeline, override register, approvals inbox with approve/reject, break-glass log with test bench, 9-role permission matrix, hash-chain verify modal, CSV export
+  - Route guards: `RequireAuth` and `RequirePermission`
+- **Breaking Changes / Schema Migrations**:
+  - `audit_event` updated with `prev_hash`, `current_hash`, `approval_id`, `related_incident_id` and SQLite trigger preventing UPDATE / DELETE.
+  - New database tables: `user` (with lockout tracking), `break_glass_grant`, `approval`, `override`.
+- **Action Required**:
+  - Backend: `python3 -m app.seed load`
+  - Frontend: `npm install && npm run build`
+
+### 2026-10-30: P1/04-participants (Canonical Participants, Contingents, Reconciliation, and Unknowns)
+- **Author**: P1 Lead
+- **Branch**: `p1/04-participants`
+- **Endpoints Added**:
+  - `GET /api/v1/participants`: List, fuzzy search, and multi-faceted filtering.
+  - `POST /api/v1/participants`: Create participant via ChangeService.
+  - `GET /api/v1/participants/{id}`: Single participant with role masking.
+  - `PATCH /api/v1/participants/{id}`: Update profile via ChangeService.
+  - `GET /api/v1/participants/{id}/360`: Full 360-degree operational view with dynamic sections.
+  - `POST /api/v1/participants/{id}/status`: State machine transition publishing `participant.status_changed` on `core.bus`.
+  - `GET /api/v1/participants/{id}/timeline`: Audit event timeline.
+  - `GET /api/v1/contingents`: Contingents list with declared vs actual strength.
+  - `GET /api/v1/contingents/{id}`: Contingent profile.
+  - `GET /api/v1/contingents/{id}/status`: Contingent operational view (attendance, travel, events, diet, merchandise, alerts, housing fragmentation).
+  - `PATCH /api/v1/contingents/{id}`: Update contingent profile via ChangeService.
+  - `GET /api/v1/reconciliation/waterfall`: Counts panel and reconciliation waterfall explaining the 2,836 vs 2,842 vs 2,400 gap.
+  - `GET /api/v1/reconciliation/duplicates`: Candidate pairs list filtered by classification or status.
+  - `GET /api/v1/reconciliation/compare`: Side-by-side compare with linked registrations and claims.
+  - `POST /api/v1/reconciliation/merge`: Merges duplicate into canonical record (blocks on conflicting merch claims).
+  - `POST /api/v1/reconciliation/undo-merge/{merge_id}`: Byte-identical pre-merge state restoration.
+  - `POST /api/v1/reconciliation/keep-separate`: Dismisses candidate pair with recorded rationale.
+  - `GET /api/v1/reconciliation/history`: Chronological merge and revert history.
+  - `GET /api/v1/reconciliation/flags`: Operational edge-case detection.
+  - `GET /api/v1/unknowns/queue`: Unknown fields ranked by Count x Criticality.
+  - `GET /api/v1/unknowns/items`: Unknown field items list.
+  - `POST /api/v1/unknowns/verify`: Record verified values through ChangeService.
+  - `POST /api/v1/unknowns/token`: Generate cryptographically signed, expiring confirmation token.
+  - `POST /api/v1/unknowns/confirm/{token}`: Public / semi-public token confirmation endpoint.
+  - `GET /api/v1/unknowns/history/{entity_type}/{entity_id}/{field}`: Field verification progression history.
+- **Public Functions Added**:
+  - `services/participants/public.py`: `summary`, `risks` (unresolved duplicates, incoming unknowns, overdue arrivals), `dependents`
+  - `services/contingents/public.py`: `summary`, `risks` (strength mismatches), `dependents`
+  - `services/reconciliation/public.py`: `summary`, `risks`, `dependents`
+  - `services/unknowns/public.py`: `summary`, `risks`, `dependents`
+- **Breaking Changes / Schema Migrations**:
+  - Added `classification` to `DuplicateCandidate`.
+  - Added `reason`, `reverted_at`, `reverted_by` to `MergeRecord`.
+  - Added `data` field to `ChangeResult` in `core.change_service`.
+  - Seed order 15 ingests `contingents.csv`, `participants.csv`, `events.csv`, `registrations.csv`, and runs pure deduplication engine persisting 312 candidates.
+### 2026-10-30: P1/07-scheduling (Scheduler, Conflict Detector, Team Reconciliation, and Version Management)
+- **Author**: P1 Lead
+- **Branch**: `p1/07-scheduling`
+- **Endpoints Added**:
+  - `GET /api/v1/events`: List events with filtering.
+  - `POST /api/v1/events`: Create event profile via ChangeService.
+  - `GET /api/v1/events/{id}`: Event profile with requirements and rounds.
+  - `PATCH /api/v1/events/{id}`: Update event profile via ChangeService.
+  - `POST /api/v1/events/{id}/cancel`: Cancel event and cascade to active sessions.
+  - `POST /api/v1/events/{id}/merge`: Merge event and repoint registrations.
+  - `POST /api/v1/events/{id}/extend-duration`: Extend duration and cascade session end times.
+  - `GET /api/v1/events/{id}/registrations`: Event registrations view.
+  - `GET /api/v1/events/teams/provisional`: Provisional teams view reconciling 1,810 team registrations without team IDs.
+  - `GET /api/v1/events/judges`: Judge registry and explicit UNASSIGNED slot gap analysis.
+  - `POST /api/v1/events/judges`: Manual judge registration with competitor/contingent conflict detection.
+  - `GET /api/v1/venues`: List venues with capacity and tags.
+  - `POST /api/v1/venues`: Create venue via ChangeService.
+  - `GET /api/v1/venues/{id}`: Venue profile with operating windows and feature tags.
+  - `PATCH /api/v1/venues/{id}`: Update venue via ChangeService.
+  - `GET /api/v1/venues/matrix/travel-times`: Travel time matrix with per-pair overrides.
+  - `GET /api/v1/venues/matrix/compatibility`: ASSUMED venue-event compatibility mapping.
+  - `POST /api/v1/schedule/generate`: Pure scheduler session generator with arrival waves (E, M, L), fairness proposals, and prototype benchmark comparison.
+  - `GET /api/v1/schedule/versions`: Schedule versions with status, solver, and count metrics.
+  - `POST /api/v1/schedule/versions/{id}/restore`: Restores full schedule version snapshot (requires FESTIVAL_DIRECTOR approval).
+  - `GET /api/v1/schedule/sessions`: Event sessions list with volunteer & equipment requirements.
+  - `POST /api/v1/schedule/sessions/{id}/move`: Move session with 60m downstream round cascade.
+  - `POST /api/v1/schedule/sessions/{id}/change-venue`: Reassign venue with capacity violation check.
+  - `GET /api/v1/schedule/conflicts`: Sweep-line conflict detector covering all 10 types.
+  - `GET /api/v1/schedule/conflicts/{id}/resolutions`: Candidate time/venue moves ranked by conflicts resolved, new conflicts created, and people affected.
+  - `POST /api/v1/schedule/conflicts/{id}/apply-resolution`: Apply selected ranked resolution.
+  - `GET /api/v1/schedule/unscheduled`: Unscheduled participants report with reasons and alternatives.
+  - `GET /api/v1/schedule/timeline`: Venue Gantt timeline data.
+- **Public Functions Added**:
+  - `services/events/public.py`: `summary`, `risks` (zero registration events), `dependents`
+  - `services/venues/public.py`: `summary`, `risks` (unreachable venues), `dependents`
+  - `services/schedule/public.py`: `summary`, `risks` (blocking conflicts in next 4h, unscheduled entrants, judge gaps), `dependents`, and report generators (`schedule_plan_csv`, `conflicts_report_csv`, `unscheduled_entrants_csv`, `resource_load_timeline_csv`)
+- **Breaking Changes / Schema Migrations**:
+  - Added `judges_needed` to `Event`.
+  - Added `setup_time_min`, `teardown_time_min`, `feature_tags` to `Venue`.
+  - Added `EventSession`, `ScheduleVersion`, `Conflict`, `Judge`, `ProvisionalTeam` models.
+  - Baseline `ASSUMED` schedule generated during seeding with 312 provisional teams covering all 1,810 registrations without team IDs.
+- **Action Required**:
+  - Run `make reset` to drop/recreate tables and ingest the raw data pack, then seed venue availability windows and the baseline assumed schedule.
+
+### 2026-10-30: P3/09-ui-accom (Accommodation Workspace, Shortage Diagnosis, Occupancy Matrix, Decision Flow, & Check-in Desk)
+- **Author**: P3 Lead
+- **Branch**: `p3/09-ui-accom`
+- **Endpoints Contracted & MSW Mocked**:
+  - `GET /api/v1/accommodation/plans` (Plan A, B, C comparison, budget-unset indicator)
+  - `POST /api/v1/accommodation/generate-plan` (Parameters, cleaning buffer, weights solver)
+  - `GET /api/v1/accommodation/shortages` (Unplaced participants grouped by bottleneck)
+  - `GET /api/v1/accommodation/why-not/:id` (Explainable root cause diagnosis, counterfactual change, quick verify)
+  - `GET /api/v1/accommodation/occupancy` (Hostel blocks, floors, beds, external properties with UNVERIFIED badges)
+  - `POST /api/v1/accommodation/check-constraints` (Live pre-flight constraint validation)
+  - `POST /api/v1/accommodation/assign` (Bed assignment with ConfirmWithReason, WhyCard generation, and 409 concurrency conflict support)
+  - `POST /api/v1/accommodation/commit-live` (Promote candidate plan to LIVE operational status)
+  - `GET /api/v1/checkin/board` (Arrival board, pending, arrived, checked-in, late curfew breaches)
+  - `GET /api/v1/checkin/participant/:id` (Participant scan lookup, room readiness, alerts, UNKNOWN prompts)
+  - `POST /api/v1/checkin/verify-arrival` (Idempotent wristband key release)
+  - `POST /api/v1/checkin/checkout` (Check out, 180m room cleaning countdown buffer trigger)
+- **Frontend Components & Features Created**:
+  - `frontend/src/features/accommodation/`:
+    - `AccommodationWorkspace.tsx`: Plan generator, compare table, Recharts trade-off chart, budget banner, approval status tracker.
+    - `ShortageView.tsx`: Grouped unplaced list with Why-not? diagnosis panel.
+    - `OccupancyMap.tsx`: Interactive blocks, floors, beds with non-colour-only text badges, contingent overlays, split highlights, leader proximity badges, external properties with UNVERIFIED badges.
+    - `DecisionFlowModal.tsx`: Live constraint-checked assign/move dialog, locking hard overrides to `FESTIVAL_DIRECTOR`, `ConfirmWithReason`, `WhyCard` on assignment, override register link, and 409 conflict recovery.
+    - `ParticipantAccommodationTab.tsx`: Exported additive tab component mounted in `Participant360Drawer.tsx`.
+    - `types.ts` & `index.tsx`: Domain types & route registration under `/accommodation`.
+  - `frontend/src/features/checkin/`:
+    - `CheckInDesk.tsx`: Large search/scan field with `/` shortcut, one-handed tablet layout, room readiness (180m buffer), accessibility & diet alert chips, 1-tap UNKNOWN verify prompts, live arrival board, check-out with cleaning status.
+    - `index.tsx`: Route registration under `/checkin`.
+- **Tests Added**:
+  - Vitest: `frontend/src/test/accommodation_ui.test.tsx` (13 test suites covering plan compare, trade-off chart, shortage diagnosis, occupancy matrix, live constraint checks, director override gate, 409 recovery, check-in desk, and participant 360 tab).
+  - Playwright: `frontend/e2e/accommodation.spec.ts` (E2E flows: generate plans, compare, explain unplaced, assign with reason, hit 409 and recover, search/scan and check in).
+- **Action Required**:
+  - Run `npm test` and `npm run typecheck` to verify client suite.
+### 2026-10-31: P1/10-inventory (Ledger-Backed Inventory, Equipment Allocation, and Transactional Merchandise Issuance)
+- **Author**: P1 Lead
+- **Branch**: `p1/10-inventory`
+- **Endpoints Added**:
+  - `GET /api/v1/logistics/items`: List inventory items with projected stock buckets (`on_hand`, `reserved`, `in_transit`, `damaged`, `under_repair`, `awaiting_return`, `available`).
+  - `GET /api/v1/logistics/items/{id}`: Single item profile with breakdown across locations.
+  - `GET /api/v1/logistics/locations`: List inventory locations.
+  - `GET /api/v1/logistics/movements`: Immutable double-entry ledger movements history.
+  - `POST /api/v1/logistics/movements`: Append-only movement recording via ChangeService (`RECEIVE`, `RESERVE`, `RELEASE`, `TRANSFER_OUT`, `TRANSFER_IN`, `ISSUE`, `RETURN`, `DAMAGE`, `SEND_REPAIR`, `REPAIR_DONE`, `ADJUST`).
+  - `GET /api/v1/logistics/transfers`: Active and past inter-venue/location transfers.
+  - `POST /api/v1/logistics/transfers`: Initiates transfer with ETA (stock in `TRANSFER_OUT` counts at neither endpoint).
+  - `POST /api/v1/logistics/transfers/{id}/complete`: Explicit transfer completion step writing `TRANSFER_IN` to destination.
+  - `GET /api/v1/logistics/equipment/find`: Searches equipment units for venue session windows; evaluates on-site units and transfer feasibility based on `travel_time` + 15m transfer buffer.
+  - `GET /api/v1/logistics/equipment/{id}/failure-analysis`: Returns dependent sessions, alternative units, and transfer feasibility.
+  - `POST /api/v1/logistics/stocktake`: Stocktake discrepancy reconciliation with mandatory reason.
+  - `GET /api/v1/logistics/ledger/balance`: Mathematical consistency check proving movements balance across the festival.
+  - `GET /api/v1/logistics/reconciliation-flags`: Surfaces reconciliation flags (the 'camera' 31 units under repair case and 'tables' needs check condition).
+  - `GET /api/v1/logistics/reports/inventory-plan`: Exports `inventory_plan.csv`.
+  - `GET /api/v1/logistics/reports/equipment-gap`: Exports `equipment_gap.csv`.
+  - `GET /api/v1/merchandise/catalog`: Catalog items with size-wise stock buckets.
+  - `GET /api/v1/merchandise/policy`: Entitlement policy (1 per confirmed participant for per-head items: T-shirt, ID card, lanyard, tote; winner medals are not per-head) and size demand/shortage analysis.
+  - `POST /api/v1/merchandise/issue`: Transactional, idempotent merchandise issuance to canonical participant; atomic claim insert + ISSUE ledger movement; returns 409 `ALREADY_ISSUED` on repeat attempt with original timestamp, counter, and staff member.
+  - `POST /api/v1/merchandise/void`: Void claim with mandatory reason and Director review; returns item to `awaiting_return`.
+  - `GET /api/v1/merchandise/qr/{participant_id}`: Signed HMAC token using `QR_SECRET`, SVG generation, and checklist.
+  - `POST /api/v1/merchandise/scan`: Validates QR token and returns canonical participant entitlements (masked for volunteers).
+  - `POST /api/v1/merchandise/sync`: Offline batch synchronization keyed idempotently by `client_op_id`.
+- **Public Functions Added**:
+  - `services/logistics/public.py`: `summary`, `risks` (camera repair deficit, tables unverified, overdue transfers), `dependents`, `inventory_plan_csv`, `equipment_gap_csv`.
+  - `services/merchandise/public.py`: `summary`, `risks` (size shortages, missing sizes requiring collection), `dependents`.
+  - `engines/equipment_allocation.py`: Refined `LedgerEquipmentAvailabilityAdapter` implementing `EquipmentAvailabilityPort` for Prompt 7 conflict detector.
+  - Registered participant 360 dynamic section `'merchandise'`.
+- **Breaking Changes / Schema Migrations**:
+  - Added `inventory_item`, `inventory_location`, `inventory_movement`, `inventory_transfer`, `merch_claim`, `entitlement_policy` tables.
+  - `inventory_movement` enforces double-entry invariant: quantities are strictly positive; physical inventory is never overwritten.
+  - Unique DB constraint on `merch_claim` for `(canonical_participant_id, item_id)` ensures strict single-claim semantics.
+  - Order 40 seeder ingests `inventory_logistics.csv` and `inventory_merch.csv`.
+- **Action Required**:
+  - Run database seeders to populate initial logistics and merchandise inventory.
+
+### 2026-10-31: P3/12-ui-ops (Operations UI: Events & Venues, Logistics, Merchandise Admin & Counter, Vendors & Food, Finance)
+- **Author**: P3 Lead
+- **Branch**: `p3/12-ui-ops`
+- **API Contracts & Handlers Added**:
+  - `docs/api/food.md`: Dietary coverage matrix (`category x meal_slot x venue`), zero-coverage alerts, certificates expiry timeline, and menu-label mismatch audits.
+  - `docs/api/vendors.md`: Vendor catalog, commercial meal rates, emergency shutdown simulation (`POST /api/v1/vendors/{id}/shutdown-impact`), and shutdown execution with replacement reassignment (`POST /api/v1/vendors/{id}/shutdown`).
+  - `docs/api/finance.md`: Budget gauge with `external_budget_inr = NULL` budget-unset explanation, external accommodation spend breakdown, vendor settlements with billing disputes, merchandise procurement costs, approved emergency disbursements, and budget-override register.
+  - `frontend/src/test/server.ts`: Mock Service Worker handlers for all 5 workspaces covering schedule Gantt timeline, 10 conflict types, ranked resolution evaluations & applications, unscheduled entrants, version diff & restore, fairness decisions, venue feature tags & compatibility, logistics 7-bucket stock, transfers with countdown ETAs, movements ledger, equipment feasibility, stocktake adjustments, reconciliation flags (camera & tables cases), merchandise catalog & policy, transactional issue (200 initial / 409 `ALREADY_ISSUED` on repeat scan), volunteer QR scan with privacy masking, food coverage matrix, vendor compliance, emergency shutdown impact & execution, and finance summary/disputes/overrides.
+- **Frontend Components & Workspaces Built**:
+  - `frontend/src/features/events/`:
+    - `EventsVenuesWorkspace.tsx`: Gantt timeline by venue with `ASSUMED` badge, judge-gap indicators (assigned/required), conflict panel grouped by the 10 conflict types with severity (1-4) and affected people counts, ranked resolution candidates drawer (`#1`, conflicts resolved, new conflicts, attendees affected), `ConfirmWithReason` resolution apply flow, unscheduled entrants table (987 entrants) with failure reasons and alternatives, schedule version list with diff and restore capability, event and venue editors with tag editor and compatibility mapping, and late-wave & wildcard fairness decisions gated by Director approval.
+    - `types.ts` & `index.tsx`: Domain types & route registrations for `/events`, `/venues`, and `/schedule`.
+  - `frontend/src/features/logistics/`:
+    - `LogisticsWorkspace.tsx`: Stock table with all 7 buckets (`on_hand`, `reserved`, `in_transit`, `damaged`, `under_repair`, `awaiting_return`, `available`), location view with active transfers and countdown ETAs (`minutes_remaining`), movement ledger with multi-column filtering, equipment-to-session assignment with transfer feasibility check (`travel_time` + 15m transfer buffer), low-stock and stocktake mismatch alerts with adjustment modal, and reconciliation flags for the camera (31 units under repair) and tables (42 tables needs check) cases.
+    - `types.ts` & `index.tsx`: Domain types & route registration for `/logistics`.
+  - `frontend/src/features/merchandise/`:
+    - `MerchandiseWorkspace.tsx`: Admin catalog, size-wise demand vs stock with entitlement policy note, reservations, issue history with volunteer tracking, QR code generator and printable accreditation sheets; **Volunteer Counter Mode** with webcam `getUserMedia` video scanning, manual ID fallback, strict privacy masking of non-essential personal fields, and huge result panel: Green `ISSUED` vs Red `ALREADY ISSUED` with original timestamp, counter ID, and issuing staff member (`usr_vol_01`).
+    - `types.ts` & `index.tsx`: Domain types & route registration for `/merchandise`.
+  - `frontend/src/features/food/`:
+    - `FoodVendorsWorkspace.tsx`: Dietary coverage matrix heat grid (`category x meal slot x venue`) with zero-coverage cells highlighted with direct action buttons, compliance table with certificate expiry timeline, menu-label mismatch flags, vendor detail with assignments and commercial rates, and Emergency Shutdown modal showing lost capacity, ranked replacements, cost delta, and notification drafts for approval.
+    - `types.ts` & `index.tsx`: Domain types & route registrations for `/food` and `/vendors`.
+  - `frontend/src/features/finance/`:
+    - `FinanceWorkspace.tsx`: Budget gauge explaining budget-unset mode (`external_budget_inr = NULL`), external accommodation spend breakdown by property, vendor settlements with due dates and disputes review modal, merchandise costs, approved emergency spend, and budget-override report.
+    - `types.ts` & `index.tsx`: Domain types & route registration for `/finance`.
+  - `frontend/src/app/registry.ts`: Registered `"Finance"` under `NAV_GROUPS` with Finance Manager and Director access.
+- **UX & Accessibility**:
+  - Virtualized/scroll-safe tables with keyboard navigation support.
+  - No colour-only meaning: all statuses paired with text labels, icons, and badges.
+  - Direct action button on every alert card and banner.
+- **Tests Added & Passing**:
+  - Vitest: `frontend/src/test/ops_ui.test.tsx` (15 comprehensive test suites covering conflict detection, ranked resolution flow, unscheduled entrants, version restore, fairness decisions, demand vs stock, volunteer counter mode, Green `ISSUED` initial scan, Red `ALREADY ISSUED` rescan, dietary coverage heat grid, compliance & mismatches, emergency vendor shutdown, logistics 7 stock buckets & reconciliation flags, and finance budget-unset gauge & billing disputes). 59 of 59 frontend unit tests passing across all suites.
+  - Playwright: `frontend/e2e/ops.spec.ts` (3 end-to-end acceptance journeys: Event Lead resolves clash via conflict panel, Volunteer scans QR twice and sees `ALREADY ISSUED` on rescan, and Food Ops Manager completes vendor shutdown with lost capacity & notifications).
+- **Action Required**:
+  - Run `npm test` and `npm run typecheck` to verify client suite.
+### 2026-10-31: P1/13-staff-transport (Staff and Volunteer Management & Duty-of-Care Shuttle Planner)
+- **Author**: P1 Lead
+- **Branch**: `p1/13-staff-transport`
+- **Endpoints Added**:
+  - `GET /api/v1/staff`: List staff profiles with roles, shift bands, skills, and status.
+  - `GET /api/v1/staff/shifts`: Scheduled shifts and venue assignments.
+  - `POST /api/v1/staff/shifts/assign`: Assign staff member to shift/session via ChangeService (`staff.assign`).
+  - `POST /api/v1/staff/shifts/{id}/replace`: Emergency replacement via ChangeService (`staff.replace`); strictly enforces mandatory handover note (`HANDOVER_NOTE_MISSING`).
+  - `GET /api/v1/staff/demand`: Calculates volunteer requirement demand over time from scheduled event sessions vs on-shift core team; surfaces peak requirement, available on shift, and maximum gap.
+  - `GET /api/v1/staff/overloaded`: Returns staff members exceeding daily maximum hours (10h) or consecutive hours (8h).
+  - `GET /api/v1/staff/conflicts`: Surfaces dual roles (competitor-staff), self-escort conflicts, and concurrent shift overlaps/travel infeasibility.
+  - `GET /api/v1/staff/replacements/suggest`: Evaluates and ranks emergency replacement candidates (available, skill-matched, not overloaded, minimal transit).
+  - `GET /api/v1/staff/reports/staff-coverage`: Downloadable CSV report for staff coverage and hourly gap analysis.
+  - `GET /api/v1/staff/{id}`: Detailed staff member profile, active assignments, and workload metrics.
+  - `GET /api/v1/transport/assumptions`: Configurable transport planning assumptions and operational hours, all marked `ASSUMED`.
+  - `PATCH /api/v1/transport/assumptions`: Updates transport planning assumptions via ChangeService (`transport.update_assumptions`).
+  - `GET /api/v1/transport/shuttles/plan`: Calculates required runs per property and time window using $\lceil \text{passengers} / \text{capacity} \rceil$, comparing demand against vehicle capacity.
+  - `GET /api/v1/transport/shuttles/runs`: Lists scheduled, in-transit, and completed shuttle runs.
+  - `POST /api/v1/transport/shuttles/runs`: Creates or dispatches a shuttle run via ChangeService (`transport.create_run`).
+  - `GET /api/v1/transport/safety/night-roster`: Surfaces late-night arrivals/departures and unverified duty-of-care arrangements.
+  - `POST /api/v1/transport/safety/verify`: Marks a participant's night transport and escort verified via ChangeService (`transport.verify_safety`).
+  - `GET /api/v1/transport/guardians/queue`: Dedicated approval queue for minors (<18 years old) residing in external accommodation (~71 baseline minors).
+  - `POST /api/v1/transport/guardians/{id}/approve`: Approves or rejects guardian authorization for a minor via ChangeService (`transport.approve_guardian`).
+  - `GET /api/v1/transport/alerts`: High-priority plain-text transport and safety alerts.
+  - `GET /api/v1/transport/coverage/summary`: Safety coverage summary across participants, shuttles, escorts, and external properties.
+  - `GET /api/v1/transport/feasibility`: Evaluates whether travel from/to external property is feasible at a specific timestamp.
+- **Public Functions Added**:
+  - `services/staff/public.py`: `summary`, `risks` (volunteer shortage, staff overload), `dependents`, `staff_coverage_csv`.
+  - `services/transport/public.py`: `summary`, `risks` (unverified night transit, minor guardian pending, shuttle deficit), `dependents`, `transport_feasible` (exposed for accommodation engine rule 6), `resource_load_timeline_csv`.
+  - Registered participant 360 dynamic section `'transport'`.
+- **Breaking Changes / Schema Migrations**:
+  - Upgraded `Staff` and `Shift` models.
+  - Added `Route`, `ShuttleRun`, `EscortAssignment`, `GuardianApproval` models, and upgraded `Transport` and `ShuttleAssignment`.
+  - Added Order 60 seeder (`app.seed.staff_transport`) seeding 48 core team members from `core_team.csv`, 144 baseline shifts, 6 external properties, default vehicles, routes, and 71 baseline minor guardian approval records.
+- **Action Required**:
+  - Run database seeders to populate initial staff profiles, shifts, external properties, and transport fleet.
+
+### 2026-10-30: P2/05-accom-engine (Explainable, Deterministic Accommodation Planning Engine & API)
+- **Author**: P2 Lead
+- **Branch**: `p2/05-accom-engine`
+- **Endpoints Added**:
+  - `POST /api/v1/accommodation/plans/generate`: Generates candidate accommodation plans (A: Cohesion-First, B: Cost-First, C: Balanced) using pure 5-stage allocation pipeline.
+  - `GET /api/v1/accommodation/plans`: Lists all candidate plans, plan hashes, metrics, and budget status (`is_budget_unset`).
+  - `GET /api/v1/accommodation/plans/{id}`: Detailed plan breakdown including metrics, plan hash, parameters applied, and plain-language sacrifices summary.
+  - `GET /api/v1/accommodation/plans/compare?ids=`: Side-by-side multi-plan comparison and trade-off analysis.
+  - `GET /api/v1/accommodation/plans/{id}/shortages`: Shortage report of unplaced participants categorized by the 7-item fixed blocking reason taxonomy.
+  - `GET /api/v1/accommodation/why-not/{participant_id}`: Explainable diagnostic panel detailing primary blocking requirement, missing info, rejected rooms/properties, and counterfactual simulation.
+  - `GET /api/v1/accommodation/demand-timeline`: Rolling occupancy timeline distinguishing confirmed vs possible demand, cleaning buffers (180m), available supply, peak hour (1,601 at 30 Oct 18:00), and invalid intervals.
+  - `GET /api/v1/accommodation/rooms`: Inventory of on-campus rooms with block, floor, capacity, accessibility, and cleaning status.
+  - `GET /api/v1/accommodation/properties`: External properties with bed capacity, cost per bed-night, distance, transport availability, and verification flags.
+  - `GET /api/v1/accommodation/reports/{report_name}`: CSV downloads for `accommodation_plan_A.csv`, `accommodation_plan_B.csv`, `accommodation_plan_C.csv`, `shortage_report.csv`, `accommodation_summary.csv`, and `bed_demand_timeline.csv`.
+  - `GET /api/v1/accommodation/decision-cards/{plan_id}`: Structured `DecisionCard` object with plain-language recommendations and trade-offs.
+- **Pure Engine Modules (`app/engines/accommodation/`)**:
+  - `types.py`: Pure dataclass models (`ParticipantSnapshot`, `RoomSnapshot`, `PropertySnapshot`, `AssignmentSnapshot`, `PlanMetrics`, `PlanResult`, `TimelinePoint`, etc.).
+  - `demand.py`: Demand partitioning, stay interval validation (invalid intervals tracked and listed, never dropped silently), and rolling occupancy timeline with cleaning buffer.
+  - `rules.py`: Hard constraints (wheelchair -> accessible rooms only, ground-floor -> floor 0, manual verification needs never auto-satisfied, non-binary/unknown gender never placed in gendered blocks, minor safeguards and night transport windows per Rule 6) and 7-item blocking taxonomy.
+  - `why_not.py`: Explainable shortage diagnosis and counterfactual simulation for unplaced participants.
+  - `planner.py`: `AccommodationPlanner` executing Stages A–D, local repair pass to consolidate contingent splits, deterministic plan hashing, and CP-SAT fallback behind `ACCOM_SOLVER`.
+  - `reports.py`: CSV report generators and structured decision cards.
+- **Public Functions Added**:
+  - `services/accommodation/public.py`: `summary` (KPIs), `risks` (bed deficit, accessibility deficit, external minors), `dependents`, and `get_contingent_housing` (cross-service housing fragmentation and leader proximity query).
+- **Database Models & Seeders**:
+  - Upgraded `StayAssignment` with `explanation` JSON packet.
+  - Upgraded `AccommodationPlan` with deterministic `plan_hash`, `sacrifices_summary`, `parameters_applied`, and `shortages_data`.
+  - Added Order 30 seeder (`app.seed.accommodation`) seeding 200 on-campus rooms (710 beds) and 6 external properties (740 beds).
+
+### 2026-10-31: P1/19-commands-reports (Natural-Language Command Bar & Section 14 Reports Engine)
+- **Author**: P1 Lead
+- **Branch**: `p1/19-commands-reports`
+- **Contracts Added**:
+  - `docs/api/commands.md`: Schema definition for structured commands, prompt sanitization protocol, and execution pipeline.
+  - `docs/api/reports.md`: Comprehensive catalog of all 20 Section 14 reports, export masking rules, and formula injection mitigation.
+- **Endpoints Added**:
+  - `POST /api/v1/commands/parse`: Parses free-text operator input into strict structured command schema (`CommandIntent` enum + typed parameters). Provider-agnostic LLM adapter with deterministic offline fallback (`RapidFuzz` + regex). Privacy-enforced context stripping (no contact, medical, or accessibility data). Returns structured command with confidence, provider origin, and explanation string.
+  - `POST /api/v1/commands/execute`: Deterministic validation and permission checking. Read-only intents (`show_impact`, `affected_events_by_equipment`, `alternative_vendors_for_diet`, `list_late_arrivals`, `navigate`, `query`) execute immediately with live data. Mutating intents (`find_accommodation_for_unplaced`) strictly create a proposed `Approval` record with `ChangeService(dry_run=True)` impact preview requiring `FESTIVAL_DIRECTOR` approval. Sliding-window rate-limiting (60 req/min) and comprehensive audit logging.
+  - `GET /api/v1/reports`: Catalog of all 20 Section 14 reports with metadata, export formats, categories, and required permissions.
+  - `GET /api/v1/reports/{name}`: Generates and streams a single report (`.csv` or `.md`). Enforces formula injection sanitization (neutralizes cells starting with `=`, `+`, `-`, `@`, `\t`, `\r`) and role-based masking. Audited via `AuditEvent(action="report.export")`.
+  - `GET /api/v1/reports/bundle.zip`: Assembles and streams all 20 reports in an in-memory ZIP archive bundle.
+  - `GET /api/v1/reports/post-festival`: Multi-domain post-festival report synthesized from audit trail and live database across attendance, accommodation utilisation, event completion, inventory usage, vendor performance, incident history, financial expenditure, operational delays, and outstanding settlements. Supports HTML and CSV output formats.
+- **Public Functions Added**:
+  - `services/commands/public.py`: `summary`, `risks` (unapproved command proposals, rate-limiting pressure), `dependents`.
+  - `services/reports/public.py`: `summary`, `risks` (unverified reports, unmasked exports), `dependents`.
+  - `services/reports/registry.py`: Registry mapping all 20 spec Section 14 reports (`REPORT_REGISTRY`).
+  - `services/reports/csv_sanitizer.py`: `sanitize_csv_value` and `write_sanitized_csv`.
+  - `services/reports/samples.py`: `generate_all_sample_plans()` writing deliverable 02 sample plans into `data/golden/`.
+- **Sample Plans & Golden Outputs**:
+  - Added `make samples` target to `Makefile` executing `python -m app.services.reports.samples`.
+  - Deliverable 02 files generated into `data/golden/`: `accommodation_plan_A.csv`, `accommodation_plan_B.csv`, `accommodation_plan_C.csv`, `schedule_plan.csv`, `inventory_plan.csv`.
+- **Tests Added & Passing**:
+  - `backend/tests/commands/test_commands.py`: 6 tests covering spec example command mappings (both offline fallback and LLM adapter), prompt injection resilience inside names, immediate read-only impact execution, mutating commands strictly creating pending proposals, RBAC permission denial for volunteers, and audit trail logging.
+  - `backend/tests/reports/test_reports.py`: 26 tests covering catalog listing, download of all 20 reports, bundle.zip generation, CSV injection neutralization, role-based PII masking, post-festival report generation (HTML/CSV), and export auditing.
+  - `backend/tests/reports/test_golden_outputs.py`: Golden output file integrity and regression stability test.
+- **Action Required**:
+  - Run `make samples` to refresh deliverable 02 outputs in `data/golden/`.
+
+### 2026-10-31: P1/22-integration (Full Stack Production Integration, Smoke Suite & Release Freeze)
+- **Author**: P1 Integration Lead
+- **Branch**: `p1/22-integration` -> `develop` -> `main`
+- **Release Tags**: `v1.0-rc1` (code freeze), `v1.0` (final release)
+- **Endpoints & Routers Added**:
+  - `GET /api/v1/commands`: List supported natural-language command intents.
+  - `GET /api/v1/incidents`, `POST /api/v1/incidents`: Operational incident logging via ChangeService (`incident.create`).
+  - `GET /api/v1/notifications`, `GET /api/v1/notifications/drafts`, `POST /api/v1/notifications/drafts`: Operational notifications via ChangeService (`notification.draft`).
+  - `GET /api/v1/food`, `GET /api/v1/food/coverage`, `GET /api/v1/food/compliance`: Dietary coverage matrix and compliance flags.
+  - `GET /api/v1/vendors`: Festival food vendor directory with capacity and hygiene expiry.
+  - `GET /api/v1/finance`, `GET /api/v1/finance/summary`: Budget ceilings, external stay commitments, and expense breakdown.
+  - `GET /api/v1/checkin`, `GET /api/v1/checkin/board`: Real-time arrival desk board and recent check-ins.
+  - `GET /api/v1/impact`, `GET /api/v1/impact/blast-radius`: Downstream blast radius impact query across all modules.
+  - `GET /api/v1/premortem`, `GET /api/v1/premortem/resilience`: Predictive resilience simulator respecting `ENABLE_PREMORTEM`.
+  - `GET /api/v1/forecasting`, `GET /api/v1/forecasting/crowd`: Predictive crowd flow forecasting respecting `ENABLE_FORECASTING`.
+- **Scripts Added / Hardened**:
+  - `scripts/smoke_all.py`: Logs in as all 9 roles, hits list endpoints for all 32 modules, runs the seven disruption scenarios from Spec Section 13 through the API, asserts operational state change and audit log growth, and outputs a formatted execution summary.
+  - `scripts/check_cross_module_consistency.py`: Automated cross-module consistency checking ensuring all 32 `public.py` files expose `summary`, `risks`, and `dependents`; all mutation routes use `ChangeService`; all modules have `docs/api` specs and frontend nav entries; and serializers enforce role masking.
+  - `scripts/backup_restore.py`: Safe SQLite database backup, restore, and snapshot tool using the SQLite online backup API.
+- **Production Deployment Assets**:
+  - `docker-compose.yml`: Production compose definition with non-root user (`festos`, UID 1001), healthchecks, restart policy (`unless-stopped`), SQLite volume persistence (`festos-data`), and env from `.env`.
+  - `backend/Dockerfile`: Hardened production image with healthcheck and non-root execution.
+  - `frontend/Dockerfile` & `frontend/nginx.conf`: Multi-stage build serving compiled assets through Nginx with reverse proxy to API, SPA routing, and security headers.
+  - `data/snapshots/demo.db`: Verified known-good fallback snapshot containing all seeded master data.
+  - `Makefile`: Targets `demo`, `reset-demo`, `smoke`, `consistency`, `backup`, `restore`, `snapshot`.
+- **Documentation**:
+  - `docs/TWIST_PLAYBOOK.md`: Comprehensive response manual covering how to add a hard constraint, disruption type, report, assumption key, participant attribute, and role.
+  - `docs/TEST_REPORT.md`: Comprehensive audit report detailing 224/224 backend tests and 59/59 frontend tests passing.
+- **Verification Results**:
+  - `backend/tests/`: **224 passed, 0 failed** in 72.89s.
+  - `frontend/src/test/`: **59 passed, 0 failed** in 9.42s.
+  - `frontend/`: `tsc --noEmit` passed with 0 errors.
+  - `scripts/check_cross_module_consistency.py`: **100% PASS**.
+  - `scripts/smoke_all.py`: **100% PASS** (9 roles, 32 modules, 7 live disruption drills, verified audit growth).
+
+
+
+
