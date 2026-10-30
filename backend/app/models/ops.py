@@ -1,12 +1,13 @@
 # OWNER: P2
 import uuid
 from datetime import datetime
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 from sqlalchemy import JSON, Column
 from sqlmodel import Field, SQLModel
 
 from app.core.clock import now
+from app.models.change import Assumption  # noqa: F401
 
 
 class Venue(SQLModel, table=True):
@@ -61,3 +62,30 @@ class NotificationDraft(SQLModel, table=True):
     body: str
     status: str = Field(default="DRAFT")  # DRAFT|QUEUED|SENT|FAILED
     created_at: datetime = Field(default_factory=now)
+
+class ImportBatchMetadata(SQLModel, table=True):
+    __tablename__ = "import_batch_metadata"
+
+    batch_id: str = Field(primary_key=True, index=True)
+    content_hash: str = Field(index=True)
+    sheet_name: str = Field(index=True)
+    filename: str
+    total_rows: int = Field(default=0)
+    imported_rows: int = Field(default=0)
+    quarantined_rows: int = Field(default=0)
+    status: str = Field(default="STAGED", index=True)  # STAGED|PROMOTED|FAILED
+    is_dry_run: bool = Field(default=False)
+    created_at: datetime = Field(default_factory=now)
+
+class StagedRecord(SQLModel, table=True):
+    __tablename__ = "staged_record"
+
+    id: str = Field(default_factory=lambda: f"stg_{uuid.uuid4().hex[:10]}", primary_key=True)
+    batch_id: str = Field(index=True)
+    source_row_id: str = Field(index=True)
+    sheet_name: str = Field(index=True)
+    target_table: str = Field(index=True)
+    payload: Dict[str, Any] = Field(default_factory=dict, sa_column=Column(JSON))
+    status: str = Field(default="PENDING", index=True)  # PENDING|PROMOTED|REJECTED
+    created_at: datetime = Field(default_factory=now)
+

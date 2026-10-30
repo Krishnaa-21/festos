@@ -1,0 +1,23 @@
+file: inventory_logistics.csv
+entity: inventory_item
+target_table: inventory_item
+id_prefix: itm_
+primary_key: id
+columns:
+  item_id:
+    canonical: id
+    synonyms: [item_id, equipment_id, code]
+  item:
+    canonical: name
+    synonyms: [item, item_name, equipment]
+  quantity:
+    canonical: quantity
+    synonyms: [quantity, qty, total_quantity]
+    type: integer
+  location:
+    canonical: location
+    synonyms: [location, current_location, stored_at]
+  condition:
+    canonical: condition
+    synonyms: [condition, state, status]
+    normalizer: condition

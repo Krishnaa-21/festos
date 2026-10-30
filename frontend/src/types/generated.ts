@@ -52,6 +52,45 @@ export interface paths {
      */
     post: operations["post_reject_api_v1_approvals__id__reject_post"];
   };
+  "/api/v1/assumptions": {
+    /**
+     * Get Assumptions
+     * @description Lists all system operational assumptions, sources, reasons, and typed values.
+     */
+    get: operations["get_assumptions_api_v1_assumptions_get"];
+    /**
+     * Put Update Assumption
+     * @description Mutates an assumption through ChangeService handler assumptions.update.
+     * Audited, validates typed value, and invalidates in-memory cache.
+     */
+    put: operations["put_update_assumption_api_v1_assumptions_put"];
+  };
+  "/api/v1/assumptions/{key}": {
+    /**
+     * Get Assumption By Key
+     * @description Fetches details of a specific assumption key.
+     */
+    get: operations["get_assumption_by_key_api_v1_assumptions__key__get"];
+    /**
+     * Put Update Assumption By Key
+     * @description Mutates a specific assumption through ChangeService handler assumptions.update.
+     */
+    put: operations["put_update_assumption_by_key_api_v1_assumptions__key__put"];
+  };
+  "/api/v1/assumptions/{key}/history": {
+    /**
+     * Get Assumption Change History
+     * @description Fetches audit history and prior values for a specific assumption key.
+     */
+    get: operations["get_assumption_change_history_api_v1_assumptions__key__history_get"];
+  };
+  "/api/v1/assumptions/{key}/dependents": {
+    /**
+     * Get Assumption Module Dependents
+     * @description Previews which system modules and planning engines read this assumption key.
+     */
+    get: operations["get_assumption_module_dependents_api_v1_assumptions__key__dependents_get"];
+  };
   "/api/v1/audit/events": {
     /**
      * List Audit Events
@@ -146,6 +185,16 @@ export interface paths {
      */
     get: operations["get_contingent_operational_status_api_v1_contingents__id__status_get"];
   };
+  "/api/v1/data-quality": {
+    /**
+     * Get Data Quality
+     * @description Retrieves comprehensive data quality report:
+     * - Reconciliation shell summary (2,836 raw vs 2,400 narrative vs 2,842 declared)
+     * - Counts of UNKNOWN per field with operational impact
+     * - List of detected anomalies and validation issues across all files
+     */
+    get: operations["get_data_quality_api_v1_data_quality_get"];
+  };
   "/api/v1/events": {
     /** Get All Events */
     get: operations["get_all_events_api_v1_events_get"];
@@ -183,6 +232,39 @@ export interface paths {
   "/api/v1/events/{event_id}/extend-duration": {
     /** Extend Event Duration */
     post: operations["extend_event_duration_api_v1_events__event_id__extend_duration_post"];
+  };
+  "/api/v1/imports": {
+    /**
+     * Get Import History
+     * @description Lists import batch history with pagination and status filtering.
+     */
+    get: operations["get_import_history_api_v1_imports_get"];
+    /**
+     * Upload Import File
+     * @description Uploads and ingests a raw CSV file into raw_record, staging, and quarantine.
+     */
+    post: operations["upload_import_file_api_v1_imports_post"];
+  };
+  "/api/v1/imports/{id}": {
+    /**
+     * Get Import Batch Details
+     * @description Fetches details for a specific import batch.
+     */
+    get: operations["get_import_batch_details_api_v1_imports__id__get"];
+  };
+  "/api/v1/imports/{id}/issues": {
+    /**
+     * Get Import Batch Issues
+     * @description Retrieves quarantined rows and validation reasons for an import batch.
+     */
+    get: operations["get_import_batch_issues_api_v1_imports__id__issues_get"];
+  };
+  "/api/v1/imports/{id}/promote": {
+    /**
+     * Post Promote Import Batch
+     * @description Promotes staged records to canonical tables through ChangeService handler imports.promote.
+     */
+    post: operations["post_promote_import_batch_api_v1_imports__id__promote_post"];
   };
   "/api/v1/overrides": {
     /**
@@ -425,6 +507,104 @@ export type webhooks = Record<string, never>;
 
 export interface components {
   schemas: {
+    /** AssumptionDependentsResponse */
+    AssumptionDependentsResponse: {
+      /** Key */
+      key: string;
+      /** Dependent Modules */
+      dependent_modules?: string[];
+      /** Description */
+      description: string;
+    };
+    /** AssumptionHistoryItem */
+    AssumptionHistoryItem: {
+      /** Change Set Id */
+      change_set_id: string;
+      /**
+       * Action
+       * @default assumptions.update
+       */
+      action?: string;
+      /** Actor Id */
+      actor_id: string;
+      /** Actor Role */
+      actor_role: string;
+      /** Previous Value */
+      previous_value?: string | null;
+      /** New Value */
+      new_value: string;
+      /** Reason */
+      reason?: string | null;
+      /**
+       * Applied At
+       * Format: date-time
+       */
+      applied_at: string;
+    };
+    /** AssumptionHistoryResponse */
+    AssumptionHistoryResponse: {
+      /** Key */
+      key: string;
+      /** History */
+      history?: components["schemas"]["AssumptionHistoryItem"][];
+    };
+    /** AssumptionItem */
+    AssumptionItem: {
+      /** Id */
+      id: string;
+      /** Key */
+      key: string;
+      /** Value */
+      value: string;
+      /** Typed Value */
+      typed_value: unknown;
+      /** Type */
+      type: string;
+      /** Owner */
+      owner: string;
+      /** Source */
+      source: string;
+      /** Reason */
+      reason: string;
+      /** Impact If Changed */
+      impact_if_changed: string;
+      /**
+       * Updated At
+       * Format: date-time
+       */
+      updated_at: string;
+    };
+    /** AssumptionUpdateRequest */
+    AssumptionUpdateRequest: {
+      /** Key */
+      key?: string | null;
+      /** Value */
+      value: string;
+      /**
+       * Reason
+       * @default Operational baseline adjustment
+       */
+      reason?: string | null;
+      /** Expected Version */
+      expected_version?: number | null;
+      /**
+       * Dry Run
+       * @default false
+       */
+      dry_run?: boolean;
+    };
+    /** Body_upload_import_file_api_v1_imports_post */
+    Body_upload_import_file_api_v1_imports_post: {
+      /** File */
+      file: string;
+      /** Sheet Name */
+      sheet_name?: string | null;
+      /**
+       * Dry Run
+       * @default false
+       */
+      dry_run?: boolean;
+    };
     /** BreakGlassRequest */
     BreakGlassRequest: {
       /**
@@ -577,6 +757,115 @@ export interface components {
        */
       risk_level?: string;
     };
+    /** DataQualityIssueItem */
+    DataQualityIssueItem: {
+      /** File */
+      file: string;
+      /** Field */
+      field: string;
+      /** Severity */
+      severity: number;
+      /** Code */
+      code: string;
+      /** Message */
+      message: string;
+      /**
+       * Count
+       * @default 1
+       */
+      count?: number;
+      /** Details */
+      details?: {
+        [key: string]: unknown;
+      };
+    };
+    /** DataQualityReport */
+    DataQualityReport: {
+      summary: components["schemas"]["DataQualitySummary"];
+      /** Unknown Fields */
+      unknown_fields?: components["schemas"]["DataQualityUnknownField"][];
+      /** Issues */
+      issues?: components["schemas"]["DataQualityIssueItem"][];
+    };
+    /** DataQualitySummary */
+    DataQualitySummary: {
+      /**
+       * Raw Participant Count
+       * @default 2836
+       */
+      raw_participant_count?: number;
+      /**
+       * Raw Participants
+       * @default 2836
+       */
+      raw_participants?: number;
+      /**
+       * Narrative Expected Count
+       * @default 2400
+       */
+      narrative_expected_count?: number;
+      /**
+       * Narrative Expected
+       * @default 2400
+       */
+      narrative_expected?: number;
+      /**
+       * Contingent Declared Total
+       * @default 2842
+       */
+      contingent_declared_total?: number;
+      /**
+       * Declared Contingent
+       * @default 2842
+       */
+      declared_contingent?: number;
+      /**
+       * Difference Raw Vs Narrative
+       * @default 436
+       */
+      difference_raw_vs_narrative?: number;
+      /**
+       * Difference Raw Vs Declared
+       * @default -6
+       */
+      difference_raw_vs_declared?: number;
+      /**
+       * Contingent Strength Gap
+       * @default 6
+       */
+      contingent_strength_gap?: number;
+      /**
+       * Total Quarantined
+       * @default 3
+       */
+      total_quarantined?: number;
+      /**
+       * Quarantined Participants
+       * @default 3
+       */
+      quarantined_participants?: number;
+      /**
+       * Total Issues
+       * @default 0
+       */
+      total_issues?: number;
+      /**
+       * Reconciliation Narrative
+       * @default Reconciliation narrative: Raw roster contains 2,836 participant rows (2,833 valid staged/canonical records and 3 quarantined records with arrival at or after departure). The planning narrative assumption expected 2,400 participants (+436 over narrative). The 38 contingent colleges declared a total strength of 2,842 (-6 gap vs raw total of 2,836).
+       */
+      reconciliation_narrative?: string;
+    };
+    /** DataQualityUnknownField */
+    DataQualityUnknownField: {
+      /** Entity */
+      entity: string;
+      /** Field */
+      field: string;
+      /** Unknown Count */
+      unknown_count: number;
+      /** Operational Impact */
+      operational_impact: string;
+    };
     /** DecisionRequest */
     DecisionRequest: {
       /**
@@ -605,9 +894,49 @@ export interface components {
       /** Warnings */
       warnings?: string[];
     };
+    /** Envelope[AssumptionDependentsResponse] */
+    Envelope_AssumptionDependentsResponse_: {
+      data: components["schemas"]["AssumptionDependentsResponse"];
+      /** Meta */
+      meta?: {
+        [key: string]: unknown;
+      };
+      /** Warnings */
+      warnings?: string[];
+    };
+    /** Envelope[AssumptionHistoryResponse] */
+    Envelope_AssumptionHistoryResponse_: {
+      data: components["schemas"]["AssumptionHistoryResponse"];
+      /** Meta */
+      meta?: {
+        [key: string]: unknown;
+      };
+      /** Warnings */
+      warnings?: string[];
+    };
+    /** Envelope[AssumptionItem] */
+    Envelope_AssumptionItem_: {
+      data: components["schemas"]["AssumptionItem"];
+      /** Meta */
+      meta?: {
+        [key: string]: unknown;
+      };
+      /** Warnings */
+      warnings?: string[];
+    };
     /** Envelope[ChangeResult] */
     Envelope_ChangeResult_: {
       data: components["schemas"]["ChangeResult"];
+      /** Meta */
+      meta?: {
+        [key: string]: unknown;
+      };
+      /** Warnings */
+      warnings?: string[];
+    };
+    /** Envelope[DataQualityReport] */
+    Envelope_DataQualityReport_: {
+      data: components["schemas"]["DataQualityReport"];
       /** Meta */
       meta?: {
         [key: string]: unknown;
@@ -628,9 +957,60 @@ export interface components {
       /** Warnings */
       warnings?: string[];
     };
+    /** Envelope[ImportBatchItem] */
+    Envelope_ImportBatchItem_: {
+      data: components["schemas"]["ImportBatchItem"];
+      /** Meta */
+      meta?: {
+        [key: string]: unknown;
+      };
+      /** Warnings */
+      warnings?: string[];
+    };
+    /** Envelope[ImportBatchResponse] */
+    Envelope_ImportBatchResponse_: {
+      data: components["schemas"]["ImportBatchResponse"];
+      /** Meta */
+      meta?: {
+        [key: string]: unknown;
+      };
+      /** Warnings */
+      warnings?: string[];
+    };
+    /** Envelope[List[AssumptionItem]] */
+    Envelope_List_AssumptionItem__: {
+      /** Data */
+      data: components["schemas"]["AssumptionItem"][];
+      /** Meta */
+      meta?: {
+        [key: string]: unknown;
+      };
+      /** Warnings */
+      warnings?: string[];
+    };
     /** Envelope[Page[Dict[str, Any]]] */
     Envelope_Page_Dict_str__Any___: {
       data: components["schemas"]["Page_Dict_str__Any__"];
+      /** Meta */
+      meta?: {
+        [key: string]: unknown;
+      };
+      /** Warnings */
+      warnings?: string[];
+    };
+    /** Envelope[Page[ImportBatchItem]] */
+    Envelope_Page_ImportBatchItem__: {
+      data: components["schemas"]["Page_ImportBatchItem_"];
+      /** Meta */
+      meta?: {
+        [key: string]: unknown;
+      };
+      /** Warnings */
+      warnings?: string[];
+    };
+    /** Envelope[Page[QuarantineIssueItem]] */
+    Envelope_Page_QuarantineIssueItem__: {
+      data: components["schemas"]["Page_QuarantineIssueItem_"];
       /** Meta */
       meta?: {
         [key: string]: unknown;
@@ -680,6 +1060,81 @@ export interface components {
     HTTPValidationError: {
       /** Detail */
       detail?: components["schemas"]["ValidationError"][];
+    };
+    /** ImportBatchItem */
+    ImportBatchItem: {
+      /** Id */
+      id: string;
+      /** Filename */
+      filename: string;
+      /** Sheet Name */
+      sheet_name: string;
+      /** Content Hash */
+      content_hash: string;
+      /** Total Rows */
+      total_rows: number;
+      /** Imported Rows */
+      imported_rows: number;
+      /** Quarantined Rows */
+      quarantined_rows: number;
+      /** Status */
+      status: string;
+      /**
+       * Imported At
+       * Format: date-time
+       */
+      imported_at: string;
+    };
+    /** ImportBatchResponse */
+    ImportBatchResponse: {
+      /** Batch Id */
+      batch_id: string;
+      /** Filename */
+      filename: string;
+      /** Sheet Name */
+      sheet_name: string;
+      /** Content Hash */
+      content_hash: string;
+      /** Total Rows */
+      total_rows: number;
+      /** Imported Rows */
+      imported_rows: number;
+      /** Quarantined Rows */
+      quarantined_rows: number;
+      /** Status */
+      status: string;
+      /**
+       * Dry Run
+       * @default false
+       */
+      dry_run?: boolean;
+      /**
+       * Imported At
+       * Format: date-time
+       */
+      imported_at: string;
+    };
+    /** ImportPromoteRequest */
+    ImportPromoteRequest: {
+      /**
+       * Expected Version
+       * @default 1
+       */
+      expected_version?: number | null;
+      /**
+       * Reason
+       * @default Promoting verified import batch to canonical database
+       */
+      reason?: string | null;
+      /**
+       * Dry Run
+       * @default false
+       */
+      dry_run?: boolean;
+      /** Payload */
+      payload?: {
+        [key: string]: unknown;
+      };
     };
     /** JudgeCreateBody */
     JudgeCreateBody: {
@@ -741,6 +1196,32 @@ export interface components {
       /** Total Pages */
       total_pages: number;
     };
+    /** Page[ImportBatchItem] */
+    Page_ImportBatchItem_: {
+      /** Items */
+      items: components["schemas"]["ImportBatchItem"][];
+      /** Total */
+      total: number;
+      /** Page */
+      page: number;
+      /** Page Size */
+      page_size: number;
+      /** Total Pages */
+      total_pages: number;
+    };
+    /** Page[QuarantineIssueItem] */
+    Page_QuarantineIssueItem_: {
+      /** Items */
+      items: components["schemas"]["QuarantineIssueItem"][];
+      /** Total */
+      total: number;
+      /** Page */
+      page: number;
+      /** Page Size */
+      page_size: number;
+      /** Total Pages */
+      total_pages: number;
+    };
     /** ParticipantCreateBody */
     ParticipantCreateBody: {
       /** Expected Version */
@@ -788,6 +1269,29 @@ export interface components {
       payload: {
         [key: string]: unknown;
       };
+    };
+    /** QuarantineIssueItem */
+    QuarantineIssueItem: {
+      /** Id */
+      id: string;
+      /** Batch Id */
+      batch_id?: string | null;
+      /** Reason */
+      reason: string;
+      /**
+       * Severity
+       * @default 4
+       */
+      severity?: number;
+      /** Raw Payload */
+      raw_payload?: {
+        [key: string]: unknown;
+      };
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
     };
     /** RefreshRequest */
     RefreshRequest: {
@@ -1156,6 +1660,187 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Assumptions
+   * @description Lists all system operational assumptions, sources, reasons, and typed values.
+   */
+  get_assumptions_api_v1_assumptions_get: {
+    parameters: {
+      query?: {
+        /** @description Filter by owner (P1, P2) */
+        owner?: string | null;
+        /** @description Search term for key, reason or impact */
+        q?: string | null;
+      };
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_List_AssumptionItem__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Put Update Assumption
+   * @description Mutates an assumption through ChangeService handler assumptions.update.
+   * Audited, validates typed value, and invalidates in-memory cache.
+   */
+  put_update_assumption_api_v1_assumptions_put: {
+    parameters: {
+      header?: {
+        "Idempotency-Key"?: string | null;
+        authorization?: string | null;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AssumptionUpdateRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_ChangeResult_"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Assumption By Key
+   * @description Fetches details of a specific assumption key.
+   */
+  get_assumption_by_key_api_v1_assumptions__key__get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+      path: {
+        key: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_AssumptionItem_"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Put Update Assumption By Key
+   * @description Mutates a specific assumption through ChangeService handler assumptions.update.
+   */
+  put_update_assumption_by_key_api_v1_assumptions__key__put: {
+    parameters: {
+      header?: {
+        "Idempotency-Key"?: string | null;
+        authorization?: string | null;
+      };
+      path: {
+        key: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AssumptionUpdateRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_ChangeResult_"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Assumption Change History
+   * @description Fetches audit history and prior values for a specific assumption key.
+   */
+  get_assumption_change_history_api_v1_assumptions__key__history_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+      path: {
+        key: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_AssumptionHistoryResponse_"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Assumption Module Dependents
+   * @description Previews which system modules and planning engines read this assumption key.
+   */
+  get_assumption_module_dependents_api_v1_assumptions__key__dependents_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+      path: {
+        key: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_AssumptionDependentsResponse_"];
         };
       };
       /** @description Validation Error */
@@ -1543,6 +2228,38 @@ export interface operations {
       };
     };
   };
+  /**
+   * Get Data Quality
+   * @description Retrieves comprehensive data quality report:
+   * - Reconciliation shell summary (2,836 raw vs 2,400 narrative vs 2,842 declared)
+   * - Counts of UNKNOWN per field with operational impact
+   * - List of detected anomalies and validation issues across all files
+   */
+  get_data_quality_api_v1_data_quality_get: {
+    parameters: {
+      query?: {
+        /** @description Set to 'csv' for exportable data_quality_report.csv */
+        format?: string | null;
+      };
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_DataQualityReport_"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
   /** Get All Events */
   get_all_events_api_v1_events_get: {
     parameters: {
@@ -1803,6 +2520,161 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Import History
+   * @description Lists import batch history with pagination and status filtering.
+   */
+  get_import_history_api_v1_imports_get: {
+    parameters: {
+      query?: {
+        page?: number;
+        page_size?: number;
+        status?: string | null;
+      };
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Page_ImportBatchItem__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Upload Import File
+   * @description Uploads and ingests a raw CSV file into raw_record, staging, and quarantine.
+   */
+  upload_import_file_api_v1_imports_post: {
+    parameters: {
+      header?: {
+        "Idempotency-Key"?: string | null;
+        authorization?: string | null;
+      };
+    };
+    requestBody: {
+      content: {
+        "multipart/form-data": components["schemas"]["Body_upload_import_file_api_v1_imports_post"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_ImportBatchResponse_"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Import Batch Details
+   * @description Fetches details for a specific import batch.
+   */
+  get_import_batch_details_api_v1_imports__id__get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_ImportBatchItem_"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Import Batch Issues
+   * @description Retrieves quarantined rows and validation reasons for an import batch.
+   */
+  get_import_batch_issues_api_v1_imports__id__issues_get: {
+    parameters: {
+      query?: {
+        page?: number;
+        page_size?: number;
+      };
+      header?: {
+        authorization?: string | null;
+      };
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Page_QuarantineIssueItem__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Post Promote Import Batch
+   * @description Promotes staged records to canonical tables through ChangeService handler imports.promote.
+   */
+  post_promote_import_batch_api_v1_imports__id__promote_post: {
+    parameters: {
+      header?: {
+        "Idempotency-Key"?: string | null;
+        authorization?: string | null;
+      };
+      path: {
+        id: string;
+      };
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["ImportPromoteRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_ChangeResult_"];
         };
       };
       /** @description Validation Error */
