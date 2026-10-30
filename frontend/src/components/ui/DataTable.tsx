@@ -12,7 +12,7 @@ import { Skeleton } from "./Skeleton";
 
 export interface Column<T> {
   key: string;
-  header: string;
+  header: React.ReactNode;
   render?: (row: T, index: number) => React.ReactNode;
   sortable?: boolean;
   width?: string;
@@ -33,6 +33,8 @@ export interface DataTableProps<T> {
   onSearch?: (term: string) => void;
   emptyMessage?: string;
   className?: string;
+  onRowClick?: (row: T) => void;
+  keyExtractor?: (row: T) => string;
 }
 
 export function DataTable<T extends Record<string, any>>({
@@ -50,6 +52,8 @@ export function DataTable<T extends Record<string, any>>({
   onSearch,
   emptyMessage = "No records found.",
   className,
+  onRowClick,
+  keyExtractor,
 }: DataTableProps<T>) {
   const [localSearch, setLocalSearch] = useState("");
   const totalPages = Math.ceil(total / pageSize) || 1;
@@ -142,8 +146,12 @@ export function DataTable<T extends Record<string, any>>({
             ) : (
               data.map((row, idx) => (
                 <tr
-                  key={row.id || idx}
-                  className="hover:bg-slate-800/40 transition-colors even:bg-slate-950/15"
+                  key={keyExtractor ? keyExtractor(row) : row.id || idx}
+                  onClick={() => onRowClick && onRowClick(row)}
+                  className={cn(
+                    "hover:bg-slate-800/40 transition-colors even:bg-slate-950/15",
+                    onRowClick && "cursor-pointer"
+                  )}
                 >
                   {columns.map((col) => (
                     <td key={col.key} className="px-4 py-3 text-slate-300">

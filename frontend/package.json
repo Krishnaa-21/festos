@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "test:e2e": "playwright test",
     "gen-types": "openapi-typescript openapi.json -o src/types/generated.ts",
     "gen-types:ci": "openapi-typescript openapi.json -o src/types/generated.ts"
   },
@@ -22,6 +23,7 @@
     "tailwind-merge": "^2.2.2"
   },
   "devDependencies": {
+    "@playwright/test": "^1.64.1",
     "@testing-library/jest-dom": "^6.4.2",
     "@testing-library/react": "^14.2.2",
     "@types/node": "^20.11.30",
