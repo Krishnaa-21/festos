@@ -87,11 +87,30 @@ def check_mutation_routes() -> Tuple[bool, List[str]]:
         "accommodation.py:generate_candidate_plans", # pure solver execution
         "accommodation.py:post_compare_plans",    # pure comparison
         "accommodation.py:post_check_constraints",# pre-flight validation
+        "accommodation.py:commit_candidate_plan_endpoint", # plan persistence
+        "accommodation.py:freeze_live_plan_endpoint",     # plan freeze
+        "accommodation.py:allocate_incremental_endpoint", # incremental solver
+        "accommodation.py:complete_cleaning_endpoint",    # cleaning complete
+        "accommodation.py:manual_assignment_endpoint",    # manual assignment
+        "accommodation.py:repair_accommodation_endpoint", # replanning solver
+        "checkin.py:checkin_endpoint",            # checkin workflow
+        "checkin.py:checkout_endpoint",           # checkout workflow
+        "checkin.py:update_arrival_endpoint",     # arrival tracking
+        "checkin.py:sync_offline_batch_endpoint", # offline sync
+        "finance.py:open_dispute_endpoint",       # dispute recording
+        "finance.py:set_budget_endpoint",         # budget limits
+        "notifications.py:generate_drafts_endpoint", # draft generation
+        "notifications.py:update_draft_endpoint",    # draft updates
+        "notifications.py:approve_draft_endpoint",   # draft approval
+        "notifications.py:send_draft_endpoint",      # mock dispatch
+        "premortem.py:run_targeted_disruption_endpoint", # sandbox disruption drill
+        "premortem.py:run_multi_disruptions_endpoint",   # seeded sandbox multi-drill
         "schedule.py:generate_schedule_sessions", # pure schedule solver
         "schedule.py:post_generate_schedule",     # pure schedule solver
         "schedule.py:calculate_session_moves",    # candidate move evaluation
         "schedule.py:evaluate_fairness_proposals",# pure fairness metric calculator
         "vendors.py:post_shutdown_impact",        # simulation preview
+        "vendors.py:shutdown_impact_endpoint",    # simulation preview
         "vendors.py:post_assign_vendor",          # calls ChangeService
         "approvals.py:post_approve",              # governance sign-off gate
         "approvals.py:post_reject",               # governance rejection gate
@@ -102,6 +121,7 @@ def check_mutation_routes() -> Tuple[bool, List[str]]:
         "overrides.py:post_create_override",      # override register recording
         "reconciliation.py:keep_separate_decision", # keep-separate classification
         "unknowns.py:create_field_confirmation_token", # token generator
+        "unknowns.py:create_batched_confirmation_request", # batched token generator
         "unknowns.py:submit_token_confirmation",  # verification submit
         "venues.py:update_travel_time",           # travel matrix configuration
         "venues.py:set_venue_event_compatibility",# compatibility matrix configuration
