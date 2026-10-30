@@ -253,3 +253,41 @@ Format:
   - Order 40 seeder ingests `inventory_logistics.csv` and `inventory_merch.csv`.
 - **Action Required**:
   - Run database seeders to populate initial logistics and merchandise inventory.
+
+### 2026-10-31: P1/13-staff-transport (Staff and Volunteer Management & Duty-of-Care Shuttle Planner)
+- **Author**: P1 Lead
+- **Branch**: `p1/13-staff-transport`
+- **Endpoints Added**:
+  - `GET /api/v1/staff`: List staff profiles with roles, shift bands, skills, and status.
+  - `GET /api/v1/staff/shifts`: Scheduled shifts and venue assignments.
+  - `POST /api/v1/staff/shifts/assign`: Assign staff member to shift/session via ChangeService (`staff.assign`).
+  - `POST /api/v1/staff/shifts/{id}/replace`: Emergency replacement via ChangeService (`staff.replace`); strictly enforces mandatory handover note (`HANDOVER_NOTE_MISSING`).
+  - `GET /api/v1/staff/demand`: Calculates volunteer requirement demand over time from scheduled event sessions vs on-shift core team; surfaces peak requirement, available on shift, and maximum gap.
+  - `GET /api/v1/staff/overloaded`: Returns staff members exceeding daily maximum hours (10h) or consecutive hours (8h).
+  - `GET /api/v1/staff/conflicts`: Surfaces dual roles (competitor-staff), self-escort conflicts, and concurrent shift overlaps/travel infeasibility.
+  - `GET /api/v1/staff/replacements/suggest`: Evaluates and ranks emergency replacement candidates (available, skill-matched, not overloaded, minimal transit).
+  - `GET /api/v1/staff/reports/staff-coverage`: Downloadable CSV report for staff coverage and hourly gap analysis.
+  - `GET /api/v1/staff/{id}`: Detailed staff member profile, active assignments, and workload metrics.
+  - `GET /api/v1/transport/assumptions`: Configurable transport planning assumptions and operational hours, all marked `ASSUMED`.
+  - `PATCH /api/v1/transport/assumptions`: Updates transport planning assumptions via ChangeService (`transport.update_assumptions`).
+  - `GET /api/v1/transport/shuttles/plan`: Calculates required runs per property and time window using $\lceil \text{passengers} / \text{capacity} \rceil$, comparing demand against vehicle capacity.
+  - `GET /api/v1/transport/shuttles/runs`: Lists scheduled, in-transit, and completed shuttle runs.
+  - `POST /api/v1/transport/shuttles/runs`: Creates or dispatches a shuttle run via ChangeService (`transport.create_run`).
+  - `GET /api/v1/transport/safety/night-roster`: Surfaces late-night arrivals/departures and unverified duty-of-care arrangements.
+  - `POST /api/v1/transport/safety/verify`: Marks a participant's night transport and escort verified via ChangeService (`transport.verify_safety`).
+  - `GET /api/v1/transport/guardians/queue`: Dedicated approval queue for minors (<18 years old) residing in external accommodation (~71 baseline minors).
+  - `POST /api/v1/transport/guardians/{id}/approve`: Approves or rejects guardian authorization for a minor via ChangeService (`transport.approve_guardian`).
+  - `GET /api/v1/transport/alerts`: High-priority plain-text transport and safety alerts.
+  - `GET /api/v1/transport/coverage/summary`: Safety coverage summary across participants, shuttles, escorts, and external properties.
+  - `GET /api/v1/transport/feasibility`: Evaluates whether travel from/to external property is feasible at a specific timestamp.
+- **Public Functions Added**:
+  - `services/staff/public.py`: `summary`, `risks` (volunteer shortage, staff overload), `dependents`, `staff_coverage_csv`.
+  - `services/transport/public.py`: `summary`, `risks` (unverified night transit, minor guardian pending, shuttle deficit), `dependents`, `transport_feasible` (exposed for accommodation engine rule 6), `resource_load_timeline_csv`.
+  - Registered participant 360 dynamic section `'transport'`.
+- **Breaking Changes / Schema Migrations**:
+  - Upgraded `Staff` and `Shift` models.
+  - Added `Route`, `ShuttleRun`, `EscortAssignment`, `GuardianApproval` models, and upgraded `Transport` and `ShuttleAssignment`.
+  - Added Order 60 seeder (`app.seed.staff_transport`) seeding 48 core team members from `core_team.csv`, 144 baseline shifts, 6 external properties, default vehicles, routes, and 71 baseline minor guardian approval records.
+- **Action Required**:
+  - Run database seeders to populate initial staff profiles, shifts, external properties, and transport fleet.
+
