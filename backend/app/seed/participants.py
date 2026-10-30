@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from sqlmodel import Session
+from sqlmodel import Session, select
 
 from app.core.clock import now
 from app.core.config import settings
@@ -158,9 +158,11 @@ def seed_participants_pack(session: Session) -> None:
         reader = csv.DictReader(f)
         for row in reader:
             pid = row["participant_id"].strip()
+            participants_for_dedupe.append(row)
             existing = session.get(Participant, pid)
             if existing:
                 continue
+
 
             name = row.get("name", "").strip()
             college = row.get("college", "").strip() or None
@@ -277,8 +279,6 @@ def seed_participants_pack(session: Session) -> None:
                     created_at=now(),
                 ))
 
-            participants_for_dedupe.append(row)
-
     session.flush()
     logger.info(f"Seeded {participant_count} participants and raw records.")
 
@@ -293,6 +293,16 @@ def seed_participants_pack(session: Session) -> None:
                 pid = row["participant_id"].strip()
                 eid = row["event_id"].strip()
                 tid = row.get("team_id", "").strip() or None
+                registrations_for_dedupe.append(row)
+
+                existing_reg = session.exec(
+                    select(Registration).where(
+                        Registration.participant_id == pid,
+                        Registration.event_id == eid,
+                    )
+                ).first()
+                if existing_reg:
+                    continue
 
                 reg = Registration(
                     participant_id=pid,
@@ -305,13 +315,12 @@ def seed_participants_pack(session: Session) -> None:
                 )
                 session.add(reg)
                 reg_count += 1
-                registrations_for_dedupe.append(row)
 
         session.flush()
         logger.info(f"Seeded {reg_count} event registrations.")
 
     # 5. Run Pure Deduplication Engine & Persist DuplicateCandidate rows
-    if participants_for_dedupe:
+    if participants_for_dedupe and not session.exec(select(DuplicateCandidate)).first():
         logger.info("Running pure deduplication engine to find candidates...")
         candidates = find_duplicate_candidates(participants_for_dedupe, registrations_for_dedupe)
         dup_count = 0
@@ -330,3 +339,4 @@ def seed_participants_pack(session: Session) -> None:
 
         session.flush()
         logger.info(f"Persisted {dup_count} duplicate candidates.")
+

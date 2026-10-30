@@ -6,10 +6,8 @@ from typing import Any, Dict, List, Optional
 from sqlalchemy import JSON, Column
 from sqlmodel import Field, SQLModel
 
-
 from app.core.clock import now
-from app.models.change import Assumption
-
+from app.models.change import Assumption  # noqa: F401
 
 
 class Venue(SQLModel, table=True):

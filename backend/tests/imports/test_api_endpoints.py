@@ -1,14 +1,13 @@
 # OWNER: P2
 from io import BytesIO
+
 import pytest
-from fastapi.testclient import TestClient
-
-from sqlalchemy.pool import StaticPool
-from sqlmodel import Session, SQLModel, create_engine
-
 from app.core.db import get_session
 from app.main import app
 from app.services.assumptions.service import seed_all_assumptions
+from fastapi.testclient import TestClient
+from sqlalchemy.pool import StaticPool
+from sqlmodel import Session, SQLModel, create_engine
 
 
 @pytest.fixture
@@ -88,7 +87,7 @@ def test_imports_api_upload_and_promote(client: TestClient):
         b"contingent_id,name,declared_strength,contact_phone\n"
         b"C88,API Test College,45,9876543210\n"
     )
-    
+
     # 1. POST /imports (upload)
     files = {"file": ("contingents.csv", BytesIO(csv_bytes), "text/csv")}
     resp = client.post("/api/v1/imports", files=files)

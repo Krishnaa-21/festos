@@ -15,7 +15,7 @@ def summary(session: Session, now: datetime) -> Dict[str, Any]:
     """Return module KPI summary as of `now`."""
     assumptions = session.exec(select(Assumption)).all()
     owners = set(a.owner for a in assumptions if a.owner)
-    
+
     last_updated = None
     if assumptions:
         dates = [a.updated_at for a in assumptions if a.updated_at]

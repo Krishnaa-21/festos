@@ -1,11 +1,10 @@
 # OWNER: P2
-import pytest
 from pathlib import Path
 
+import pytest
 from app.engines.importer import (
     MalformedCSVError,
     MissingColumnsError,
-    get_mapping_config,
     normalizers,
     parse_csv_content,
     validate_cross_pack,

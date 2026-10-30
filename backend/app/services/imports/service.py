@@ -6,15 +6,14 @@ import io
 import logging
 import uuid
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, List, Optional, Tuple
 
-from sqlmodel import Session, func, select
+from sqlmodel import Session, select
 
+import app.services.imports.handlers  # noqa: F401
 from app.core.change_service import ChangeRequest, ChangeResult, execute_change
 from app.core.clock import now
 from app.engines.importer import (
-    MalformedCSVError,
-    MissingColumnsError,
     ParsedImportResult,
     ValidationIssue,
     get_mapping_config,
@@ -35,7 +34,7 @@ from app.models.participants import (
 )
 from app.models.staff import Staff
 from app.models.vendors import Vendor
-from app.schemas.common import Actor, Severity
+from app.schemas.common import Actor
 from app.schemas.imports import (
     DataQualityIssueItem,
     DataQualityReport,
@@ -45,7 +44,6 @@ from app.schemas.imports import (
     ImportBatchResponse,
     QuarantineIssueItem,
 )
-import app.services.imports.handlers  # noqa: F401
 from app.services.assumptions.service import get_assumption
 
 logger = logging.getLogger("festos.imports")

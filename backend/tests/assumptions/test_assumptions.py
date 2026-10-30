@@ -1,20 +1,16 @@
 # OWNER: P2
-from datetime import time
 import pytest
-from sqlmodel import Session, select
-
 from app.models.change import ChangeSet
 from app.models.ops import Assumption
 from app.schemas.common import Actor, Role
 from app.services.assumptions.service import (
-    ASSUMPTION_CATALOG,
     clear_assumption_cache,
     get_assumption,
     get_assumption_dependents,
-    list_assumptions,
     seed_all_assumptions,
     update_assumption,
 )
+from sqlmodel import Session, select
 
 
 @pytest.fixture

@@ -1,11 +1,10 @@
 # OWNER: P2
 from __future__ import annotations
 
-import os
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
-import yaml
 
+import yaml
 from app.engines.importer.normalizers import (
     normalize_accessibility,
     normalize_condition,

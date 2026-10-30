@@ -1,5 +1,9 @@
 # OWNER: P2
-from app.engines.importer.mapping import ColumnMappingConfig, get_mapping_config, map_and_normalize_row
+from app.engines.importer.mapping import (
+    ColumnMappingConfig,
+    get_mapping_config,
+    map_and_normalize_row,
+)
 from app.engines.importer.normalizers import (
     format_ist,
     normalize_accessibility,

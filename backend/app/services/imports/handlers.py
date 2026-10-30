@@ -1,14 +1,13 @@
 # OWNER: P2
 from __future__ import annotations
 
-from datetime import datetime
 import logging
-from typing import Any, Dict, List, Optional
+from datetime import datetime
+from typing import Any, Dict, List
 
 from sqlmodel import Session, select
 
 from app.core.clock import now
-
 from app.core.registry import register_change_handler
 from app.models.accommodation import ExternalProperty, Room
 from app.models.events import Event

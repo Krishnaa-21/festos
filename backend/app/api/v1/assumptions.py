@@ -1,15 +1,11 @@
 # OWNER: P2
-from typing import Any, Dict, List, Optional
-
-from fastapi import APIRouter, Depends, Header, HTTPException, Query
-from sqlmodel import Session
+from typing import List, Optional
 
 from app.core.change_service import ChangeRequest, ChangeResult, execute_change
 from app.core.db import get_session
 from app.core.deps import get_actor
 from app.schemas.assumptions import (
     AssumptionDependentsResponse,
-    AssumptionHistoryItem,
     AssumptionHistoryResponse,
     AssumptionItem,
     AssumptionUpdateRequest,
@@ -21,6 +17,8 @@ from app.services.assumptions.service import (
     get_assumption_history,
     list_assumptions,
 )
+from fastapi import APIRouter, Depends, Header, HTTPException, Query
+from sqlmodel import Session
 
 router = APIRouter(prefix="/assumptions", tags=["Assumptions"])
 

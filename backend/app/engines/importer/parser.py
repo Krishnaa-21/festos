@@ -5,7 +5,7 @@ import csv
 import hashlib
 import io
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
 from app.engines.importer.mapping import (
     ColumnMappingConfig,
