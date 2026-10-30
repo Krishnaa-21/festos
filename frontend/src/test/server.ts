@@ -1198,7 +1198,1468 @@ export const handlers = [
       warnings: [],
     });
   }),
+
+  // --- EVENTS & VENUES & SCHEDULE ---
+  http.get("*/api/v1/events", ({ request }) => {
+    const url = new URL(request.url);
+    const q = url.searchParams.get("q")?.toLowerCase();
+    const items = [
+      {
+        id: "E01",
+        name: "Aarohan Vocals Solo",
+        solo_team: "SOLO",
+        rounds: 3,
+        rounds_text: "prelims|semis|finals",
+        duration_min: 90,
+        venue_requirements: "stage; audio; seating",
+        equipment_needs: "microphones; audio mixer; cables",
+        volunteers_needed: 6,
+        judges_needed: 2,
+        registrations_count: 142,
+        status: "ACTIVE",
+      },
+      {
+        id: "E02",
+        name: "Battle of the Bands",
+        solo_team: "TEAM",
+        rounds: 2,
+        rounds_text: "prelims|finals",
+        duration_min: 120,
+        venue_requirements: "stage; audio; power",
+        equipment_needs: "drum kit; amplifiers; audio mixer",
+        volunteers_needed: 10,
+        judges_needed: 3,
+        registrations_count: 28,
+        status: "ACTIVE",
+      },
+      {
+        id: "E03",
+        name: "Case Clash",
+        solo_team: "TEAM",
+        rounds: 3,
+        rounds_text: "prelims|semis|finals",
+        duration_min: 120,
+        venue_requirements: "power; tables; projector",
+        equipment_needs: "projector; extension cords",
+        volunteers_needed: 8,
+        judges_needed: 3,
+        registrations_count: 48,
+        status: "ACTIVE",
+      },
+      {
+        id: "E04",
+        name: "Street Play (Nukkad Natak)",
+        solo_team: "TEAM",
+        rounds: 1,
+        rounds_text: "single",
+        duration_min: 90,
+        venue_requirements: "open ground",
+        equipment_needs: "barricades; megaphone",
+        volunteers_needed: 12,
+        judges_needed: 2,
+        registrations_count: 18,
+        status: "ACTIVE",
+      },
+      {
+        id: "E05",
+        name: "Choreo Night",
+        solo_team: "TEAM",
+        rounds: 2,
+        rounds_text: "prelims|finals",
+        duration_min: 150,
+        venue_requirements: "stage; lights; audio",
+        equipment_needs: "lighting rigs; smoke machine; wireless mics",
+        volunteers_needed: 15,
+        judges_needed: 4,
+        registrations_count: 32,
+        status: "ACTIVE",
+      },
+    ];
+
+    const filtered = q
+      ? items.filter((it) => it.name.toLowerCase().includes(q) || it.id.toLowerCase().includes(q))
+      : items;
+
+    return HttpResponse.json({
+      data: {
+        items: filtered,
+        total: filtered.length,
+        page: 1,
+        page_size: 50,
+        total_pages: 1,
+      },
+      meta: {},
+      warnings: [],
+    });
+  }),
+
+  http.put("*/api/v1/events/:id", async ({ params, request }) => {
+    const id = params.id as string;
+    const body = (await request.json()) as any;
+    return HttpResponse.json({
+      data: {
+        id,
+        status: "UPDATED",
+        ...body,
+      },
+      meta: {},
+      warnings: [],
+    });
+  }),
+
+  http.get("*/api/v1/venues", () => {
+    return HttpResponse.json({
+      data: {
+        items: [
+          {
+            id: "V01",
+            name: "Main Auditorium",
+            capacity: 650,
+            indoor_outdoor: "indoor",
+            accessible: true,
+            setup_time_min: 20,
+            teardown_time_min: 20,
+            feature_tags: ["stage", "audio", "lights", "air conditioned"],
+            availability_windows: "08:00-23:00",
+            status: "AVAILABLE",
+          },
+          {
+            id: "V02",
+            name: "Management Hall 1",
+            capacity: 180,
+            indoor_outdoor: "indoor",
+            accessible: true,
+            setup_time_min: 15,
+            teardown_time_min: 15,
+            feature_tags: ["projector", "power", "seating", "quiet room"],
+            availability_windows: "08:00-22:00",
+            status: "AVAILABLE",
+          },
+          {
+            id: "V03",
+            name: "Management Hall 2",
+            capacity: 180,
+            indoor_outdoor: "indoor",
+            accessible: true,
+            setup_time_min: 15,
+            teardown_time_min: 15,
+            feature_tags: ["projector", "power", "seating"],
+            availability_windows: "08:00-22:00",
+            status: "AVAILABLE",
+          },
+          {
+            id: "V04",
+            name: "Amphitheatre",
+            capacity: 450,
+            indoor_outdoor: "outdoor",
+            accessible: true,
+            setup_time_min: 25,
+            teardown_time_min: 25,
+            feature_tags: ["open ground", "stage", "seating", "audio"],
+            availability_windows: "09:00-23:00",
+            status: "AVAILABLE",
+          },
+          {
+            id: "V05",
+            name: "Sports Complex Plaza",
+            capacity: 350,
+            indoor_outdoor: "outdoor",
+            accessible: false,
+            setup_time_min: 15,
+            teardown_time_min: 15,
+            feature_tags: ["open ground", "power"],
+            availability_windows: "08:00-20:00",
+            status: "AVAILABLE",
+          },
+        ],
+        total: 5,
+      },
+      meta: {},
+      warnings: [],
+    });
+  }),
+
+  http.put("*/api/v1/venues/:id", async ({ params, request }) => {
+    const id = params.id as string;
+    const body = (await request.json()) as any;
+    return HttpResponse.json({
+      data: {
+        id,
+        status: "UPDATED",
+        ...body,
+      },
+      meta: {},
+      warnings: [],
+    });
+  }),
+
+  http.get("*/api/v1/venues/compatibility", () => {
+    return HttpResponse.json({
+      data: {
+        mapping: {
+          "stage; audio; seating": ["V01", "V04"],
+          "stage; audio; power": ["V01", "V04"],
+          "power; tables; projector": ["V02", "V03"],
+          "open ground": ["V04", "V05"],
+          "stage; lights; audio": ["V01"],
+        },
+        status: "ASSUMED",
+        notes: "Derived from prototype requirements mapping; editable by Event Lead.",
+      },
+      meta: {},
+      warnings: ["Venue-event compatibility is ASSUMED because raw dataset contains no explicit venue assignments."],
+    });
+  }),
+
+  http.put("*/api/v1/venues/compatibility", async ({ request }) => {
+    const body = (await request.json()) as any;
+    return HttpResponse.json({
+      data: {
+        status: "UPDATED",
+        requirement_key: body.requirement_key,
+        venue_ids: body.venue_ids,
+        reason: body.reason,
+      },
+      meta: {},
+      warnings: [],
+    });
+  }),
+
+  http.get("*/api/v1/schedule/timeline", () => {
+    return HttpResponse.json({
+      data: {
+        status: "ASSUMED",
+        venues: [
+          {
+            venue_id: "V01",
+            venue_name: "Main Auditorium",
+            blocks: [
+              {
+                session_id: "ses_001",
+                event_id: "E01",
+                event_name: "Aarohan Vocals Solo",
+                round: "prelims",
+                heat: "Heat 1",
+                start: "2026-10-31T09:00:00Z",
+                end: "2026-10-31T10:30:00Z",
+                setup_start: "2026-10-31T08:45:00Z",
+                teardown_end: "2026-10-31T10:45:00Z",
+                entrants_count: 45,
+                judges_assigned: 1,
+                judges_needed: 2,
+                judge_gap: true,
+                status: "ASSUMED",
+              },
+              {
+                session_id: "ses_002",
+                event_id: "E02",
+                event_name: "Battle of the Bands",
+                round: "prelims",
+                heat: "Heat 1",
+                start: "2026-10-31T11:15:00Z",
+                end: "2026-10-31T13:15:00Z",
+                setup_start: "2026-10-31T10:55:00Z",
+                teardown_end: "2026-10-31T13:35:00Z",
+                entrants_count: 14,
+                judges_assigned: 3,
+                judges_needed: 3,
+                judge_gap: false,
+                status: "ASSUMED",
+              },
+            ],
+          },
+          {
+            venue_id: "V02",
+            venue_name: "Management Hall 1",
+            blocks: [
+              {
+                session_id: "ses_003",
+                event_id: "E03",
+                event_name: "Case Clash",
+                round: "prelims",
+                heat: "Track A",
+                start: "2026-10-31T09:30:00Z",
+                end: "2026-10-31T11:30:00Z",
+                setup_start: "2026-10-31T09:15:00Z",
+                teardown_end: "2026-10-31T11:45:00Z",
+                entrants_count: 24,
+                judges_assigned: 2,
+                judges_needed: 3,
+                judge_gap: true,
+                status: "ASSUMED",
+              },
+            ],
+          },
+          {
+            venue_id: "V04",
+            venue_name: "Amphitheatre",
+            blocks: [
+              {
+                session_id: "ses_004",
+                event_id: "E04",
+                event_name: "Street Play (Nukkad Natak)",
+                round: "single",
+                heat: "Round 1",
+                start: "2026-10-31T10:00:00Z",
+                end: "2026-10-31T11:30:00Z",
+                setup_start: "2026-10-31T09:35:00Z",
+                teardown_end: "2026-10-31T11:55:00Z",
+                entrants_count: 18,
+                judges_assigned: 2,
+                judges_needed: 2,
+                judge_gap: false,
+                status: "ASSUMED",
+              },
+            ],
+          },
+        ],
+      },
+      meta: {
+        benchmark: "172 prototype sessions generated; labelled ASSUMED",
+      },
+      warnings: ["Schedule is labelled ASSUMED. Raw data contains no event times or venue assignments."],
+    });
+  }),
+
+  // Conflict list and resolutions
+  http.get("*/api/v1/schedule/conflicts", () => {
+    return HttpResponse.json({
+      data: {
+        total: 10,
+        items: [
+          {
+            id: "cfl_01",
+            conflict_type: "PARTICIPANT_CLASH",
+            severity: 4,
+            status: "OPEN",
+            description: "Participant P0042 (Aarav Sharma) double-booked between E01 Heat M1 (09:00-10:30) and E03 Track A (09:30-11:30)",
+            people_affected: 1,
+            entity_refs: { participant_id: "P0042", session_a: "ses_001", session_b: "ses_003" },
+          },
+          {
+            id: "cfl_02",
+            conflict_type: "VENUE_DOUBLE_BOOKING",
+            severity: 4,
+            status: "OPEN",
+            description: "Main Auditorium (V01) assigned to two concurrent sessions: ses_001 and ses_099",
+            people_affected: 59,
+            entity_refs: { venue_id: "V01", session_a: "ses_001", session_b: "ses_099" },
+          },
+          {
+            id: "cfl_03",
+            conflict_type: "JUDGE_DOUBLE_BOOKING",
+            severity: 3,
+            status: "OPEN",
+            description: "Judge J04 (Dr. K. Verma) assigned concurrently to E01 in V01 and E05 in V04",
+            people_affected: 45,
+            entity_refs: { judge_id: "J04", session_a: "ses_001", session_b: "ses_005" },
+          },
+          {
+            id: "cfl_04",
+            conflict_type: "TEARDOWN_SETUP_OVERLAP",
+            severity: 3,
+            status: "OPEN",
+            description: "Teardown of ses_001 ends at 10:45 but setup of ses_002 begins at 10:40 (5m overlap)",
+            people_affected: 20,
+            entity_refs: { venue_id: "V01", session_a: "ses_001", session_b: "ses_002" },
+          },
+          {
+            id: "cfl_05",
+            conflict_type: "TRAVEL_TIME_INSUFFICIENT",
+            severity: 3,
+            status: "OPEN",
+            description: "Contingent C05 has only 5m transition between V01 and V05 (minimum travel time 15m required)",
+            people_affected: 18,
+            entity_refs: { contingent_id: "C05", from_venue: "V01", to_venue: "V05" },
+          },
+          {
+            id: "cfl_06",
+            conflict_type: "ROUND_DEPENDENCY_TIMING",
+            severity: 3,
+            status: "OPEN",
+            description: "Semis scheduled before prelims results compilation buffer (60m required)",
+            people_affected: 32,
+            entity_refs: { event_id: "E01", prelim_session: "ses_001", semi_session: "ses_012" },
+          },
+          {
+            id: "cfl_07",
+            conflict_type: "ARRIVAL_WINDOW_BREACH",
+            severity: 2,
+            status: "OPEN",
+            description: "Heat scheduled at 08:30 for participants arriving at 09:15 train",
+            people_affected: 12,
+            entity_refs: { session_id: "ses_001", contingent_id: "C12" },
+          },
+          {
+            id: "cfl_08",
+            conflict_type: "CAPACITY_EXCEEDED",
+            severity: 2,
+            status: "OPEN",
+            description: "Registration count (195) exceeds Management Hall 1 seated capacity (180)",
+            people_affected: 15,
+            entity_refs: { venue_id: "V02", session_id: "ses_003" },
+          },
+          {
+            id: "cfl_09",
+            conflict_type: "EQUIPMENT_UNAVAILABLE",
+            severity: 2,
+            status: "OPEN",
+            description: "High-power audio rig reserved simultaneously by ses_002 and ses_004",
+            people_affected: 30,
+            entity_refs: { equipment_id: "itm_audio_01" },
+          },
+          {
+            id: "cfl_10",
+            conflict_type: "ACCESSIBILITY_UNMET",
+            severity: 4,
+            status: "OPEN",
+            description: "Participant requiring wheelchair access scheduled in non-accessible venue V05",
+            people_affected: 1,
+            entity_refs: { participant_id: "P0291", venue_id: "V05" },
+          },
+        ],
+      },
+      meta: {
+        types_checked: 10,
+        open_conflicts: 10,
+      },
+      warnings: ["Zero venue overlaps does not mean zero conflicts: all 10 types are checked."],
+    });
+  }),
+
+  http.get("*/api/v1/schedule/conflicts/:id/resolutions", ({ params }) => {
+    const id = params.id as string;
+    return HttpResponse.json({
+      data: {
+        conflict_id: id,
+        recommendations: [
+          {
+            id: "res_01",
+            rank: 1,
+            action: "schedule.move_session",
+            rationale: "Shift ses_003 (Case Clash) start to 11:45 after ses_001 teardown and buffer",
+            conflicts_resolved: 2,
+            new_conflicts_created: 0,
+            people_affected: 24,
+            suggested_start_at: "2026-10-31T11:45:00Z",
+            suggested_venue_id: "V02",
+          },
+          {
+            id: "res_02",
+            rank: 2,
+            action: "schedule.change_venue",
+            rationale: "Reassign ses_003 to V03 (Management Hall 2) to eliminate venue contention",
+            conflicts_resolved: 1,
+            new_conflicts_created: 0,
+            people_affected: 24,
+            suggested_start_at: "2026-10-31T09:30:00Z",
+            suggested_venue_id: "V03",
+          },
+        ],
+      },
+      meta: {},
+      warnings: [],
+    });
+  }),
+
+  http.post("*/api/v1/schedule/conflicts/:id/apply-resolution", async ({ params, request }) => {
+    const id = params.id as string;
+    const body = (await request.json()) as any;
+    return HttpResponse.json({
+      data: {
+        status: "APPLIED",
+        conflict_id: id,
+        applied_action: body.action || "schedule.move_session",
+        reason: body.reason || "Applied ranked resolution candidate",
+        change_set_id: "cs_sch_res_881",
+      },
+      meta: {},
+      warnings: [],
+    });
+  }),
+
+  http.get("*/api/v1/schedule/unscheduled", () => {
+    return HttpResponse.json({
+      data: {
+        total_registrations: 5580,
+        scheduled_count: 4593,
+        unscheduled_count: 987,
+        unplaced_later_round_sessions: 28,
+        reasons_breakdown: {
+          NOT_ON_SITE_LONG_ENOUGH: 412,
+          NO_SLOT_VENUE_FULL_OR_PERSONAL_CLASH: 575,
+        },
+        items: [
+          {
+            participant_id: "P0012",
+            participant_name: "Karan Patel",
+            event_id: "E05",
+            event_name: "Choreo Night",
+            contingent_id: "C02",
+            contingent_name: "BITS Pilani",
+            reason: "NOT_ON_SITE_LONG_ENOUGH",
+            arrival_datetime: "2026-10-31T22:00:00Z",
+            departure_datetime: "2026-11-01T14:00:00Z",
+            alternatives: ["Request arrival extension", "Schedule in Late-Arrival Wave L1"],
+          },
+          {
+            participant_id: "P0088",
+            participant_name: "Sneha Reddy",
+            event_id: "E01",
+            event_name: "Aarohan Vocals Solo",
+            contingent_id: "C09",
+            contingent_name: "St. Xavier's",
+            reason: "NO_SLOT_VENUE_FULL_OR_PERSONAL_CLASH",
+            arrival_datetime: "2026-10-31T08:00:00Z",
+            departure_datetime: "2026-11-02T18:00:00Z",
+            alternatives: ["Add supplementary heat M3", "Wildcard finals entry"],
+          },
+          {
+            participant_id: "P0145",
+            participant_name: "Rahul Verma",
+            event_id: "E03",
+            event_name: "Case Clash",
+            contingent_id: "C14",
+            contingent_name: "IIM Ahmedabad",
+            reason: "NO_SLOT_VENUE_FULL_OR_PERSONAL_CLASH",
+            arrival_datetime: "2026-10-31T10:00:00Z",
+            departure_datetime: "2026-11-02T16:00:00Z",
+            alternatives: ["Reassign to Track B in V03", "Split slot into 2 heats"],
+          },
+        ],
+      },
+      meta: {
+        prototype_benchmark: "987 unscheduled registrations tracked transparently",
+      },
+      warnings: ["Never silently drop participants: all 987 unscheduled registrations are tracked with explanations."],
+    });
+  }),
+
+  http.get("*/api/v1/schedule/versions", () => {
+    return HttpResponse.json({
+      data: {
+        items: [
+          {
+            id: "sch_v1_0",
+            plan_name: "Plan Alpha (Greedy Graph Clustered)",
+            status: "ASSUMED",
+            sessions_count: 172,
+            conflicts_count: 10,
+            unscheduled_count: 987,
+            created_at: "2026-10-30T09:00:00Z",
+            created_by: "EVENT_LEAD",
+            is_active: true,
+          },
+          {
+            id: "sch_v0_9",
+            plan_name: "Plan Baseline (Sequential Heuristic)",
+            status: "ARCHIVED",
+            sessions_count: 154,
+            conflicts_count: 24,
+            unscheduled_count: 1102,
+            created_at: "2026-10-29T18:00:00Z",
+            created_by: "EVENT_LEAD",
+            is_active: false,
+          },
+        ],
+        total: 2,
+      },
+      meta: {},
+      warnings: [],
+    });
+  }),
+
+  http.post("*/api/v1/schedule/versions/:id/restore", async ({ params, request }) => {
+    const id = params.id as string;
+    const body = (await request.json()) as any;
+    return HttpResponse.json({
+      data: {
+        status: "APPLIED",
+        restored_version_id: id,
+        reason: body.reason || "Restored schedule version",
+        change_set_id: "cs_sch_rst_109",
+      },
+      meta: {},
+      warnings: [],
+    });
+  }),
+
+  http.get("*/api/v1/schedule/fairness-decisions", () => {
+    return HttpResponse.json({
+      data: {
+        decisions: [
+          {
+            id: "dec_late_wave",
+            title: "Late Arrival Wave on Nov 1 Morning",
+            type: "LATE_WAVE",
+            status: "PENDING_APPROVAL",
+            requires_role: "FESTIVAL_DIRECTOR",
+            affected_participants: 138,
+            reason: "13% of registered contingents arrive late night Oct 31 due to train delays.",
+            action_route: "/approvals",
+          },
+          {
+            id: "dec_wildcard_finals",
+            title: "Wildcard Slot in Aarohan Vocals Finals",
+            type: "WILDCARD_FINALS",
+            status: "PENDING_APPROVAL",
+            requires_role: "FESTIVAL_DIRECTOR",
+            affected_participants: 1,
+            reason: "Top scorer from prelims had emergency transport breakdown.",
+            action_route: "/approvals",
+          },
+        ],
+      },
+      meta: {},
+      warnings: [],
+    });
+  }),
+
+  // --- LOGISTICS & EQUIPMENT ---
+  http.get("*/api/v1/logistics/items", () => {
+    return HttpResponse.json({
+      data: {
+        items: [
+          {
+            id: "itm_cam_01",
+            name: "Camera (DSLR 4K Media)",
+            code: "L13-1",
+            kind: "equipment",
+            condition: "UNDER_REPAIR",
+            location_id: "loc_reg_desk",
+            location_name: "Registration Desk Store",
+            on_hand: 31,
+            reserved: 0,
+            in_transit: 0,
+            damaged: 0,
+            under_repair: 31,
+            awaiting_return: 0,
+            available: 0,
+            low_stock_threshold: 3,
+          },
+          {
+            id: "itm_mic_01",
+            name: "Wireless Handheld Microphone",
+            code: "EQ-MIC-01",
+            kind: "equipment",
+            condition: "GOOD",
+            location_id: "loc_store_a",
+            location_name: "Central Store A",
+            on_hand: 40,
+            reserved: 12,
+            in_transit: 4,
+            damaged: 2,
+            under_repair: 0,
+            awaiting_return: 2,
+            available: 20,
+            low_stock_threshold: 10,
+          },
+          {
+            id: "itm_tab_01",
+            name: "Folding Conference Table (6ft)",
+            code: "EQ-TAB-02",
+            kind: "equipment",
+            condition: "NEEDS_CHECK",
+            location_id: "loc_sports_complex",
+            location_name: "Sports Complex",
+            on_hand: 42,
+            reserved: 20,
+            in_transit: 0,
+            damaged: 0,
+            under_repair: 0,
+            awaiting_return: 0,
+            available: 22,
+            low_stock_threshold: 15,
+          },
+          {
+            id: "itm_proj_01",
+            name: "HDMI Laser Projector (5000 Lumens)",
+            code: "EQ-PRJ-01",
+            kind: "equipment",
+            condition: "GOOD",
+            location_id: "loc_main_auditorium",
+            location_name: "Main Auditorium",
+            on_hand: 12,
+            reserved: 8,
+            in_transit: 1,
+            damaged: 1,
+            under_repair: 0,
+            awaiting_return: 0,
+            available: 2,
+            low_stock_threshold: 4,
+          },
+          {
+            id: "itm_barr_01",
+            name: "Crowd Control Barricade",
+            code: "EQ-BAR-01",
+            kind: "equipment",
+            condition: "GOOD",
+            location_id: "loc_sports_complex",
+            location_name: "Sports Complex",
+            on_hand: 100,
+            reserved: 40,
+            in_transit: 20,
+            damaged: 5,
+            under_repair: 0,
+            awaiting_return: 0,
+            available: 35,
+            low_stock_threshold: 25,
+          },
+        ],
+        total: 5,
+      },
+      meta: {},
+      warnings: [],
+    });
+  }),
+
+  http.get("*/api/v1/logistics/locations", () => {
+    return HttpResponse.json({
+      data: {
+        locations: [
+          { id: "loc_store_a", name: "Central Store A", building: "Administrative Block", items_count: 240 },
+          { id: "loc_reg_desk", name: "Registration Desk Store", building: "Welcome Centre", items_count: 145 },
+          { id: "loc_main_auditorium", name: "Main Auditorium Backstage", building: "Auditorium", items_count: 85 },
+          { id: "loc_sports_complex", name: "Sports Complex Ground", building: "Sports Complex", items_count: 190 },
+        ],
+      },
+      meta: {},
+      warnings: [],
+    });
+  }),
+
+  http.get("*/api/v1/logistics/transfers", () => {
+    return HttpResponse.json({
+      data: {
+        transfers: [
+          {
+            id: "trf_001",
+            item_id: "itm_mic_01",
+            item_name: "Wireless Handheld Microphone",
+            quantity: 4,
+            from_location_id: "loc_store_a",
+            from_location_name: "Central Store A",
+            to_location_id: "loc_main_auditorium",
+            to_location_name: "Main Auditorium Backstage",
+            vehicle: "Utility Van 1",
+            status: "IN_TRANSIT",
+            eta: "2026-10-31T10:45:00Z",
+            minutes_remaining: 12,
+          },
+          {
+            id: "trf_002",
+            item_id: "itm_barr_01",
+            item_name: "Crowd Control Barricade",
+            quantity: 20,
+            from_location_id: "loc_store_a",
+            from_location_name: "Central Store A",
+            to_location_id: "loc_sports_complex",
+            to_location_name: "Sports Complex Ground",
+            vehicle: "Electric Buggy 2",
+            status: "IN_TRANSIT",
+            eta: "2026-10-31T11:00:00Z",
+            minutes_remaining: 27,
+          },
+        ],
+      },
+      meta: {},
+      warnings: [],
+    });
+  }),
+
+  http.post("*/api/v1/logistics/transfers/:id/complete", async ({ params }) => {
+    const id = params.id as string;
+    return HttpResponse.json({
+      data: {
+        transfer_id: id,
+        status: "COMPLETED",
+        completed_at: new Date().toISOString(),
+      },
+      meta: {},
+      warnings: [],
+    });
+  }),
+
+  http.get("*/api/v1/logistics/movements", () => {
+    return HttpResponse.json({
+      data: {
+        items: [
+          {
+            id: "mvt_001",
+            item_id: "itm_mic_01",
+            item_name: "Wireless Handheld Microphone",
+            movement_type: "TRANSFER_OUT",
+            from_location: "Central Store A",
+            to_location: "Main Auditorium Backstage",
+            quantity: 4,
+            actor: "LOGISTICS_MANAGER",
+            reason: "Transfer for soundcheck in Auditorium",
+            created_at: "2026-10-31T09:30:00Z",
+          },
+          {
+            id: "mvt_002",
+            item_id: "itm_proj_01",
+            item_name: "HDMI Laser Projector",
+            movement_type: "DAMAGE",
+            from_location: "Main Auditorium Backstage",
+            to_location: null,
+            quantity: 1,
+            actor: "LOGISTICS_MANAGER",
+            reason: "Bulb burnt out during trial",
+            created_at: "2026-10-31T08:15:00Z",
+          },
+          {
+            id: "mvt_003",
+            item_id: "itm_barr_01",
+            item_name: "Crowd Control Barricade",
+            movement_type: "RECEIVE",
+            from_location: "External Supplier",
+            to_location: "Central Store A",
+            quantity: 100,
+            actor: "LOGISTICS_MANAGER",
+            reason: "Vendor delivery batch 1",
+            created_at: "2026-10-30T14:00:00Z",
+          },
+        ],
+        total: 3,
+      },
+      meta: {},
+      warnings: [],
+    });
+  }),
+
+  http.get("*/api/v1/logistics/equipment/find", ({ request }) => {
+    const url = new URL(request.url);
+    const itemName = url.searchParams.get("item_name") || "projector";
+    return HttpResponse.json({
+      data: {
+        item_name: itemName,
+        venue_id: "V01",
+        quantity_needed: 1,
+        available_on_site: [
+          {
+            item_id: "itm_proj_01",
+            location_id: "loc_main_auditorium",
+            available_units: 2,
+          },
+        ],
+        transfer_needed: [
+          {
+            item_id: "itm_proj_backup",
+            source_location_id: "loc_store_a",
+            source_location_name: "Central Store A",
+            available_units: 6,
+            travel_time_min: 15,
+            transfer_duration_min: 15,
+            feasible: true,
+            latest_departure: "2026-10-31T10:00:00Z",
+          },
+        ],
+        shortage: 0,
+      },
+      meta: {},
+      warnings: [],
+    });
+  }),
+
+  http.get("*/api/v1/logistics/reconciliation-flags", () => {
+    return HttpResponse.json({
+      data: {
+        flags: [
+          {
+            code: "CAMERA_ALL_UNDER_REPAIR",
+            item: "camera",
+            needed: 3,
+            available_good: 0,
+            total_under_repair: 31,
+            severity: "HIGH",
+            message: "All 31 cameras across 4 locations are logged as 'under repair'; 3 needed for Media Coverage.",
+            action_label: "Inspect Cameras / Reconcile",
+          },
+          {
+            code: "TABLES_NEEDS_CHECK",
+            item: "table",
+            location: "Sports Complex",
+            quantity: 42,
+            condition: "needs check",
+            severity: "MEDIUM",
+            message: "42 tables in Sports Complex flagged 'needs check'; physical condition unverified before morning session.",
+            action_label: "Verify Physical Condition",
+          },
+        ],
+      },
+      meta: {},
+      warnings: [],
+    });
+  }),
+
+  http.post("*/api/v1/logistics/stocktake", async ({ request }) => {
+    const body = (await request.json()) as any;
+    return HttpResponse.json({
+      data: {
+        status: "APPLIED",
+        item_id: body.item_id || "itm_cam_01",
+        delta: body.delta || 0,
+        new_on_hand: body.counted_quantity || 31,
+        reason: body.reason || "Physical count reconciled",
+      },
+      meta: {},
+      warnings: [],
+    });
+  }),
+
+  // --- MERCHANDISE & COUNTER MODE ---
+  http.get("*/api/v1/merchandise/catalog", () => {
+    return HttpResponse.json({
+      data: {
+        items: [
+          { id: "mch_tshirt_s", name: "Festival T-shirt (Size S)", size: "S", on_hand: 449, reserved: 20, available: 429, is_per_head: true },
+          { id: "mch_tshirt_m", name: "Festival T-shirt (Size M)", size: "M", on_hand: 115, reserved: 15, available: 100, is_per_head: true },
+          { id: "mch_tshirt_l", name: "Festival T-shirt (Size L)", size: "L", on_hand: 234, reserved: 30, available: 204, is_per_head: true },
+          { id: "mch_tshirt_xl", name: "Festival T-shirt (Size XL)", size: "XL", on_hand: 713, reserved: 29, available: 684, is_per_head: true },
+          { id: "mch_tshirt_xxl", name: "Festival T-shirt (Size XXL)", size: "XXL", on_hand: 136, reserved: 10, available: 126, is_per_head: true },
+          { id: "mch_id_card", name: "Accreditation ID Badge", size: "NA", on_hand: 3200, reserved: 100, available: 3100, is_per_head: true },
+          { id: "mch_lanyard", name: "Fest Lanyard", size: "NA", on_hand: 3200, reserved: 100, available: 3100, is_per_head: true },
+          { id: "mch_tote", name: "Festival Tote Bag", size: "NA", on_hand: 2900, reserved: 150, available: 2750, is_per_head: true },
+        ],
+        total: 8,
+      },
+      meta: {},
+      warnings: [],
+    });
+  }),
+
+  http.get("*/api/v1/merchandise/policy", () => {
+    return HttpResponse.json({
+      data: {
+        policy_name: "Standard Fest Entitlement Baseline",
+        is_editable: true,
+        rules: [
+          { item: "T-shirt", entitlement: "1 per canonical participant", per_head: true },
+          { item: "ID card", entitlement: "1 per canonical participant", per_head: true },
+          { item: "lanyard", entitlement: "1 per canonical participant", per_head: true },
+          { item: "tote", entitlement: "1 per canonical participant", per_head: true },
+          { item: "winner medal", entitlement: "Event result allocation only", per_head: false },
+        ],
+        size_breakdown: {
+          S: { demand: 435, stock: 449, net: 14, shortage_alert: false },
+          M: { demand: 850, stock: 115, net: -735, shortage_alert: true },
+          L: { demand: 620, stock: 234, net: -386, shortage_alert: true },
+          XL: { demand: 680, stock: 713, net: 33, shortage_alert: false },
+          XXL: { demand: 110, stock: 136, net: 26, shortage_alert: false },
+          UNKNOWN: { count: 141, flag: "NEEDS_SIZE_COLLECTION" },
+        },
+      },
+      meta: {
+        note: "Shortages depend on the entitlement policy (1 per verified canonical participant). Demand shifts if policy is relaxed.",
+      },
+      warnings: ["Critical stock shortage detected in sizes M (-735) and L (-386)."],
+    });
+  }),
+
+  http.get("*/api/v1/merchandise/history", () => {
+    return HttpResponse.json({
+      data: {
+        items: [
+          {
+            claim_id: "clm_001",
+            participant_id: "P0012",
+            participant_name: "Karan Patel",
+            item_name: "T-shirt (L)",
+            counter_id: "counter_north_01",
+            issued_by: "usr_vol_01",
+            issued_at: "2026-10-31T08:15:30Z",
+          },
+          {
+            claim_id: "clm_002",
+            participant_id: "P0088",
+            participant_name: "Sneha Reddy",
+            item_name: "Accreditation ID & Lanyard",
+            counter_id: "counter_south_02",
+            issued_by: "usr_vol_02",
+            issued_at: "2026-10-31T08:22:10Z",
+          },
+        ],
+        total: 2,
+      },
+      meta: {},
+      warnings: [],
+    });
+  }),
+
+  http.get("*/api/v1/merchandise/qr/:participant_id", ({ params }) => {
+    const id = params.participant_id as string;
+    return HttpResponse.json({
+      data: {
+        participant_id: id,
+        token: `hmac_v1_${id}_secure_99`,
+        qr_svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="#ffffff"/><rect x="10" y="10" width="30" height="30" fill="#000000"/><rect x="60" y="10" width="30" height="30" fill="#000000"/><rect x="10" y="60" width="30" height="30" fill="#000000"/><rect x="45" y="45" width="10" height="10" fill="#000000"/></svg>`,
+        entitlements: ["T-shirt", "ID card", "lanyard", "tote"],
+      },
+      meta: {},
+      warnings: [],
+    });
+  }),
+
+  // Merchandise scan & issue stateful tracker for ALREADY_ISSUED test
+  (() => {
+    const issuedMap = new Set<string>();
+
+    return http.post("*/api/v1/merchandise/issue", async ({ request }) => {
+      const body = (await request.json()) as any;
+      const pid = body.participant_id || "P0042";
+      const key = `${pid}:${body.item_id || "tshirt"}`;
+
+      if (issuedMap.has(key)) {
+        return HttpResponse.json(
+          {
+            error: {
+              code: "ALREADY_ISSUED",
+              message: `Item already issued to participant ${pid}`,
+              details: {
+                claim_id: "clm_prev_882",
+                canonical_participant_id: pid,
+                claimed_at: "2026-10-31T08:35:10Z",
+                counter_id: "counter_north_01",
+                issued_by: "usr_vol_01 (Pooja Sharma)",
+              },
+            },
+          },
+          { status: 409 }
+        );
+      }
+
+      issuedMap.add(key);
+      return HttpResponse.json({
+        data: {
+          claim_id: `clm_${Math.random().toString(36).slice(2, 8)}`,
+          canonical_participant_id: pid,
+          item_id: body.item_id || "mch_tshirt_l",
+          item_name: "T-shirt (Size L)",
+          status: "ISSUED",
+          issued_at: new Date().toISOString(),
+          counter_id: body.counter_id || "counter_north_01",
+          issued_by: "usr_vol_01 (Pooja Sharma)",
+        },
+        meta: {},
+        warnings: [],
+      });
+    });
+  })(),
+
+  // Scan endpoint with minimal fields only for volunteers
+  http.post("*/api/v1/merchandise/scan", async ({ request }) => {
+    const body = (await request.json()) as any;
+    const token = body.token || "";
+    const pid = token.includes("P") ? token.replace(/[^A-Za-z0-9_]/g, "") : "P0042";
+
+    return HttpResponse.json({
+      data: {
+        valid: true,
+        canonical_participant_id: pid,
+        name: "Aarav Sharma",
+        contingent: "IIT Bombay",
+        // Volunteers see minimal fields only - no phone, no accommodation bed, no medical notes
+        entitlements: [
+          { item: "ID card", status: "ISSUED", claim_id: "clm_01" },
+          { item: "lanyard", status: "ISSUED", claim_id: "clm_02" },
+          { item: "T-shirt", status: "PENDING", size: "L" },
+          { item: "tote", status: "PENDING", size: "NA" },
+        ],
+      },
+      meta: {},
+      warnings: [],
+    });
+  }),
+
+  // --- VENDORS & FOOD ---
+  http.get("*/api/v1/food/coverage", () => {
+    return HttpResponse.json({
+      data: {
+        categories: ["VEG", "NON_VEG", "JAIN", "VEGAN", "GLUTEN_FREE"],
+        meal_slots: ["BREAKFAST", "LUNCH", "SNACKS", "DINNER", "LATE_NIGHT"],
+        venues: [
+          { id: "V01", name: "Main Auditorium" },
+          { id: "V04", name: "Amphitheatre" },
+          { id: "V05", name: "Sports Complex" },
+          { id: "V07", name: "Central Food Court" },
+        ],
+        matrix: [
+          // Amphitheatre Lunch Jain is 0 coverage
+          { category: "JAIN", meal_slot: "LUNCH", venue_id: "V04", capacity: 0, demand: 45, deficit: 45, is_zero_coverage: true, vendor_names: [] },
+          { category: "VEG", meal_slot: "LUNCH", venue_id: "V04", capacity: 350, demand: 280, deficit: 0, is_zero_coverage: false, vendor_names: ["Annapurna Caterers"] },
+          { category: "NON_VEG", meal_slot: "LUNCH", venue_id: "V04", capacity: 200, demand: 150, deficit: 0, is_zero_coverage: false, vendor_names: ["Spice Junction"] },
+          { category: "VEGAN", meal_slot: "LUNCH", venue_id: "V04", capacity: 60, demand: 30, deficit: 0, is_zero_coverage: false, vendor_names: ["Green Bowl"] },
+          { category: "GLUTEN_FREE", meal_slot: "LUNCH", venue_id: "V04", capacity: 0, demand: 12, deficit: 12, is_zero_coverage: true, vendor_names: [] },
+          
+          // Food Court Lunch
+          { category: "JAIN", meal_slot: "LUNCH", venue_id: "V07", capacity: 180, demand: 110, deficit: 0, is_zero_coverage: false, vendor_names: ["Shanti Rasoi"] },
+          { category: "VEG", meal_slot: "LUNCH", venue_id: "V07", capacity: 600, demand: 500, deficit: 0, is_zero_coverage: false, vendor_names: ["Annapurna Caterers", "Food Plaza"] },
+          { category: "NON_VEG", meal_slot: "LUNCH", venue_id: "V07", capacity: 400, demand: 320, deficit: 0, is_zero_coverage: false, vendor_names: ["Spice Junction", "Royal Feast"] },
+          { category: "VEGAN", meal_slot: "LUNCH", venue_id: "V07", capacity: 100, demand: 45, deficit: 0, is_zero_coverage: false, vendor_names: ["Green Bowl"] },
+          { category: "GLUTEN_FREE", meal_slot: "LUNCH", venue_id: "V07", capacity: 50, demand: 20, deficit: 0, is_zero_coverage: false, vendor_names: ["Pure Roots"] },
+        ],
+        summary: {
+          zero_coverage_count: 2,
+          critical_alerts: [
+            { category: "JAIN", meal_slot: "LUNCH", venue_name: "Amphitheatre", affected: 45 },
+            { category: "GLUTEN_FREE", meal_slot: "LUNCH", venue_name: "Amphitheatre", affected: 12 },
+          ],
+        },
+      },
+      meta: {},
+      warnings: ["Zero-coverage cells detected: immediate vendor slot assignment required."],
+    });
+  }),
+
+  http.get("*/api/v1/vendors", () => {
+    return HttpResponse.json({
+      data: {
+        items: [
+          {
+            id: "vnd_01",
+            name: "Annapurna Caterers",
+            status: "ACTIVE",
+            dietary_options: "VEG, JAIN",
+            menu_description: "North Indian Thali, Dal Baati, Jain Meal, Evening Snacks",
+            capacity: 450,
+            hours: "07:00-23:00",
+            hygiene_certificate_expiry: "2026-11-20",
+            days_to_expiry: 21,
+            payment_terms: "MINIMUM_GUARANTEE_PLUS_ACTUALS",
+            base_rate_per_meal_inr: 180,
+            contact_phone: "+91-9876543210",
+          },
+          {
+            id: "vnd_02",
+            name: "Spice Junction",
+            status: "ACTIVE",
+            dietary_options: "VEG, NON_VEG",
+            menu_description: "Dum Biryani, Butter Chicken, Paneer Rolls",
+            capacity: 350,
+            hours: "11:00-02:00",
+            hygiene_certificate_expiry: "2026-10-31",
+            days_to_expiry: 1,
+            payment_terms: "FIXED_PER_MEAL",
+            base_rate_per_meal_inr: 220,
+            contact_phone: "+91-9812345678",
+          },
+          {
+            id: "vnd_05",
+            name: "Royal Feast Caterers",
+            status: "ACTIVE",
+            dietary_options: "VEG, NON_VEG, JAIN",
+            menu_description: "Multi-Cuisine Buffet, Tandoor, Mughlai & Jain Counter",
+            capacity: 500,
+            hours: "08:00-01:00",
+            hygiene_certificate_expiry: "2026-12-15",
+            days_to_expiry: 46,
+            payment_terms: "FIXED_PER_MEAL",
+            base_rate_per_meal_inr: 240,
+            contact_phone: "+91-9988776655",
+          },
+        ],
+        total: 3,
+      },
+      meta: {},
+      warnings: [],
+    });
+  }),
+
+  http.get("*/api/v1/vendors/compliance", () => {
+    return HttpResponse.json({
+      data: {
+        certifications: [
+          {
+            vendor_id: "vnd_02",
+            vendor_name: "Spice Junction",
+            certificate_type: "FSSAI Food Hygiene",
+            certificate_number: "FSSAI-MP-2024-9982",
+            valid_until: "2026-10-31",
+            days_left: 1,
+            status: "CRITICAL_EXPIRING",
+            audit_pass: true,
+          },
+          {
+            vendor_id: "vnd_01",
+            vendor_name: "Annapurna Caterers",
+            certificate_type: "FSSAI Commercial Catering",
+            certificate_number: "FSSAI-MP-2023-1142",
+            valid_until: "2026-11-20",
+            days_left: 21,
+            status: "VALID",
+            audit_pass: true,
+          },
+        ],
+        mismatches: [
+          {
+            id: "flg_mis_01",
+            vendor_id: "vnd_02",
+            vendor_name: "Spice Junction",
+            item_name: "Paneer Butter Masala",
+            issue: "Declared 'Jain-Friendly' but recipe contains onion puree.",
+            severity: "HIGH",
+          },
+        ],
+      },
+      meta: {},
+      warnings: [],
+    });
+  }),
+
+  http.post("*/api/v1/vendors/:id/shutdown-impact", ({ params }) => {
+    const id = params.id as string;
+    return HttpResponse.json({
+      data: {
+        vendor_id: id,
+        vendor_name: "Spice Junction",
+        lost_capacity: 350,
+        affected_slots: [
+          { date: "2026-10-31", meal_slot: "LUNCH", venue_name: "Food Court", meals_deficit: 350 },
+          { date: "2026-10-31", meal_slot: "DINNER", venue_name: "Food Court", meals_deficit: 350 },
+        ],
+        ranked_replacements: [
+          {
+            vendor_id: "vnd_05",
+            vendor_name: "Royal Feast Caterers",
+            available_capacity: 500,
+            dietary_match: "EXACT (VEG, NON_VEG)",
+            proximity_score: 0.95,
+            rate_per_meal_inr: 240,
+            cost_delta_inr: 7000,
+            rank: 1,
+            rationale: "Adjacent kitchen with verified 500-meal reserve capacity and active FSSAI clearance.",
+          },
+          {
+            vendor_id: "vnd_01",
+            vendor_name: "Annapurna Caterers",
+            available_capacity: 250,
+            dietary_match: "PARTIAL (VEG only)",
+            proximity_score: 0.85,
+            rate_per_meal_inr: 180,
+            cost_delta_inr: -14000,
+            rank: 2,
+            rationale: "Lower cost but requires secondary vendor for non-veg allocation.",
+          },
+        ],
+        cost_delta_inr: 7000,
+        notification_drafts: [
+          {
+            id: "not_01",
+            recipient_group: "FOOD_OPS_MANAGERS",
+            channel: "APP_PUSH",
+            subject: "URGENT: Vendor Shutdown Enacted",
+            body: "Spice Junction food stall is shut down due to hygiene protocol. Royal Feast Caterers activated.",
+            requires_approval: false,
+          },
+          {
+            id: "not_02",
+            recipient_group: "AFFECTED_PARTICIPANTS",
+            channel: "SMS",
+            subject: "Meal Location Update",
+            body: "Dining notice: Non-veg and veg meals for Lunch & Dinner are now served at Royal Feast counter.",
+            requires_approval: true,
+          },
+        ],
+      },
+      meta: {},
+      warnings: [],
+    });
+  }),
+
+  http.post("*/api/v1/vendors/:id/shutdown", async ({ params, request }) => {
+    const id = params.id as string;
+    const body = (await request.json()) as any;
+    return HttpResponse.json({
+      data: {
+        status: "APPLIED",
+        vendor_id: id,
+        new_status: "SHUTDOWN",
+        replacement_assigned: body.replacement_vendor_id || "vnd_05",
+        reason: body.reason || "Emergency health shutdown",
+        change_set_id: "cs_vnd_sht_991",
+        notifications_queued: 2,
+      },
+      meta: {},
+      warnings: [],
+    });
+  }),
+
+  // --- FINANCE & BUDGET OVERVIEW ---
+  http.get("*/api/v1/finance/summary", () => {
+    return HttpResponse.json({
+      data: {
+        external_budget_inr: null, // Context: external_budget_inr = NULL
+        budget_status: "BUDGET_UNSET",
+        budget_explanation: "External accommodation budget is currently UNSET by the Festival Director. Engine is calculating committed spend against unconstrained demand. Festival Director authorization required to lock budget limit.",
+        total_spend_committed_inr: 2845000,
+        total_spend_projected_inr: 3450000,
+        breakdown: {
+          external_accommodation_inr: 1618500,
+          vendors_and_catering_inr: 780000,
+          merchandise_inr: 295000,
+          logistics_equipment_inr: 91500,
+          approved_emergency_inr: 60000,
+        },
+      },
+      meta: {},
+      warnings: ["external_budget_inr is NULL: Operating in budget-unset monitoring mode."],
+    });
+  }),
+
+  http.get("*/api/v1/finance/accommodation-spend", () => {
+    return HttpResponse.json({
+      data: {
+        properties: [
+          {
+            property_id: "prop_01",
+            name: "Lemon Tree Hotel",
+            capacity_beds: 180,
+            booked_beds: 160,
+            nights: 3,
+            rate_per_bed_night_inr: 1800,
+            total_spend_inr: 864000,
+            contract_status: "CONFIRMED",
+            payment_status: "ADVANCE_PAID",
+          },
+          {
+            property_id: "prop_02",
+            name: "Ginger Indore",
+            capacity_beds: 120,
+            booked_beds: 110,
+            nights: 3,
+            rate_per_bed_night_inr: 1400,
+            total_spend_inr: 462000,
+            contract_status: "CONFIRMED",
+            payment_status: "PARTIAL",
+          },
+          {
+            property_id: "prop_03",
+            name: "Royal Palace Residency",
+            capacity_beds: 90,
+            booked_beds: 75,
+            nights: 3,
+            rate_per_bed_night_inr: 1300,
+            total_spend_inr: 292500,
+            contract_status: "PENDING_FINAL_ROOMING",
+            payment_status: "PENDING",
+          },
+        ],
+        total_external_spend_inr: 1618500,
+      },
+      meta: {},
+      warnings: [],
+    });
+  }),
+
+  http.get("*/api/v1/finance/vendor-settlements", () => {
+    return HttpResponse.json({
+      data: {
+        settlements: [
+          {
+            vendor_id: "vnd_01",
+            vendor_name: "Annapurna Caterers",
+            contract_total_inr: 280000,
+            advance_paid_inr: 100000,
+            balance_due_inr: 180000,
+            due_date: "2026-11-05",
+            status: "PENDING_VERIFICATION",
+            dispute: null,
+          },
+          {
+            vendor_id: "vnd_02",
+            vendor_name: "Spice Junction",
+            contract_total_inr: 195000,
+            advance_paid_inr: 80000,
+            balance_due_inr: 115000,
+            due_date: "2026-11-02",
+            status: "DISPUTED",
+            dispute: {
+              id: "dsp_01",
+              amount_inr: 18500,
+              reason: "Billed for 120 extra lunch packs during Oct 31 storm delay without authorization token.",
+              opened_by: "Finance Manager",
+              opened_at: "2026-10-31T15:00:00Z",
+            },
+          },
+        ],
+        total_payable_inr: 295000,
+        disputed_amount_inr: 18500,
+      },
+      meta: {},
+      warnings: [],
+    });
+  }),
+
+  http.get("*/api/v1/finance/merchandise-costs", () => {
+    return HttpResponse.json({
+      data: {
+        items: [
+          { item_name: "T-shirt", unit_cost_inr: 190, ordered_qty: 2850, total_cost_inr: 541500, supplier: "Aero Apparels", status: "DELIVERED" },
+          { item_name: "Accreditation ID & Lanyard", unit_cost_inr: 35, ordered_qty: 3000, total_cost_inr: 105000, supplier: "PrintFast Media", status: "DELIVERED" },
+          { item_name: "Festival Tote Bag", unit_cost_inr: 65, ordered_qty: 2850, total_cost_inr: 185250, supplier: "EcoBags India", status: "DELIVERED" },
+        ],
+        total_merchandise_spend_inr: 831750,
+      },
+      meta: {},
+      warnings: [],
+    });
+  }),
+
+  http.get("*/api/v1/finance/emergency-spend", () => {
+    return HttpResponse.json({
+      data: {
+        items: [
+          {
+            id: "emg_01",
+            description: "Backup Diesel Generator for Main Auditorium sound rig",
+            amount_inr: 35000,
+            approved_by: "Festival Director",
+            approved_at: "2026-10-31T06:15:00Z",
+            reason: "Grid transformer voltage fluctuation threat during Inauguration",
+            audit_link: "aud_emg_991",
+          },
+          {
+            id: "emg_02",
+            description: "Heavy-duty waterproof tarpaulins for Amphitheatre equipment",
+            amount_inr: 25000,
+            approved_by: "Festival Director",
+            approved_at: "2026-10-31T12:30:00Z",
+            reason: "Sudden weather bulletin predicting rain showers",
+            audit_link: "aud_emg_992",
+          },
+        ],
+        total_emergency_spend_inr: 60000,
+      },
+      meta: {},
+      warnings: [],
+    });
+  }),
+
+  http.get("*/api/v1/finance/overrides-report", () => {
+    return HttpResponse.json({
+      data: {
+        overrides: [
+          {
+            id: "ovr_fin_01",
+            category: "BUDGET_OVERRIDE",
+            target_entity: "Lemon Tree Hotel (prop_01)",
+            original_value: "₹1,500 / bed-night",
+            overridden_value: "₹1,800 / bed-night",
+            delta_inr: 144000,
+            reason: "Rate hike accepted to secure 160 guaranteed beds on fest weekend due to citywide hotel rush.",
+            authorized_by: "Festival Director",
+            authorized_at: "2026-10-28T14:20:00Z",
+            audit_event_id: "aud_ovr_3120",
+          },
+        ],
+      },
+      meta: {},
+      warnings: [],
+    });
+  }),
 ];
 
 export const server = setupServer(...handlers);
+
 

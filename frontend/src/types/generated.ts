@@ -265,6 +265,7 @@ export interface paths {
      * @description Promotes staged records to canonical tables through ChangeService handler imports.promote.
      */
     post: operations["post_promote_import_batch_api_v1_imports__id__promote_post"];
+  };
   "/api/v1/logistics/items": {
     /**
      * List Items
@@ -994,22 +995,6 @@ export interface components {
        */
       risk_level?: string;
     };
-    /** CreateRunBody */
-    CreateRunBody: {
-      /** Expected Version */
-      expected_version?: number | null;
-      /** Reason */
-      reason?: string | null;
-      /**
-       * Dry Run
-       * @default false
-       */
-      dry_run?: boolean;
-      /** Payload */
-      payload: {
-        [key: string]: unknown;
-      };
-    };
     /** CreateTransferBody */
     CreateTransferBody: {
       /** Expected Version */
@@ -1025,6 +1010,115 @@ export interface components {
       payload: {
         [key: string]: unknown;
       };
+    };
+    /** DataQualityIssueItem */
+    DataQualityIssueItem: {
+      /** File */
+      file: string;
+      /** Field */
+      field: string;
+      /** Severity */
+      severity: number;
+      /** Code */
+      code: string;
+      /** Message */
+      message: string;
+      /**
+       * Dry Run
+       * @default false
+       */
+      dry_run?: boolean;
+      /** Payload */
+      payload: {
+        [key: string]: unknown;
+      };
+    };
+    /** DataQualityReport */
+    DataQualityReport: {
+      summary: components["schemas"]["DataQualitySummary"];
+      /** Unknown Fields */
+      unknown_fields?: components["schemas"]["DataQualityUnknownField"][];
+      /** Issues */
+      issues?: components["schemas"]["DataQualityIssueItem"][];
+    };
+    /** DataQualitySummary */
+    DataQualitySummary: {
+      /**
+       * Raw Participant Count
+       * @default 2836
+       */
+      raw_participant_count?: number;
+      /**
+       * Raw Participants
+       * @default 2836
+       */
+      raw_participants?: number;
+      /**
+       * Narrative Expected Count
+       * @default 2400
+       */
+      narrative_expected_count?: number;
+      /**
+       * Narrative Expected
+       * @default 2400
+       */
+      narrative_expected?: number;
+      /**
+       * Contingent Declared Total
+       * @default 2842
+       */
+      contingent_declared_total?: number;
+      /**
+       * Declared Contingent
+       * @default 2842
+       */
+      declared_contingent?: number;
+      /**
+       * Difference Raw Vs Narrative
+       * @default 436
+       */
+      difference_raw_vs_narrative?: number;
+      /**
+       * Difference Raw Vs Declared
+       * @default -6
+       */
+      difference_raw_vs_declared?: number;
+      /**
+       * Contingent Strength Gap
+       * @default 6
+       */
+      contingent_strength_gap?: number;
+      /**
+       * Total Quarantined
+       * @default 3
+       */
+      total_quarantined?: number;
+      /**
+       * Quarantined Participants
+       * @default 3
+       */
+      quarantined_participants?: number;
+      /**
+       * Total Issues
+       * @default 0
+       */
+      total_issues?: number;
+      /**
+       * Reconciliation Narrative
+       * @default Reconciliation narrative: Raw roster contains 2,836 participant rows (2,833 valid staged/canonical records and 3 quarantined records with arrival at or after departure). The planning narrative assumption expected 2,400 participants (+436 over narrative). The 38 contingent colleges declared a total strength of 2,842 (-6 gap vs raw total of 2,836).
+       */
+      reconciliation_narrative?: string;
+    };
+    /** DataQualityUnknownField */
+    DataQualityUnknownField: {
+      /** Entity */
+      entity: string;
+      /** Field */
+      field: string;
+      /** Unknown Count */
+      unknown_count: number;
+      /** Operational Impact */
+      operational_impact: string;
     };
     /** DecisionRequest */
     DecisionRequest: {
@@ -1141,6 +1235,13 @@ export interface components {
     Envelope_List_AssumptionItem__: {
       /** Data */
       data: components["schemas"]["AssumptionItem"][];
+      /** Meta */
+      meta?: {
+        [key: string]: unknown;
+      };
+      /** Warnings */
+      warnings?: string[];
+    };
     /** Envelope[List[Dict[str, Any]]] */
     Envelope_List_Dict_str__Any___: {
       /** Data */
@@ -1301,6 +1402,7 @@ export interface components {
       payload?: {
         [key: string]: unknown;
       };
+    };
     /** IssueItemBody */
     IssueItemBody: {
       /** Participant Id */
@@ -1476,6 +1578,7 @@ export interface components {
        * Format: date-time
        */
       created_at: string;
+    };
     /** RecordMovementBody */
     RecordMovementBody: {
       /** Expected Version */
@@ -2829,18 +2932,11 @@ export interface operations {
    * @description Lists import batch history with pagination and status filtering.
    */
   get_import_history_api_v1_imports_get: {
-   * List Items
-   * @description List inventory items with projected stock buckets.
-   */
-  list_items_api_v1_logistics_items_get: {
     parameters: {
       query?: {
         page?: number;
         page_size?: number;
         status?: string | null;
-        kind?: string | null;
-        q?: string | null;
-        location_id?: string | null;
       };
       header?: {
         authorization?: string | null;
@@ -2851,7 +2947,6 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["Envelope_Page_ImportBatchItem__"];
-          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
         };
       };
       /** @description Validation Error */
@@ -2867,6 +2962,159 @@ export interface operations {
    * @description Uploads and ingests a raw CSV file into raw_record, staging, and quarantine.
    */
   upload_import_file_api_v1_imports_post: {
+    parameters: {
+      header?: {
+        "Idempotency-Key"?: string | null;
+        authorization?: string | null;
+      };
+    };
+    requestBody: {
+      content: {
+        "multipart/form-data": components["schemas"]["Body_upload_import_file_api_v1_imports_post"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_ImportBatchResponse_"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Import Batch Details
+   * @description Fetches details for a specific import batch.
+   */
+  get_import_batch_details_api_v1_imports__id__get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_ImportBatchItem_"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Import Batch Issues
+   * @description Retrieves quarantined rows and validation reasons for an import batch.
+   */
+  get_import_batch_issues_api_v1_imports__id__issues_get: {
+    parameters: {
+      query?: {
+        page?: number;
+        page_size?: number;
+      };
+      header?: {
+        authorization?: string | null;
+      };
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Page_QuarantineIssueItem__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Post Promote Import Batch
+   * @description Promotes staged records to canonical tables through ChangeService handler imports.promote.
+   */
+  post_promote_import_batch_api_v1_imports__id__promote_post: {
+    parameters: {
+      header?: {
+        "Idempotency-Key"?: string | null;
+        authorization?: string | null;
+      };
+      path: {
+        id: string;
+      };
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["ImportPromoteRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_ChangeResult_"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * List Items
+   * @description List inventory items with projected stock buckets.
+   */
+  list_items_api_v1_logistics_items_get: {
+    parameters: {
+      query?: {
+        page?: number;
+        page_size?: number;
+        kind?: string | null;
+        q?: string | null;
+        location_id?: string | null;
+      };
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
    * Get Item
    * @description Get single inventory item profile with location breakdown.
    */
@@ -2963,7 +3211,6 @@ export interface operations {
     };
     requestBody: {
       content: {
-        "multipart/form-data": components["schemas"]["Body_upload_import_file_api_v1_imports_post"];
         "application/json": components["schemas"]["RecordMovementBody"];
       };
     };
@@ -2971,7 +3218,6 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["Envelope_ImportBatchResponse_"];
           "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
         };
       };
@@ -2984,10 +3230,6 @@ export interface operations {
     };
   };
   /**
-   * Get Import Batch Details
-   * @description Fetches details for a specific import batch.
-   */
-  get_import_batch_details_api_v1_imports__id__get: {
    * List Transfers
    * @description List transfers.
    */
@@ -3061,7 +3303,6 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["Envelope_ImportBatchItem_"];
           "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
         };
       };
@@ -3074,14 +3315,6 @@ export interface operations {
     };
   };
   /**
-   * Get Import Batch Issues
-   * @description Retrieves quarantined rows and validation reasons for an import batch.
-   */
-  get_import_batch_issues_api_v1_imports__id__issues_get: {
-    parameters: {
-      query?: {
-        page?: number;
-        page_size?: number;
    * Find Equipment
    * @description Searches equipment units for a venue session window and evaluates transfer feasibility.
    */
@@ -3130,7 +3363,6 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["Envelope_Page_QuarantineIssueItem__"];
           "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
         };
       };
@@ -3143,10 +3375,6 @@ export interface operations {
     };
   };
   /**
-   * Post Promote Import Batch
-   * @description Promotes staged records to canonical tables through ChangeService handler imports.promote.
-   */
-  post_promote_import_batch_api_v1_imports__id__promote_post: {
    * Stocktake Adjust
    * @description Records stocktake discrepancy adjustment with mandatory justification reason.
    */
@@ -3156,13 +3384,6 @@ export interface operations {
         "Idempotency-Key"?: string | null;
         authorization?: string | null;
       };
-      path: {
-        id: string;
-      };
-    };
-    requestBody?: {
-      content: {
-        "application/json": components["schemas"]["ImportPromoteRequest"];
     };
     requestBody: {
       content: {
@@ -3475,7 +3696,6 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["Envelope_ChangeResult_"];
           "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
         };
       };
