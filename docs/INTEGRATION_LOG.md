@@ -325,36 +325,33 @@ Format:
 - **Action Required**:
   - Run database seeders to populate initial staff profiles, shifts, external properties, and transport fleet.
 
-### 2026-10-31: P1/16-dashboard-sim (Central Control Dashboard, Risk Heatmap, Decision Log, & Scenario Simulator)
-- **Author**: P1 Lead
-- **Branch**: `p1/16-dashboard-sim`
+### 2026-10-30: P2/05-accom-engine (Explainable, Deterministic Accommodation Planning Engine & API)
+- **Author**: P2 Lead
+- **Branch**: `p2/05-accom-engine`
 - **Endpoints Added**:
-  - `GET /api/v1/dashboard/metrics`: Aggregates every module's `public.summary()` into the canonical festival metrics list (participants, accommodation occupancy, available beds, unplaced, sessions, open conflicts, logistics equipment, merchandise, vendor status, food coverage gaps, staff availability, open incidents, approvals, overrides). Features 15-second TTL cache with event-bus-driven invalidation and role-aware filtering (Volunteer receives no sensitive governance/incident data).
-  - `GET /api/v1/dashboard/attention`: Priority attention queue gathering `public.risks()` across all modules, deduplicating, and ranking strictly by $\text{Severity} \times \text{Urgency} \times \text{People Affected}$ using `app.core.scoring`. Every alert carries a direct actionable route and API endpoint.
-  - `GET /api/v1/dashboard/heatmap`: 2D Severity ($1\text{--}4$) $\times$ Time-to-Impact Urgency ($1\text{--}5$) risk heatmap matrix with people affected, uncertainty, criticality, and top contributors per cell.
-  - `GET /api/v1/decisions`: List and filter decision cards by module, approver, and date range.
-  - `GET /api/v1/decisions/{id}`: Detailed DecisionCard with transparent reason logging and link to P3 Override register without data duplication.
-  - `GET /api/v1/decisions/{id}/why`: One-click explainability breakdown for decisions (hard satisfied, soft relaxed, alternatives rejected, cost & people impact).
-  - `POST /api/v1/decisions`: Creates and persists a standardized DecisionCard.
-  - `POST /api/v1/scenarios`: Forks live database into an isolated sandbox (`scenarios/<id>.db`) using SQLite backup API; enforces retention limits (max 10 active, 48h TTL).
-  - `GET /api/v1/scenarios`: Lists active scenarios and metadata.
-  - `GET /api/v1/scenarios/{id}`: Returns scenario details and recorded actions.
-  - `POST /api/v1/scenarios/{id}/actions`: Executes mutations strictly within the sandbox DB via `ChangeService` and logs recorded action.
-  - `GET /api/v1/scenarios/{id}/compare`: Returns metric diffs vs live (beds, unplaced, cost, conflicts, risks).
-  - `POST /api/v1/scenarios/{id}/commit`: Replays recorded actions onto live database through `ChangeService` after approval; performs rebase check warning if live mutated since fork.
-  - `POST /api/v1/scenarios/{id}/discard`: Closes engine and permanently purges sandbox DB file.
-  - `POST /api/v1/scenarios/{id}/simulate-incident`: Adapter allowing incident drills (Prompt 14) to simulate disruptions in a sandbox.
+  - `POST /api/v1/accommodation/plans/generate`: Generates candidate accommodation plans (A: Cohesion-First, B: Cost-First, C: Balanced) using pure 5-stage allocation pipeline.
+  - `GET /api/v1/accommodation/plans`: Lists all candidate plans, plan hashes, metrics, and budget status (`is_budget_unset`).
+  - `GET /api/v1/accommodation/plans/{id}`: Detailed plan breakdown including metrics, plan hash, parameters applied, and plain-language sacrifices summary.
+  - `GET /api/v1/accommodation/plans/compare?ids=`: Side-by-side multi-plan comparison and trade-off analysis.
+  - `GET /api/v1/accommodation/plans/{id}/shortages`: Shortage report of unplaced participants categorized by the 7-item fixed blocking reason taxonomy.
+  - `GET /api/v1/accommodation/why-not/{participant_id}`: Explainable diagnostic panel detailing primary blocking requirement, missing info, rejected rooms/properties, and counterfactual simulation.
+  - `GET /api/v1/accommodation/demand-timeline`: Rolling occupancy timeline distinguishing confirmed vs possible demand, cleaning buffers (180m), available supply, peak hour (1,601 at 30 Oct 18:00), and invalid intervals.
+  - `GET /api/v1/accommodation/rooms`: Inventory of on-campus rooms with block, floor, capacity, accessibility, and cleaning status.
+  - `GET /api/v1/accommodation/properties`: External properties with bed capacity, cost per bed-night, distance, transport availability, and verification flags.
+  - `GET /api/v1/accommodation/reports/{report_name}`: CSV downloads for `accommodation_plan_A.csv`, `accommodation_plan_B.csv`, `accommodation_plan_C.csv`, `shortage_report.csv`, `accommodation_summary.csv`, and `bed_demand_timeline.csv`.
+  - `GET /api/v1/accommodation/decision-cards/{plan_id}`: Structured `DecisionCard` object with plain-language recommendations and trade-offs.
+- **Pure Engine Modules (`app/engines/accommodation/`)**:
+  - `types.py`: Pure dataclass models (`ParticipantSnapshot`, `RoomSnapshot`, `PropertySnapshot`, `AssignmentSnapshot`, `PlanMetrics`, `PlanResult`, `TimelinePoint`, etc.).
+  - `demand.py`: Demand partitioning, stay interval validation (invalid intervals tracked and listed, never dropped silently), and rolling occupancy timeline with cleaning buffer.
+  - `rules.py`: Hard constraints (wheelchair -> accessible rooms only, ground-floor -> floor 0, manual verification needs never auto-satisfied, non-binary/unknown gender never placed in gendered blocks, minor safeguards and night transport windows per Rule 6) and 7-item blocking taxonomy.
+  - `why_not.py`: Explainable shortage diagnosis and counterfactual simulation for unplaced participants.
+  - `planner.py`: `AccommodationPlanner` executing Stages A–D, local repair pass to consolidate contingent splits, deterministic plan hashing, and CP-SAT fallback behind `ACCOM_SOLVER`.
+  - `reports.py`: CSV report generators and structured decision cards.
 - **Public Functions Added**:
-  - `services/dashboard/public.py`: `summary`, `risks` (stale metrics cache, uncommitted scenarios awaiting decision), `dependents`.
-  - `services/decisions/public.py`: `summary`, `risks` (pending reviews), `dependents`.
-  - `services/scenarios/public.py`: `summary`, `risks` (stale sandbox forks), `dependents`.
-  - `core/decision_log.py`: `add(...)` helper function for standardized DecisionCard creation across modules.
-  - `core/db.py`: `close_scenario_engine(scenario_id)` to release SQLite file locks.
-- **Breaking Changes / Schema Migrations**:
-  - Added `decision_card` table in `app.models.decisions`.
-  - Added `forked_at`, `live_changeset_count_at_fork`, and `recorded_actions` to `Scenario` model.
-  - Registered `CloseHostelHandler`, `UpdateRoomHandler`, and `IncidentSimulateHandler` as `ChangeHandler` subclasses in `app.core.change_service`.
-- **Action Required**:
-  - None; new tables are automatically created on startup.
+  - `services/accommodation/public.py`: `summary` (KPIs), `risks` (bed deficit, accessibility deficit, external minors), `dependents`, and `get_contingent_housing` (cross-service housing fragmentation and leader proximity query).
+- **Database Models & Seeders**:
+  - Upgraded `StayAssignment` with `explanation` JSON packet.
+  - Upgraded `AccommodationPlan` with deterministic `plan_hash`, `sacrifices_summary`, `parameters_applied`, and `shortages_data`.
+  - Added Order 30 seeder (`app.seed.accommodation`) seeding 200 on-campus rooms (710 beds) and 6 external properties (740 beds).
 
 

@@ -1,4 +1,5 @@
 # OWNER: P1
+import app.seed.accommodation
 import app.seed.assumptions
 import app.seed.events
 import app.seed.imports
