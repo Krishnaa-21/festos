@@ -501,3 +501,4 @@ test.describe("FestOS Demo Acceptance & Rehearsal Suite (Prompt 24)", () => {
     await expect(page.locator('[data-testid="volunteer-confirm-issue-btn"]')).toBeVisible();
   });
 });
+

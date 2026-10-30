@@ -78,3 +78,4 @@ describe("Accessibility (axe) Audit - WCAG 2.1 AA Compliance", () => {
     expect(seriousViolations).toEqual([]);
   });
 });
+

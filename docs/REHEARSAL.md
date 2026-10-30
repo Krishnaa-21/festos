@@ -70,3 +70,4 @@ Run this checklist 15 minutes before judges arrive:
 6. **Security & Audit (5:30)**: Break-glass unmasking with audit event entry $\rightarrow$ Override register $\rightarrow$ Role-gated volunteer mobile isolation.
 7. **Assumptions & AI Disclosure (6:15)**: `/reports` assumptions tab $\rightarrow$ 180 min cleaning buffer $\rightarrow$ AI disclosure card.
 8. **Timer Stop (7:00)**: Reset system for judges via `make reset-demo` in terminal.
+

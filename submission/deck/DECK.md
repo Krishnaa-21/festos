@@ -85,3 +85,4 @@ footer: 'EPINOIA 2026 Master Pitch'
 - **Assumptions Register:** 180-minute cleaning buffer, 12-seat shuttle capacity, and 18-year minor threshold are explicit, sourced, and editable.
 - **AI Boundaries:** AI proposes suggestions and parses natural language. Deterministic algorithms validate hard constraints. Humans authorize changes.
 - **Instant Rehearsal:** `make reset-demo` returns the entire platform to a pristine baseline snapshot in **0.08 seconds**.
+

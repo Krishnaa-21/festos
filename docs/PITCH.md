@@ -128,3 +128,4 @@ If a judge says: *"What if I want to simulate an unplanned disaster, like heavy 
    - Demonstrate a complete sandbox copy where the recovery plan is applied and side-by-side metrics are benchmarked against production.
 5. **Step 5:** Click **Discard Scenario**:
    - Prove that the sandbox is destroyed cleanly without leaving any orphan records in live operations.
+

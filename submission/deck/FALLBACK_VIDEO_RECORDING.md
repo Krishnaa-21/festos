@@ -96,3 +96,4 @@
   - Terminal prints: `[SUCCESS] Database successfully restored in 0.080 seconds`.
 - **Voiceover:**
   > *"Assumptions are explicit. AI proposes, logic validates, humans approve. And with make reset-demo, our entire system returns to a known baseline in 0.08 seconds. FestOS is fully rehearsed and ready for Aarohan 2026."*
+
