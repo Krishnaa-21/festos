@@ -60,12 +60,36 @@ class NotificationDraft(SQLModel, table=True):
     __tablename__ = "notification_draft"
 
     id: str = Field(default_factory=lambda: f"not_{uuid.uuid4().hex[:8]}", primary_key=True)
-    channel: str = Field(default="SMS")  # SMS|EMAIL|WHATSAPP|APP
-    recipient: str = Field(index=True)
+    audience: str = Field(default="contingent_leaders", index=True)  # contingent_leaders | volunteers | vendors | accommodation_coordinators | event_organisers
+    channel: str = Field(default="SMS")  # SMS | EMAIL | WHATSAPP | APP
+    recipient: str = Field(default="ALL", index=True)
     subject: Optional[str] = Field(default=None)
     body: str
-    status: str = Field(default="DRAFT")  # DRAFT|QUEUED|SENT|FAILED
+    status: str = Field(default="PENDING_APPROVAL", index=True)  # DRAFT | PENDING_APPROVAL | APPROVED | SENT | REJECTED
+    requires_approval: bool = Field(default=True)
+    approved_by: Optional[str] = Field(default=None)
+    approved_at: Optional[datetime] = Field(default=None)
+    template_key: Optional[str] = Field(default=None)
+    related_change_set_id: Optional[str] = Field(default=None)
+    related_incident_id: Optional[str] = Field(default=None)
     created_at: datetime = Field(default_factory=now)
+    updated_at: datetime = Field(default_factory=now)
+
+
+class NotificationDeliveryLog(SQLModel, table=True):
+    __tablename__ = "notification_delivery_log"
+
+    id: str = Field(default_factory=lambda: f"ndl_{uuid.uuid4().hex[:8]}", primary_key=True)
+    draft_id: str = Field(foreign_key="notification_draft.id", index=True)
+    audience: str = Field(index=True)
+    recipient: str = Field(index=True)
+    channel: str
+    subject: Optional[str] = Field(default=None)
+    body: str
+    sent_at: datetime = Field(default_factory=now)
+    status: str = Field(default="DELIVERED")  # SENT | DELIVERED | FAILED
+    provider: str = Field(default="MOCK_DISPATCHER")
+
 
 class ImportBatchMetadata(SQLModel, table=True):
     __tablename__ = "import_batch_metadata"

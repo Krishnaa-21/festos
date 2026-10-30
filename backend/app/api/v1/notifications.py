@@ -1,114 +1,215 @@
 # OWNER: P2
-from datetime import datetime
+from __future__ import annotations
+
 from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Query, status
-from pydantic import BaseModel
-from sqlmodel import Session, select
-
-from app.core.change_service import ChangeHandler, ChangeRequest, execute_change
-from app.core.clock import now
 from app.core.db import get_session
-from app.core.deps import get_actor
-from app.core.registry import register_change_handler
-from app.models.ops import NotificationDraft
-from app.schemas.common import Actor, Envelope, Violation
+from app.core.deps import require_permission
+from app.schemas.common import Actor, Envelope
+from app.schemas.notifications import (
+    DeliveryLogSchema,
+    EditDraftRequest,
+    GenerateDraftsRequest,
+    NotificationDraftSchema,
+    TemplateSchema,
+)
+from app.services.notifications.service import (
+    approve_draft,
+    generate_drafts,
+    get_delivery_logs,
+    get_draft,
+    list_drafts,
+    list_templates,
+    send_draft,
+    update_draft,
+)
+from fastapi import APIRouter, Depends, Query
+from sqlmodel import Session
 
-router = APIRouter(prefix="/notifications", tags=["notifications"])
-
-
-class DraftNotificationBody(BaseModel):
-    channel: str = "SMS"
-    recipient: str
-    subject: Optional[str] = None
-    body: str
-    reason: Optional[str] = None
-
-
-@register_change_handler("notification.draft")
-class NotificationDraftHandler(ChangeHandler):
-    def validate(self, req: ChangeRequest, session: Session) -> List[Violation]:
-        return []
-
-    def snapshot(self, req: ChangeRequest, session: Session) -> Dict[str, Any]:
-        return {}
-
-    def apply(self, req: ChangeRequest, session: Session) -> Dict[str, Any]:
-        payload = req.payload
-        draft = NotificationDraft(
-            channel=payload.get("channel", "SMS"),
-            recipient=payload.get("recipient", "ALL_PARTICIPANTS"),
-            subject=payload.get("subject"),
-            body=payload.get("body", ""),
-            status="DRAFT",
-            created_at=now(),
-        )
-        session.add(draft)
-        session.flush()
-        return {"notification_id": draft.id, "recipient": draft.recipient, "status": draft.status}
+router = APIRouter(prefix="/notifications", tags=["Notification Engine"])
 
 
-@router.get("", response_model=Envelope[Dict[str, Any]])
 @router.get("/drafts", response_model=Envelope[Dict[str, Any]])
-def list_notifications(
-    channel: Optional[str] = Query(None),
-    status_filter: Optional[str] = Query(None, alias="status"),
-    page: int = Query(1, ge=1),
-    page_size: int = Query(20, ge=1, le=100),
+def list_drafts_endpoint(
+    audience: Optional[str] = Query(None, description="Filter by audience (contingent_leaders, volunteers, vendors, accommodation_coordinators, event_organisers)"),
+    status: Optional[str] = Query(None, description="Filter by status (DRAFT, PENDING_APPROVAL, APPROVED, SENT, REJECTED)"),
+    channel: Optional[str] = Query(None, description="Filter by channel (SMS, APP, EMAIL, WHATSAPP)"),
     session: Session = Depends(get_session),
-    actor: Actor = Depends(get_actor),
+    actor: Actor = Depends(require_permission("notifications:read")),
 ):
-    """List operational notification drafts."""
-    query = select(NotificationDraft).order_by(NotificationDraft.created_at.desc())
-    if channel:
-        query = query.where(NotificationDraft.channel == channel.upper())
-    if status_filter:
-        query = query.where(NotificationDraft.status == status_filter.upper())
+    """List notification drafts with audience and approval status."""
+    drafts = list_drafts(session=session, audience=audience, status=status, channel=channel)
+    items = [
+        NotificationDraftSchema(
+            id=d.id,
+            audience=d.audience,
+            channel=d.channel,
+            recipient=d.recipient,
+            subject=d.subject,
+            body=d.body,
+            status=d.status,
+            requires_approval=d.requires_approval,
+            template_key=d.template_key,
+            related_change_set_id=d.related_change_set_id,
+            related_incident_id=d.related_incident_id,
+            created_at=d.created_at.isoformat(),
+        )
+        for d in drafts
+    ]
+    return Envelope(data={"items": items, "total": len(items)})
 
-    all_items = session.exec(query).all()
-    total = len(all_items)
-    start = (page - 1) * page_size
-    items = all_items[start : start + page_size]
 
+@router.get("/drafts/{id}", response_model=Envelope[NotificationDraftSchema])
+def get_draft_endpoint(
+    id: str,
+    session: Session = Depends(get_session),
+    actor: Actor = Depends(require_permission("notifications:read")),
+):
+    """Get single notification draft details."""
+    d = get_draft(session, id)
+    return Envelope(
+        data=NotificationDraftSchema(
+            id=d.id,
+            audience=d.audience,
+            channel=d.channel,
+            recipient=d.recipient,
+            subject=d.subject,
+            body=d.body,
+            status=d.status,
+            requires_approval=d.requires_approval,
+            template_key=d.template_key,
+            related_change_set_id=d.related_change_set_id,
+            related_incident_id=d.related_incident_id,
+            created_at=d.created_at.isoformat(),
+        )
+    )
+
+
+@router.post("/drafts/generate", response_model=Envelope[Dict[str, Any]])
+def generate_drafts_endpoint(
+    body: GenerateDraftsRequest,
+    session: Session = Depends(get_session),
+    actor: Actor = Depends(require_permission("notifications:write")),
+):
+    """Generate audience-targeted notification drafts from structured change data."""
+    drafts = generate_drafts(
+        event_type=body.event_type,
+        context=body.context,
+        change_set_id=body.change_set_id,
+        incident_id=body.incident_id,
+        session=session,
+    )
     return Envelope(
         data={
-            "items": [
-                {
-                    "id": d.id,
-                    "channel": d.channel,
-                    "recipient": d.recipient,
-                    "subject": d.subject,
-                    "body": d.body,
-                    "status": d.status,
-                    "created_at": d.created_at.isoformat() if d.created_at else None,
-                }
-                for d in items
-            ],
-            "total": total,
-            "page": page,
-            "page_size": page_size,
+            "drafts_generated": len(drafts),
+            "draft_ids": [d.id for d in drafts],
+            "audiences": [d.audience for d in drafts],
         }
     )
 
 
-@router.post("/drafts", response_model=Envelope[Dict[str, Any]], status_code=status.HTTP_201_CREATED)
-def draft_notification(
-    body: DraftNotificationBody,
-    idempotency_key: Optional[str] = Header(None, alias="Idempotency-Key"),
+@router.put("/drafts/{id}", response_model=Envelope[NotificationDraftSchema])
+@router.patch("/drafts/{id}", response_model=Envelope[NotificationDraftSchema])
+def update_draft_endpoint(
+    id: str,
+    body: EditDraftRequest,
     session: Session = Depends(get_session),
-    actor: Actor = Depends(get_actor),
+    actor: Actor = Depends(require_permission("notifications:write")),
 ):
-    """Draft an operational notification via ChangeService."""
-    req = ChangeRequest(
-        action="notification.draft",
-        entity_type="notification_draft",
-        entity_id=f"notif_{now().strftime('%Y%m%d%H%M%S')}",
-        payload=body.model_dump(),
-        reason=body.reason or f"Drafted broadcast notification for {body.recipient}",
-        actor=actor,
-        idempotency_key=idempotency_key,
+    """Edit notification draft subject, body, or recipient before dispatch."""
+    d = update_draft(session=session, draft_id=id, req=body, actor=actor)
+    return Envelope(
+        data=NotificationDraftSchema(
+            id=d.id,
+            audience=d.audience,
+            channel=d.channel,
+            recipient=d.recipient,
+            subject=d.subject,
+            body=d.body,
+            status=d.status,
+            requires_approval=d.requires_approval,
+            template_key=d.template_key,
+            related_change_set_id=d.related_change_set_id,
+            related_incident_id=d.related_incident_id,
+            created_at=d.created_at.isoformat(),
+        )
     )
-    res = execute_change(req, session)
-    if res.status == "REJECTED":
-        raise HTTPException(status_code=422, detail=[v.model_dump() for v in res.violations])
-    return Envelope(data=res.model_dump())
+
+
+@router.post("/drafts/{id}/approve", response_model=Envelope[Dict[str, Any]])
+def approve_draft_endpoint(
+    id: str,
+    session: Session = Depends(get_session),
+    actor: Actor = Depends(require_permission("notifications:approve")),
+):
+    """Approve a notification draft for sending."""
+    d = approve_draft(session=session, draft_id=id, actor=actor)
+    return Envelope(
+        data={
+            "id": d.id,
+            "status": d.status,
+            "approved_by": d.approved_by,
+            "approved_at": d.approved_at.isoformat() if d.approved_at else None,
+        }
+    )
+
+
+@router.post("/drafts/{id}/send", response_model=Envelope[DeliveryLogSchema])
+def send_draft_endpoint(
+    id: str,
+    session: Session = Depends(get_session),
+    actor: Actor = Depends(require_permission("notifications:write")),
+):
+    """Mock-send a notification draft. Strictly requires prior approval."""
+    log = send_draft(session=session, draft_id=id, actor=actor)
+    return Envelope(
+        data=DeliveryLogSchema(
+            id=log.id,
+            draft_id=log.draft_id,
+            audience=log.audience,
+            recipient=log.recipient,
+            channel=log.channel,
+            subject=log.subject,
+            body=log.body,
+            sent_at=log.sent_at.isoformat(),
+            status=log.status,
+            provider=log.provider,
+        )
+    )
+
+
+@router.get("/log", response_model=Envelope[Dict[str, Any]])
+def get_log_endpoint(
+    session: Session = Depends(get_session),
+    actor: Actor = Depends(require_permission("notifications:read")),
+):
+    """Return the complete delivery audit log of dispatched notifications."""
+    logs = get_delivery_logs(session)
+    items = [
+        DeliveryLogSchema(
+            id=log_item.id,
+            draft_id=log_item.draft_id,
+            audience=log_item.audience,
+            recipient=log_item.recipient,
+            channel=log_item.channel,
+            subject=log_item.subject,
+            body=log_item.body,
+            sent_at=log_item.sent_at.isoformat(),
+            status=log_item.status,
+            provider=log_item.provider,
+        )
+        for log_item in logs
+    ]
+
+    return Envelope(data={"logs": items, "total": len(items)})
+
+
+@router.get("/templates", response_model=Envelope[List[TemplateSchema]])
+def list_templates_endpoint(
+    session: Session = Depends(get_session),
+    actor: Actor = Depends(require_permission("notifications:read")),
+):
+    """List available notification templates across the 5 audiences."""
+    templates = list_templates()
+    items = [TemplateSchema(**t) for t in templates]
+    return Envelope(data=items)

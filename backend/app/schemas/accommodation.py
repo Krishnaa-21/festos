@@ -136,3 +136,69 @@ class PropertyItemSchema(BaseModel):
     accessibility_verified: bool
     gender_suitability_verified: bool
     status: str
+
+
+class RoomUpdateRequest(BaseModel):
+    expected_version: Optional[int] = None
+    status: Optional[str] = None
+    cleaning_status: Optional[str] = None
+    accessible: Optional[bool] = None
+    gender_class: Optional[str] = None
+    capacity: Optional[int] = None
+    floor: Optional[int] = None
+    block: Optional[str] = None
+    safety_info: Optional[str] = None
+    reason: Optional[str] = None
+
+
+class CleaningCompleteRequest(BaseModel):
+    expected_version: Optional[int] = None
+    inspected_by: Optional[str] = None
+    notes: Optional[str] = None
+
+
+class PropertyUpdateRequest(BaseModel):
+    expected_version: Optional[int] = None
+    beds: Optional[int] = None
+    cost_per_bed_night: Optional[float] = None
+    transport_availability: Optional[str] = None
+    transport_limited: Optional[bool] = None
+    transport_windows: Optional[str] = None
+    safety_info: Optional[str] = None
+    accessibility_verified: Optional[bool] = None
+    gender_suitability_verified: Optional[bool] = None
+    status: Optional[str] = None
+    reason: Optional[str] = None
+
+
+class CommitPlanRequest(BaseModel):
+    reason: Optional[str] = "Commit candidate plan to live operations"
+    override_budget_rationale: Optional[str] = None
+
+
+class FreezePlanRequest(BaseModel):
+    reason: Optional[str] = "Freeze live plan allocations"
+
+
+class IncrementalAllocateRequest(BaseModel):
+    participant_ids: Optional[List[str]] = None
+    contingent_id: Optional[str] = None
+
+
+class ManualAssignRequest(BaseModel):
+    participant_id: str
+    target_bed_key: str
+    target_room_id: Optional[str] = None
+    target_property_id: Optional[str] = None
+    reason: str
+    override_hard_constraint: bool = False
+    expected_version: Optional[int] = None
+
+
+class RepairPlanRequest(BaseModel):
+    plan_id: Optional[str] = None
+    closed_block: Optional[str] = None
+    closed_room_ids: Optional[List[str]] = None
+    closed_property_id: Optional[str] = None
+    strategy: str = "MINIMAL_CHANGE"
+

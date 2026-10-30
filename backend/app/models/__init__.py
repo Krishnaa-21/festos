@@ -2,6 +2,8 @@
 # Import all model modules so SQLModel metadata discovers every table
 from app.models.accommodation import (
     AccommodationPlan,
+    BedReallocationSuggestion,
+    CheckinOperationRecord,
     ExternalProperty,
     Room,
     StayAssignment,
@@ -30,7 +32,13 @@ from app.models.inventory import (
     MerchClaim,
     Transfer,
 )
-from app.models.ops import Incident, NotificationDraft, TravelTime, Venue
+from app.models.ops import (
+    Incident,
+    NotificationDeliveryLog,
+    NotificationDraft,
+    TravelTime,
+    Venue,
+)
 from app.models.participants import (
     Contingent,
     DuplicateCandidate,
@@ -51,7 +59,13 @@ from app.models.transport import (
     ShuttleRun,
     Transport,
 )
-from app.models.vendors import MealSlot, Vendor, VendorAssignment
+from app.models.vendors import (
+    EmergencySpend,
+    MealSlot,
+    Vendor,
+    VendorAssignment,
+    VendorSettlement,
+)
 
 __all__ = [
     "Participant",
@@ -88,13 +102,18 @@ __all__ = [
     "ExternalProperty",
     "StayAssignment",
     "AccommodationPlan",
+    "BedReallocationSuggestion",
+    "CheckinOperationRecord",
     "Vendor",
     "MealSlot",
     "VendorAssignment",
+    "VendorSettlement",
+    "EmergencySpend",
     "Venue",
     "TravelTime",
     "Incident",
     "NotificationDraft",
+    "NotificationDeliveryLog",
     "AuditEvent",
     "User",
     "BreakGlassGrant",
@@ -102,3 +121,4 @@ __all__ = [
     "Override",
     "DecisionCard",
 ]
+

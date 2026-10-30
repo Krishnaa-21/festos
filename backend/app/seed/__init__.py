@@ -7,6 +7,7 @@ import app.seed.inventory
 import app.seed.participants
 import app.seed.staff_transport
 import app.seed.users
+import app.seed.vendors
 from app.seed.registry import run_seeders
 
 __all__ = ["run_seeders"]

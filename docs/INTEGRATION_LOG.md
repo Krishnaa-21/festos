@@ -354,34 +354,95 @@ Format:
   - Upgraded `AccommodationPlan` with deterministic `plan_hash`, `sacrifices_summary`, `parameters_applied`, and `shortages_data`.
   - Added Order 30 seeder (`app.seed.accommodation`) seeding 200 on-campus rooms (710 beds) and 6 external properties (740 beds).
 
-### 2026-10-31: P1/19-commands-reports (Natural-Language Command Bar & Section 14 Reports Engine)
-- **Author**: P1 Lead
-- **Branch**: `p1/19-commands-reports`
-- **Contracts Added**:
-  - `docs/api/commands.md`: Schema definition for structured commands, prompt sanitization protocol, and execution pipeline.
-  - `docs/api/reports.md`: Comprehensive catalog of all 20 Section 14 reports, export masking rules, and formula injection mitigation.
+### 2026-10-30: P2/08-accom-ops (Live Auditable Accommodation Operations, Check-in & Minimal-Change Repair)
+- **Author**: P2 Lead
+- **Branch**: `p2/08-accom-ops`
+- **Contracts Added / Extended**:
+  - `docs/api/accommodation.md`: Extended with live plan commit, approvals, freeze logic, incremental allocation, manual assignment/relocation with hard overrides and decision cards, room/property resource updates, cleaning timer, and minimal-change repair engine.
+  - `docs/api/checkin.md`: Comprehensive check-in API contract (arrival board, QR/search lookup, check-in with room readiness check and alternative suggestions, check-out with cleaning timer, arrival time updates, offline sync batch with APPLIED/DUPLICATE_IGNORED/CONFLICT, and cancellation/no-show advisory reallocation suggestions).
 - **Endpoints Added**:
-  - `POST /api/v1/commands/parse`: Parses free-text operator input into strict structured command schema (`CommandIntent` enum + typed parameters). Provider-agnostic LLM adapter with deterministic offline fallback (`RapidFuzz` + regex). Privacy-enforced context stripping (no contact, medical, or accessibility data). Returns structured command with confidence, provider origin, and explanation string.
-  - `POST /api/v1/commands/execute`: Deterministic validation and permission checking. Read-only intents (`show_impact`, `affected_events_by_equipment`, `alternative_vendors_for_diet`, `list_late_arrivals`, `navigate`, `query`) execute immediately with live data. Mutating intents (`find_accommodation_for_unplaced`) strictly create a proposed `Approval` record with `ChangeService(dry_run=True)` impact preview requiring `FESTIVAL_DIRECTOR` approval. Sliding-window rate-limiting (60 req/min) and comprehensive audit logging.
-  - `GET /api/v1/reports`: Catalog of all 20 Section 14 reports with metadata, export formats, categories, and required permissions.
-  - `GET /api/v1/reports/{name}`: Generates and streams a single report (`.csv` or `.md`). Enforces formula injection sanitization (neutralizes cells starting with `=`, `+`, `-`, `@`, `\t`, `\r`) and role-based masking. Audited via `AuditEvent(action="report.export")`.
-  - `GET /api/v1/reports/bundle.zip`: Assembles and streams all 20 reports in an in-memory ZIP archive bundle.
-  - `GET /api/v1/reports/post-festival`: Multi-domain post-festival report synthesized from audit trail and live database across attendance, accommodation utilisation, event completion, inventory usage, vendor performance, incident history, financial expenditure, operational delays, and outstanding settlements. Supports HTML and CSV output formats.
-- **Public Functions Added**:
-  - `services/commands/public.py`: `summary`, `risks` (unapproved command proposals, rate-limiting pressure), `dependents`.
-  - `services/reports/public.py`: `summary`, `risks` (unverified reports, unmasked exports), `dependents`.
-  - `services/reports/registry.py`: Registry mapping all 20 spec Section 14 reports (`REPORT_REGISTRY`).
-  - `services/reports/csv_sanitizer.py`: `sanitize_csv_value` and `write_sanitized_csv`.
-  - `services/reports/samples.py`: `generate_all_sample_plans()` writing deliverable 02 sample plans into `data/golden/`.
-- **Sample Plans & Golden Outputs**:
-  - Added `make samples` target to `Makefile` executing `python -m app.services.reports.samples`.
-  - Deliverable 02 files generated into `data/golden/`: `accommodation_plan_A.csv`, `accommodation_plan_B.csv`, `accommodation_plan_C.csv`, `schedule_plan.csv`, `inventory_plan.csv`.
+  - `POST /api/v1/accommodation/plans/commit`: Commits candidate plan to LIVE via approval workflow (`accommodation.commit_plan`). Auto-approved if within budget and no hard constraints relaxed; escalates to `FESTIVAL_DIRECTOR` if external cost exceeds budget or hard relaxations exist.
+  - `POST /api/v1/accommodation/plans/{id}/freeze`: Freezes plan to prevent re-solvers or mass shifts while allowing audited manual/incremental adjustments.
+  - `POST /api/v1/accommodation/allocate-incremental`: Incremental placement for late arriving contingents or participants, preserving every approved assignment (minimal change).
+  - `PATCH /api/v1/accommodation/rooms/{id}`: Audited resource management for room status, gender class, accessibility, safety info, and maintenance.
+  - `POST /api/v1/accommodation/rooms/{id}/cleaning-complete`: Marks room cleaning complete and sets room and cleaning status to `READY`.
+  - `PATCH /api/v1/accommodation/properties/{id}`: Audited property resource updates (capacity, pricing, transport windows, safety info, verification).
+  - `POST /api/v1/accommodation/assign`: Manual assignment/relocation. Enforces concurrency guard (409 Conflict), checks hard constraints; Director-only override for accessibility/gender/safety with mandatory reason, recording to `core.overrides.record` and structured `DecisionCard`.
+  - `POST /api/v1/accommodation/repair`: Minimal-change replanning engine (`engines/repair/accommodation.py`) for hostel/block/property closures, generating candidate repair plan + diff.
+  - `GET /api/v1/checkin/board`: Real-time arrival board grouped by status (EXPECTED, ARRIVED, DELAYED, CHECKED_IN, CANCELLED, NO_SHOW).
+  - `GET /api/v1/checkin/search`: Fast participant search by QR code, participant ID, name, or contingent.
+  - `GET /api/v1/checkin/participant/{id}`: Detailed participant check-in profile including stay assignment, room readiness, and flags.
+  - `POST /api/v1/checkin/checkin`: Idempotent check-in with `client_op_id`. Verifies room readiness; if not READY, blocks check-in and returns alternative ready rooms.
+  - `POST /api/v1/checkin/verify-arrival`: Updates participant status to ARRIVED upon physical gate entry.
+  - `POST /api/v1/checkin/checkout`: Check-out operation; releases occupant, sets room status to `CLEANING` and starts cleaning buffer countdown timer (`cleaning_buffer_minutes`).
+  - `PATCH /api/v1/checkin/participant/{id}/arrival`: Early/late arrival update with ETA shift recalculation.
+  - `POST /api/v1/checkin/sync`: Offline sync batch processor accepting queued operations from field tablets and returning per-operation status: `APPLIED`, `DUPLICATE_IGNORED`, or `CONFLICT` with explanatory details.
+  - `GET /api/v1/checkin/reallocations/suggestions`: Lists pending reallocation suggestions triggered by cancellations/no-shows.
+- **Event Bus Subscriptions**:
+  - `@subscribe("participant.status_changed")`: On `CANCELLED` or `NO_SHOW`, immediately frees bed assignments (`stay.status = 'CANCELLED'`), excludes the cancelling participant, and computes an advisory reallocation suggestion for eligible unplaced participants (preserving contingent cohesion and leadership priority, NEVER auto-applying changes).
+- **Public Functions Added / Updated**:
+  - `services/accommodation/public.py`:
+    - `summary`: Live metrics (occupancy, available beds, unplaced count).
+    - `risks`: Active risk detection (unplaced participants, accessibility needs unconfirmed with arrival within 6h, capacity shortfalls, minors in external stays without guardian approval).
+    - `dependents`: Dependency mappings (room -> participants, property -> participants, participant -> room).
+    - Registered participant 360 dynamic section `'accommodation'`.
+- **Database Models Added / Updated**:
+  - `Room`: added `safety_info`.
+  - `ExternalProperty`: added `transport_windows` and `safety_info`.
+  - `AccommodationPlan`: added `is_frozen` and `frozen_at`.
+  - Added `BedReallocationSuggestion`: tracking advisory bed suggestions on cancellation/no-show.
+  - Added `CheckinOperationRecord`: tracking client operation IDs and audit records for idempotent offline check-ins.
 - **Tests Added & Passing**:
-  - `backend/tests/commands/test_commands.py`: 6 tests covering spec example command mappings (both offline fallback and LLM adapter), prompt injection resilience inside names, immediate read-only impact execution, mutating commands strictly creating pending proposals, RBAC permission denial for volunteers, and audit trail logging.
-  - `backend/tests/reports/test_reports.py`: 26 tests covering catalog listing, download of all 20 reports, bundle.zip generation, CSV injection neutralization, role-based PII masking, post-festival report generation (HTML/CSV), and export auditing.
-  - `backend/tests/reports/test_golden_outputs.py`: Golden output file integrity and regression stability test.
-- **Action Required**:
-  - Run `make samples` to refresh deliverable 02 outputs in `data/golden/`.
+  - `backend/tests/accommodation/test_accommodation_ops.py`: 7 tests covering concurrent bed allocation 409 conflict guard, checkout cleaning buffer lock, cancellation releasing bed and generating advisory suggestion (not auto-applied), Director-only hard override enforcement, minimal-change repair after hostel block closure, offline sync idempotent replay, and full acceptance lifecycle (candidate C -> propose commit -> approval -> live plan -> block closure -> repair proposal -> approval -> live diff applied with audit trail).
+  - Total 28 tests in `backend/tests/accommodation/` passing.
+
+### 2026-10-30: P2/11-vendors (Vendors, Food Coverage & Compliance, Emergency Shutdown, Notifications, Finance)
+- **Author**: P2 Lead
+- **Branch**: `p2/11-vendors`
+- **Contracts Added**:
+  - `docs/api/vendors.md`: 14 vendors profile, menu, dietary declared options, contracts, payment terms, hours, shutdown impact/analysis/execute, compliance reports.
+  - `docs/api/food.md`: Dietary coverage and demand matrix, menu verification flags, meal slots catalogue.
+  - `docs/api/finance.md`: External accommodation spend, vendor settlements, payment recording, dispute logging, emergency spend, budget ceilings, financial override audit report.
+  - `docs/api/notifications.md`: Notification drafts generation across 5 audiences, draft approvals, mock delivery, delivery logs.
+- **Endpoints Added**:
+  - `GET /api/v1/vendors`: List vendors with compliance and active status filtering.
+  - `GET /api/v1/vendors/{id}`: Vendor profile with meal slot capacities and operating hours.
+  - `POST /api/v1/vendors/{id}/shutdown-impact` & `POST /api/v1/vendors/{id}/shutdown-analysis`: 10-step shutdown impact assessment with ranked replacement candidates and cost deltas.
+  - `POST /api/v1/vendors/{id}/shutdown` & `POST /api/v1/vendors/{id}/shutdown-execute`: Execute shutdown and slot reallocation via ChangeService handler `vendors.shutdown`.
+  - `GET /api/v1/vendors/reports/{report_name}`: CSV downloads for `vendor_coverage.csv` and `vendor_compliance.csv`.
+  - `GET /api/v1/food/coverage`: Slot-by-slot dietary coverage matrix with UNKNOWN demand ranges and zero-coverage alerts.
+  - `GET /api/v1/food/compliance` & `GET /api/v1/food/compliance-flags`: Menu item keyword mismatch verification flags (`requires_human_confirmation: true`).
+  - `GET /api/v1/food/slots` & `GET /api/v1/food/meal-slots`: Festival meal slot schedules.
+  - `GET /api/v1/notifications/drafts`: Audience-filtered notification drafts list.
+  - `POST /api/v1/notifications/drafts/generate`: Generate drafts across 5 audiences (`contingent_leaders`, `volunteers`, `vendors`, `accommodation_coordinators`, `event_organisers`).
+  - `PUT /api/v1/notifications/drafts/{id}` & `PATCH /api/v1/notifications/drafts/{id}`: Edit draft content and templates.
+  - `POST /api/v1/notifications/drafts/{id}/approve`: Audited draft approval.
+  - `POST /api/v1/notifications/drafts/{id}/send`: Mock notification dispatcher enforcing prior approval.
+  - `GET /api/v1/notifications/delivery-logs`: Log of dispatched notifications.
+  - `GET /api/v1/finance/summary`: Budget gauge metrics, committed spend, projected spend, and budget-unset explanation.
+  - `GET /api/v1/finance/accommodation-spend`: Property-by-property external accommodation spending breakdown.
+  - `GET /api/v1/finance/vendor-settlements`: Vendor settlement invoices, due dates, advance payments, and dispute statuses.
+  - `POST /api/v1/finance/vendor-settlements/{id}/pay`: Record settlement disbursements via `finance.record_payment`.
+  - `POST /api/v1/finance/vendor-settlements/{id}/dispute`: Record settlement disputes via `finance.open_dispute`.
+  - `GET /api/v1/finance/merchandise-costs`: Merchandise procurement overview.
+  - `GET /api/v1/finance/emergency-spend`: Approved emergency procurement disbursements log.
+  - `POST /api/v1/finance/emergency-spend`: Propose emergency spend with auto-approval for Festival Director via `finance.emergency_spend`.
+  - `GET /api/v1/finance/overrides-report` & `GET /api/v1/finance/budget-overrides-report`: Financial and constraint override audit trail.
+  - `POST /api/v1/finance/budget/set`: Set external accommodation budget ceiling assumption (`external_budget_inr`).
+- **Engines & ChangeService Handlers**:
+  - `backend/app/engines/vendors/compliance.py`: Certificate validity classifier (`is_certificate_valid_at`), operating hours overlap (`hours_cover_slot`), menu label keyword mismatch classifier (`verify_menu_labels`).
+  - `backend/app/engines/vendors/coverage.py`: Demand and coverage matrix (`evaluate_dietary_matrix`), UNKNOWN demand range preservation, zero-coverage critical alerts.
+  - `backend/app/engines/vendors/shutdown.py`: Feature 7 10-step shutdown analysis (`vendor_shutdown_analysis`), replacement ranking, backup capacity absorption check, cost delta calculation, audience draft generation.
+  - `backend/app/services/vendors/handlers.py`: Registered `vendors.shutdown` handler.
+  - `backend/app/services/finance/handlers.py`: Registered `finance.record_payment`, `finance.open_dispute`, `finance.emergency_spend` handlers.
+  - `backend/app/services/notifications/service.py`: Notification service with approval gating and `generate_drafts(event_type, context, session)` export.
+- **Models & Seeders**:
+  - `Vendor`, `MealSlot`, `VendorAssignment`, `VendorSettlement`, `EmergencySpend`, `NotificationDraft`, `NotificationDeliveryLog`.
+  - Seeder (order 50) `app.seed.vendors`: 14 vendors, festival meal slots, assignments, baseline settlements.
+  - Module public contracts: `vendors.public`, `food.public`, `notifications.public`, `finance.public` with `summary`, `risks`, `dependents`, and CSV report exporters.
+- **Tests Added & Passing**:
+  - 26 unit and operations tests in `test_vendors_ops.py`, `test_food_ops.py`, `test_notifications_ops.py`, `test_finance_ops.py`.
+  - 0 regressions in accommodation test suite (54 total tests passing across all 5 test suites).
 
 ### 2026-10-31: P1/22-integration (Full Stack Production Integration, Smoke Suite & Release Freeze)
 - **Author**: P1 Integration Lead

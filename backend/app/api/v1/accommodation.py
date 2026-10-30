@@ -8,20 +8,33 @@ from app.core.db import get_session
 from app.core.deps import require_permission
 from app.schemas.accommodation import (
     AccommodationPlanSchema,
+    CleaningCompleteRequest,
+    CommitPlanRequest,
     DemandTimelineResponseData,
+    FreezePlanRequest,
     GeneratePlanRequest,
+    IncrementalAllocateRequest,
+    ManualAssignRequest,
     PlansResponseData,
     PropertyItemSchema,
+    PropertyUpdateRequest,
+    RepairPlanRequest,
     RoomItemSchema,
+    RoomUpdateRequest,
     ShortagesResponseData,
     WhyNotResponseData,
 )
 from app.schemas.common import Actor, DecisionCard, Envelope
 from app.services.accommodation.service import (
+    allocate_incremental,
+    commit_plan_to_live,
     compare_plans,
+    complete_room_cleaning,
+    freeze_live_plan,
     generate_plans,
     get_decision_card,
     get_demand_timeline,
+    get_live_plan,
     get_plan_by_id,
     get_plan_shortages,
     get_plans,
@@ -29,6 +42,10 @@ from app.services.accommodation.service import (
     get_report_csv,
     get_rooms,
     get_why_not,
+    manual_assign,
+    repair_accommodation,
+    update_property_resource,
+    update_room_resource,
 )
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlmodel import Session
@@ -385,3 +402,171 @@ def get_plan_decision_card(
     """Get structured DecisionCard for a plan."""
     card = get_decision_card(session=session, plan_id=plan_id)
     return Envelope(data=card)
+
+
+# -----------------------------------------------------------------------------
+# 7. Live Plan & Approvals
+# -----------------------------------------------------------------------------
+@router.post("/plans/{id}/commit", response_model=Envelope[Dict[str, Any]])
+def commit_candidate_plan_endpoint(
+    id: str,
+    body: Optional[CommitPlanRequest] = None,
+    actor: Actor = Depends(require_permission("accommodation:write")),
+    session: Session = Depends(get_session),
+):
+    """Commit candidate plan to LIVE via approvals workflow."""
+    reason = body.reason if body else "Commit candidate plan to LIVE"
+    override_budget = body.override_budget_rationale if body else None
+    result = commit_plan_to_live(
+        session=session,
+        plan_id=id,
+        actor=actor,
+        reason=reason,
+        override_budget_rationale=override_budget,
+    )
+    if result.get("status") == "PENDING_APPROVAL":
+        return Envelope(
+            data=result,
+            meta={"requires_director_approval": True, "approval_id": result.get("change_set_id")},
+            warnings=["High-risk plan commit requires Festival Director sign-off."],
+        )
+    return Envelope(data=result)
+
+
+@router.get("/plans/live", response_model=Envelope[Dict[str, Any]])
+def get_live_plan_endpoint(
+    actor: Actor = Depends(require_permission("accommodation:read")),
+    session: Session = Depends(get_session),
+):
+    """Retrieve the currently operational LIVE accommodation plan."""
+    live = get_live_plan(session)
+    if not live:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No LIVE plan currently active.")
+    return Envelope(
+        data={
+            "plan_id": live.plan_id,
+            "kind": live.kind,
+            "name": live.name,
+            "status": live.status,
+            "is_frozen": live.is_frozen,
+            "frozen_at": live.frozen_at.isoformat() if live.frozen_at else None,
+            "on_campus_placed": live.on_campus_placed,
+            "external_placed": live.external_placed,
+            "total_cost_inr": live.total_cost_inr,
+            "contingent_splits": live.contingent_splits,
+        }
+    )
+
+
+@router.post("/plans/live/freeze", response_model=Envelope[Dict[str, Any]])
+def freeze_live_plan_endpoint(
+    body: Optional[FreezePlanRequest] = None,
+    actor: Actor = Depends(require_permission("accommodation:write")),
+    session: Session = Depends(get_session),
+):
+    """Freeze LIVE plan allocations ahead of festival commencement."""
+    reason = body.reason if body else "Lock allocations"
+    res = freeze_live_plan(session=session, actor=actor, reason=reason)
+    return Envelope(data=res)
+
+
+@router.post("/plans/live/allocate-incremental", response_model=Envelope[Dict[str, Any]])
+def allocate_incremental_endpoint(
+    body: Optional[IncrementalAllocateRequest] = None,
+    actor: Actor = Depends(require_permission("accommodation:write")),
+    session: Session = Depends(get_session),
+):
+    """Incrementally allocate late arrivals while preserving all approved assignments."""
+    p_ids = body.participant_ids if body else None
+    c_id = body.contingent_id if body else None
+    result = allocate_incremental(session=session, participant_ids=p_ids, contingent_id=c_id, actor=actor)
+    return Envelope(data=result)
+
+
+# -----------------------------------------------------------------------------
+# 8. Operational Resource Management & Cleaning
+# -----------------------------------------------------------------------------
+@router.patch("/rooms/{id}", response_model=Envelope[Dict[str, Any]])
+def update_room_endpoint(
+    id: str,
+    body: RoomUpdateRequest,
+    actor: Actor = Depends(require_permission("accommodation:write")),
+    session: Session = Depends(get_session),
+):
+    """Update room operational status, cleaning, or accessibility attributes via ChangeService."""
+    payload = body.model_dump(exclude_unset=True, exclude={"expected_version", "reason"})
+    res = update_room_resource(
+        session=session,
+        room_id=id,
+        payload=payload,
+        actor=actor,
+        reason=body.reason,
+        expected_version=body.expected_version,
+    )
+    return Envelope(data=res.data, meta={"change_set_id": res.change_set_id})
+
+
+@router.post("/rooms/{id}/cleaning-complete", response_model=Envelope[Dict[str, Any]])
+def complete_cleaning_endpoint(
+    id: str,
+    body: Optional[CleaningCompleteRequest] = None,
+    actor: Actor = Depends(require_permission("accommodation:write")),
+    session: Session = Depends(get_session),
+):
+    """Mark housekeeping inspection complete, transitioning room status to READY."""
+    notes = body.notes if body else "Cleaning complete"
+    exp_v = body.expected_version if body else None
+    res = complete_room_cleaning(
+        session=session,
+        room_id=id,
+        actor=actor,
+        notes=notes,
+        expected_version=exp_v,
+    )
+    return Envelope(data=res.data, meta={"change_set_id": res.change_set_id})
+
+
+@router.patch("/properties/{id}", response_model=Envelope[Dict[str, Any]])
+def update_property_endpoint(
+    id: str,
+    body: PropertyUpdateRequest,
+    actor: Actor = Depends(require_permission("accommodation:write")),
+    session: Session = Depends(get_session),
+):
+    """Update external property pricing, transport windows, and verification flags via ChangeService."""
+    payload = body.model_dump(exclude_unset=True, exclude={"expected_version", "reason"})
+    res = update_property_resource(
+        session=session,
+        property_id=id,
+        payload=payload,
+        actor=actor,
+        reason=body.reason,
+        expected_version=body.expected_version,
+    )
+    return Envelope(data=res.data, meta={"change_set_id": res.change_set_id})
+
+
+# -----------------------------------------------------------------------------
+# 9. Manual Assignment & Minimal-Change Repair
+# -----------------------------------------------------------------------------
+@router.post("/assignments/manual", response_model=Envelope[Dict[str, Any]])
+def manual_assignment_endpoint(
+    body: ManualAssignRequest,
+    actor: Actor = Depends(require_permission("accommodation:write")),
+    session: Session = Depends(get_session),
+):
+    """Manually assign or move participant with mandatory reason and Director override enforcement."""
+    res = manual_assign(session=session, req=body, actor=actor)
+    return Envelope(data=res)
+
+
+@router.post("/repair", response_model=Envelope[Dict[str, Any]])
+def repair_accommodation_endpoint(
+    body: RepairPlanRequest,
+    actor: Actor = Depends(require_permission("accommodation:write")),
+    session: Session = Depends(get_session),
+):
+    """Minimal-change repair engine: re-plans displaced participants while preserving unaffected stays."""
+    diff = repair_accommodation(session=session, req=body)
+    return Envelope(data=diff)
+
