@@ -591,8 +591,9 @@ def test_golden_run_data_pack():
     """
     import csv
     import os
+    from pathlib import Path
 
-    data_dir = "/home/avnish_sharma/festos/data/raw"
+    data_dir = str(Path(__file__).resolve().parents[3] / "data" / "raw")
     hostels_path = os.path.join(data_dir, "hostels.csv")
     properties_path = os.path.join(data_dir, "external_stays.csv")
     participants_path = os.path.join(data_dir, "participants.csv")

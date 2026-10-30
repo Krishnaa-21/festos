@@ -3,8 +3,9 @@ from __future__ import annotations
 
 import time
 from collections import defaultdict
-from typing import Dict, List
+from typing import Any, Dict, List
 
+from app.core.config import settings
 from app.core.db import get_session
 from app.core.deps import get_actor
 from app.core.errors import RateLimitedError
@@ -16,7 +17,7 @@ from app.services.commands.schemas import (
     ParseResponseData,
 )
 from app.services.commands.service import execute_command, parse_command
-from fastapi import APIRouter, Depends, Request, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from sqlmodel import Session
 
 router = APIRouter(prefix="/commands", tags=["Commands"])
@@ -45,6 +46,11 @@ def parse_natural_command(
     session: Session = Depends(get_session),
 ) -> Envelope[ParseResponseData]:
     """Parses natural-language text into a strict structured command schema with operator explanation."""
+    if not settings.ENABLE_COMMANDS:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="The natural-language command bar module is disabled by feature flag (ENABLE_COMMANDS=false)",
+        )
     client_id = actor.id if actor else (request.client.host if request.client else "unknown_client")
     check_command_rate_limit(client_id)
 
@@ -81,6 +87,11 @@ def execute_structured_command(
     - Read-only commands execute and return results immediately (HTTP 200).
     - Mutating commands create a dry-run proposal requiring approval (HTTP 202).
     """
+    if not settings.ENABLE_COMMANDS:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="The natural-language command bar module is disabled by feature flag (ENABLE_COMMANDS=false)",
+        )
     client_id = actor.id if actor else (request.client.host if request.client else "unknown_client")
     check_command_rate_limit(client_id)
 
@@ -98,4 +109,28 @@ def execute_structured_command(
         data=res,
         meta={"intent": res.intent.value, "status": res.status},
         warnings=res.warnings,
+    )
+
+
+@router.get("", response_model=Envelope[Dict[str, Any]])
+def list_command_intents(
+    actor: Actor = Depends(get_actor),
+):
+    """Lists supported natural-language command intents and their schema definitions."""
+    if not settings.ENABLE_COMMANDS:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="The natural-language command bar module is disabled by feature flag (ENABLE_COMMANDS=false)",
+        )
+
+    from app.services.commands.schemas import CommandIntent
+    intents = [
+        {"intent": i.value, "name": i.name}
+        for i in CommandIntent
+    ]
+    return Envelope(
+        data={
+            "supported_intents": intents,
+            "total": len(intents),
+        }
     )

@@ -18,9 +18,7 @@ logger = logging.getLogger("festos.seed.accommodation")
 @register_seeder(name="seed_accommodation_resources", order=30)
 def seed_accommodation_resources(session: Session) -> None:
     """Seed on-campus rooms and external properties into database (order 30)."""
-    raw_dir = Path(__file__).resolve().parent.parent.parent.parent / "data" / "raw"
-    if not raw_dir.exists():
-        raw_dir = Path("/home/avnish_sharma/festos/data/raw")
+    raw_dir = Path(__file__).resolve().parents[3] / "data" / "raw"
 
     # 1. Seed on-campus rooms from hostels.csv (200 rooms / 710 beds)
     hostels_file = raw_dir / "hostels.csv"

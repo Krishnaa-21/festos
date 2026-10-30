@@ -94,7 +94,7 @@ def test_raw_records_preserved_byte_for_byte():
 
 def test_golden_counts_comparison():
     """Compare raw CSV data against spec reference numbers: assert plausibility and print differences."""
-    raw_dir = Path("/home/krishna/festos/data/raw")
+    raw_dir = Path(__file__).resolve().parents[3] / "data" / "raw"
     if not raw_dir.exists():
         pytest.skip("data/raw not accessible")
 

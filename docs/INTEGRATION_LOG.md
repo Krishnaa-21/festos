@@ -444,5 +444,41 @@ Format:
   - 26 unit and operations tests in `test_vendors_ops.py`, `test_food_ops.py`, `test_notifications_ops.py`, `test_finance_ops.py`.
   - 0 regressions in accommodation test suite (54 total tests passing across all 5 test suites).
 
+### 2026-10-31: P1/22-integration (Full Stack Production Integration, Smoke Suite & Release Freeze)
+- **Author**: P1 Integration Lead
+- **Branch**: `p1/22-integration` -> `develop` -> `main`
+- **Release Tags**: `v1.0-rc1` (code freeze), `v1.0` (final release)
+- **Endpoints & Routers Added**:
+  - `GET /api/v1/commands`: List supported natural-language command intents.
+  - `GET /api/v1/incidents`, `POST /api/v1/incidents`: Operational incident logging via ChangeService (`incident.create`).
+  - `GET /api/v1/notifications`, `GET /api/v1/notifications/drafts`, `POST /api/v1/notifications/drafts`: Operational notifications via ChangeService (`notification.draft`).
+  - `GET /api/v1/food`, `GET /api/v1/food/coverage`, `GET /api/v1/food/compliance`: Dietary coverage matrix and compliance flags.
+  - `GET /api/v1/vendors`: Festival food vendor directory with capacity and hygiene expiry.
+  - `GET /api/v1/finance`, `GET /api/v1/finance/summary`: Budget ceilings, external stay commitments, and expense breakdown.
+  - `GET /api/v1/checkin`, `GET /api/v1/checkin/board`: Real-time arrival desk board and recent check-ins.
+  - `GET /api/v1/impact`, `GET /api/v1/impact/blast-radius`: Downstream blast radius impact query across all modules.
+  - `GET /api/v1/premortem`, `GET /api/v1/premortem/resilience`: Predictive resilience simulator respecting `ENABLE_PREMORTEM`.
+  - `GET /api/v1/forecasting`, `GET /api/v1/forecasting/crowd`: Predictive crowd flow forecasting respecting `ENABLE_FORECASTING`.
+- **Scripts Added / Hardened**:
+  - `scripts/smoke_all.py`: Logs in as all 9 roles, hits list endpoints for all 32 modules, runs the seven disruption scenarios from Spec Section 13 through the API, asserts operational state change and audit log growth, and outputs a formatted execution summary.
+  - `scripts/check_cross_module_consistency.py`: Automated cross-module consistency checking ensuring all 32 `public.py` files expose `summary`, `risks`, and `dependents`; all mutation routes use `ChangeService`; all modules have `docs/api` specs and frontend nav entries; and serializers enforce role masking.
+  - `scripts/backup_restore.py`: Safe SQLite database backup, restore, and snapshot tool using the SQLite online backup API.
+- **Production Deployment Assets**:
+  - `docker-compose.yml`: Production compose definition with non-root user (`festos`, UID 1001), healthchecks, restart policy (`unless-stopped`), SQLite volume persistence (`festos-data`), and env from `.env`.
+  - `backend/Dockerfile`: Hardened production image with healthcheck and non-root execution.
+  - `frontend/Dockerfile` & `frontend/nginx.conf`: Multi-stage build serving compiled assets through Nginx with reverse proxy to API, SPA routing, and security headers.
+  - `data/snapshots/demo.db`: Verified known-good fallback snapshot containing all seeded master data.
+  - `Makefile`: Targets `demo`, `reset-demo`, `smoke`, `consistency`, `backup`, `restore`, `snapshot`.
+- **Documentation**:
+  - `docs/TWIST_PLAYBOOK.md`: Comprehensive response manual covering how to add a hard constraint, disruption type, report, assumption key, participant attribute, and role.
+  - `docs/TEST_REPORT.md`: Comprehensive audit report detailing 224/224 backend tests and 59/59 frontend tests passing.
+- **Verification Results**:
+  - `backend/tests/`: **224 passed, 0 failed** in 72.89s.
+  - `frontend/src/test/`: **59 passed, 0 failed** in 9.42s.
+  - `frontend/`: `tsc --noEmit` passed with 0 errors.
+  - `scripts/check_cross_module_consistency.py`: **100% PASS**.
+  - `scripts/smoke_all.py`: **100% PASS** (9 roles, 32 modules, 7 live disruption drills, verified audit growth).
+
+
 
 

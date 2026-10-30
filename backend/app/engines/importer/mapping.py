@@ -15,7 +15,7 @@ from app.engines.importer.normalizers import (
     normalize_tri,
 )
 
-DEFAULT_MAPPING_DIR = Path("/home/krishna/festos/data/mapping")
+DEFAULT_MAPPING_DIR = Path(__file__).resolve().parents[4] / "data" / "mapping"
 
 
 class ColumnMappingConfig:
