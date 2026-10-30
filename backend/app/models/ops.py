@@ -38,6 +38,10 @@ class TravelTime(SQLModel, table=True):
     to_venue_id: str = Field(foreign_key="venue.id", index=True)
     travel_time_min: int = Field(default=15)
 
+    @property
+    def duration_minutes(self) -> int:
+        return self.travel_time_min
+
 class Incident(SQLModel, table=True):
     __tablename__ = "incident"
 

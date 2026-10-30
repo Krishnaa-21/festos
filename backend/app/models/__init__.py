@@ -22,10 +22,12 @@ from app.models.events import (
     ScheduleVersion,
 )
 from app.models.inventory import (
+    EntitlementPolicy,
     InventoryItem,
     InventoryLocation,
     InventoryMovement,
     MerchClaim,
+    Transfer,
 )
 from app.models.ops import Incident, NotificationDraft, TravelTime, Venue
 from app.models.participants import (

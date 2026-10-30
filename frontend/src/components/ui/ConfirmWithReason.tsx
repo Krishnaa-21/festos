@@ -14,6 +14,7 @@ export interface ConfirmWithReasonProps {
   placeholder?: string;
   isLoading?: boolean;
   riskLevel?: "LOW" | "HIGH" | "CRITICAL";
+  children?: React.ReactNode;
 }
 
 export const ConfirmWithReason: React.FC<ConfirmWithReasonProps> = ({
@@ -27,6 +28,7 @@ export const ConfirmWithReason: React.FC<ConfirmWithReasonProps> = ({
   placeholder = "Specify operational rationale, contingent context, or authorized bypass code...",
   isLoading = false,
   riskLevel = "HIGH",
+  children,
 }) => {
   const [reason, setReason] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -67,6 +69,8 @@ export const ConfirmWithReason: React.FC<ConfirmWithReasonProps> = ({
             <strong>CRITICAL RISK:</strong> This action relaxes a protected constraint and will immediately be dispatched to the Festival Director and permanent audit ledger.
           </div>
         )}
+
+        {children}
 
         <div>
           <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">
