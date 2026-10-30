@@ -1,8 +1,11 @@
 # OWNER: P1
 from datetime import datetime
 from typing import Any, Dict, List
+
 from sqlmodel import Session
+
 from app.schemas.common import EntityRef, RiskItem
+
 
 def summary(session: Session, now: datetime) -> Dict[str, Any]:
     """Return module KPI summary as of `now`."""
