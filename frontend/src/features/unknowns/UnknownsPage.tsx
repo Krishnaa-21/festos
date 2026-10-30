@@ -1,9 +1,14 @@
 import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
   CheckCircle2,
   Link2,
   Copy,
   History,
+  AlertTriangle,
+  HelpCircle,
+  Share2,
+  Sparkles,
 } from "lucide-react";
 import {
   Card,
@@ -30,6 +35,8 @@ export interface UnknownQueueItem {
   score: number;
   owner: string;
   impact_text: string;
+  computed_gain?: string;
+  method_label?: string;
   sample_entity_ids: string[];
 }
 
@@ -52,6 +59,25 @@ export interface VerificationHistoryItem {
   verified_at: string;
 }
 
+const METHOD_LABELS: Record<string, { label: string; gain: string }> = {
+  accommodation_requested: {
+    label: "DIRECT_LEADER_SMS",
+    gain: "+418 beds de-risked; unlocks definitive blocking in Plan A/B",
+  },
+  gender: {
+    label: "ARRIVAL_KIOSK",
+    gain: "+417 participants placed without violating gender corridor buffers",
+  },
+  diet: {
+    label: "WHATSAPP_LINK",
+    gain: "+394 dietary clearances; eliminates 220 Jain meal deficit risks",
+  },
+  tshirt_size: {
+    label: "PORTAL_FORM",
+    gain: "+55 kitbags pre-packed; reduces arrival concourse queue by 12m",
+  },
+};
+
 const SEEDED_QUEUE: UnknownQueueItem[] = [
   {
     field: "accommodation_requested",
@@ -61,6 +87,8 @@ const SEEDED_QUEUE: UnknownQueueItem[] = [
     score: 1672,
     owner: "ACCOMMODATION_LEAD",
     impact_text: "Beds cannot be definitively blocked in Plan A/B without confirmed housing requirement.",
+    computed_gain: "+418 beds de-risked; unlocks definitive blocking in Plan A/B",
+    method_label: "DIRECT_LEADER_SMS",
     sample_entity_ids: ["P0012", "P0045", "P0104"],
   },
   {
@@ -71,6 +99,8 @@ const SEEDED_QUEUE: UnknownQueueItem[] = [
     score: 1668,
     owner: "ACCOMMODATION_LEAD",
     impact_text: "Room allocation cannot enforce campus gender segregation safety constraints.",
+    computed_gain: "+417 participants placed without violating gender corridor buffers",
+    method_label: "ARRIVAL_KIOSK",
     sample_entity_ids: ["P0003", "P0019", "P0212"],
   },
   {
@@ -81,6 +111,8 @@ const SEEDED_QUEUE: UnknownQueueItem[] = [
     score: 1182,
     owner: "FOOD_OPS_MANAGER",
     impact_text: "Catering procurement buffers risk meal shortages or food waste during banquets.",
+    computed_gain: "+394 dietary clearances; eliminates 220 Jain meal deficit risks",
+    method_label: "WHATSAPP_LINK",
     sample_entity_ids: ["P0001", "P0005", "P0102"],
   },
   {
@@ -91,6 +123,8 @@ const SEEDED_QUEUE: UnknownQueueItem[] = [
     score: 110,
     owner: "MERCHANDISE_MANAGER",
     impact_text: "Merchandise packing desk cannot pre-kit kit bags for arrival check-in.",
+    computed_gain: "+55 kitbags pre-packed; reduces arrival concourse queue by 12m",
+    method_label: "PORTAL_FORM",
     sample_entity_ids: ["P0211", "P0342"],
   },
 ];
@@ -120,10 +154,15 @@ const SEEDED_UNRESOLVED_ITEMS: Record<string, UnresolvedItem[]> = {
 
 export const UnknownsPage: React.FC = () => {
   const { addToast } = useToast();
+  const [searchParams] = useSearchParams();
+  const whyNotParam = searchParams.get("why_not");
+  const participantIdParam = searchParams.get("participant_id");
+
   const [queue, setQueue] = useState<UnknownQueueItem[]>(SEEDED_QUEUE);
-  const [selectedField, setSelectedField] = useState<string>("diet");
-  const [items, setItems] = useState<UnresolvedItem[]>(SEEDED_UNRESOLVED_ITEMS["diet"] || []);
+  const [selectedField, setSelectedField] = useState<string>("accommodation_requested");
+  const [items, setItems] = useState<UnresolvedItem[]>(SEEDED_UNRESOLVED_ITEMS["accommodation_requested"] || []);
   const [loading, setLoading] = useState(false);
+  const [showWhyNotDrawer, setShowWhyNotDrawer] = useState(Boolean(whyNotParam || participantIdParam));
 
   // Inline Verification Form State
   const [verifyingItem, setVerifyingItem] = useState<UnresolvedItem | null>(null);
@@ -389,10 +428,116 @@ export const UnknownsPage: React.FC = () => {
             Aggregated queue ranked by Count × Criticality. A blank never means NO, consent, or absence of need.
           </p>
         </div>
+
+        <div className="flex items-center gap-2">
+          <Button
+            data-testid="why-not-toggle-btn"
+            variant="outline"
+            size="sm"
+            onClick={() => setShowWhyNotDrawer(!showWhyNotDrawer)}
+          >
+            <HelpCircle className="w-3.5 h-3.5 mr-1 text-indigo-400" />
+            {showWhyNotDrawer ? "Hide Why-not?" : "Why-not? Unplaced Explainability"}
+          </Button>
+        </div>
       </div>
 
+      {/* Why-Not? Root Cause Explainability Card (Deep-linkable via ?why_not=unplaced) */}
+      {showWhyNotDrawer && (
+        <Card className="border-amber-500/40 bg-gradient-to-r from-amber-950/30 to-slate-900" data-testid="why-not-panel">
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <AlertTriangle className="w-5 h-5 text-amber-400" />
+                <CardTitle className="text-sm font-bold text-white uppercase tracking-wider">
+                  Why-Not? Deep-Dive: Root Cause Analysis for Unplaced Participants
+                </CardTitle>
+              </div>
+              <Badge variant="solid" status="PENDING">
+                ROOT CAUSE EXPLAINER
+              </Badge>
+            </div>
+            <CardDescription className="text-xs text-amber-200">
+              Target: {participantIdParam ? `Participant ${participantIdParam}` : "85 Displaced & Unplaced Participants"} · Aarohan 2026
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3 text-xs">
+            <p className="text-slate-300 leading-relaxed">
+              Under FestOS hard principles, participants cannot be placed into rooms or hostels when critical safety or housing consent values are missing. The algorithm refused auto-allocation due to:
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 font-mono">
+              <div className="p-3 rounded-lg bg-slate-900 border border-amber-900/40 space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="font-sans font-semibold text-white">1. Housing Consent Check</span>
+                  <Badge triState="UNKNOWN">UNKNOWN</Badge>
+                </div>
+                <div className="text-[11px] text-slate-400 font-sans">
+                  <code className="text-amber-300">accommodation_requested = UNKNOWN</code>. A blank is never assumed as YES. Requires affirmative opt-in before bed reservation.
+                </div>
+              </div>
+
+              <div className="p-3 rounded-lg bg-slate-900 border border-amber-900/40 space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="font-sans font-semibold text-white">2. Gender Corridor Safety Barrier</span>
+                  <Badge triState="UNKNOWN">UNKNOWN</Badge>
+                </div>
+                <div className="text-[11px] text-slate-400 font-sans">
+                  <code className="text-amber-300">gender = UNKNOWN</code>. Hard safety rule blocks room assignment into gender-segregated Hostels 1 & 2 corridors without verified gender.
+                </div>
+              </div>
+            </div>
+
+            <div className="pt-2 flex items-center justify-between border-t border-slate-800/80">
+              <span className="text-slate-400 font-sans">
+                Action: Resolve unknown fields below to immediately unblock bed allocation in Plan A.
+              </span>
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => setSelectedField("accommodation_requested")}
+              >
+                Inspect Housing Queue →
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Before vs After Burn-Down Impact Panel */}
+      <Card className="border-slate-800 bg-slate-900/70" data-testid="before-after-panel">
+        <CardContent className="p-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs font-mono">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded bg-indigo-950 text-indigo-400">
+                <Sparkles className="w-4 h-4" />
+              </div>
+              <div>
+                <span className="font-bold text-white font-sans">Burn-Down Certainty Index: </span>
+                <span className="text-emerald-400 font-bold">78%</span> (was 64% at initial data ingestion)
+              </div>
+            </div>
+
+            <div className="flex items-center gap-6">
+              <div>
+                <span className="text-slate-400 font-sans">Active UNKNOWN Fields: </span>
+                <span className="text-white font-bold">1,284 remaining</span>
+              </div>
+              <div>
+                <span className="text-slate-400 font-sans">Resolved via Direct Token: </span>
+                <span className="text-emerald-400 font-bold">342 verified</span>
+              </div>
+              <div>
+                <span className="text-slate-400 font-sans">Beds Unlocked: </span>
+                <span className="text-indigo-300 font-bold">+286 beds</span>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Field Queue Cards Ranked by Criticality */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4" data-testid="ranked-unknowns-grid">
         {queue.map((item) => {
           const isSelected = item.field === selectedField;
           return (
@@ -419,6 +564,31 @@ export const UnknownsPage: React.FC = () => {
                 <span>Score: {item.score}</span>
                 <span className="text-slate-500 truncate max-w-[100px]">{item.owner}</span>
               </div>
+
+              {/* Method Label and Computed Gain */}
+              {
+                (() => {
+                  const method = item.method_label || METHOD_LABELS[item.field]?.label;
+                  const gain = item.computed_gain || METHOD_LABELS[item.field]?.gain;
+                  return (
+                    <>
+                      {method && (
+                        <div className="mt-2 flex items-center gap-1.5">
+                          <Badge variant="outline" className="text-[10px] border-indigo-500/40 text-indigo-300">
+                            {method}
+                          </Badge>
+                        </div>
+                      )}
+                      {gain && (
+                        <div className="mt-1.5 text-[10px] text-emerald-400 font-medium">
+                          {gain}
+                        </div>
+                      )}
+                    </>
+                  );
+                })()
+              }
+
               <div className="text-[11px] text-slate-300/80 mt-2 line-clamp-2 leading-relaxed border-t border-slate-800/80 pt-2">
                 {item.impact_text}
               </div>
@@ -622,7 +792,7 @@ export const UnknownsPage: React.FC = () => {
             </p>
 
             {generatedToken ? (
-              <div className="space-y-3">
+              <div className="space-y-3" data-testid="minimal-request-generator">
                 <div className="p-3 rounded-lg bg-slate-950 border border-slate-800 space-y-1.5">
                   <span className="text-[11px] text-slate-400 block font-medium">Generated Public Verification URL:</span>
                   <div className="font-mono text-indigo-300 break-all text-[11px] select-all bg-slate-900 p-2 rounded border border-slate-800">
@@ -633,26 +803,56 @@ export const UnknownsPage: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between">
+                {/* Minimal Confirmation Request Generator Snippet */}
+                <div className="p-3 rounded-lg bg-slate-900/90 border border-indigo-500/30 space-y-2">
+                  <span className="text-[11px] text-indigo-300 font-semibold flex items-center gap-1">
+                    <Share2 className="w-3.5 h-3.5" /> Pre-formatted WhatsApp / SMS Request Generator:
+                  </span>
+                  <div className="text-[11px] text-slate-300 bg-slate-950 p-2.5 rounded font-mono leading-relaxed select-all">
+                    {`[Aarohan 2026 Emergency Notice] Attn Leader of ${tokenItem.contingent_id}: Please confirm the ${tokenItem.field} for ${tokenItem.name} (${tokenItem.id}) to finalize room & catering reservations: https://festos.aarohan.org/verify?token=${generatedToken}`}
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between pt-1">
                   <span className="text-[11px] text-emerald-400 flex items-center gap-1">
                     <CheckCircle2 className="h-3.5 w-3.5" /> Link active & cryptographically signed
                   </span>
-                  <Button
-                    size="sm"
-                    className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs"
-                    onClick={() => {
-                      navigator.clipboard.writeText(`https://festos.aarohan.org/verify?token=${generatedToken}`);
-                      addToast({
-                        title: "Link Copied to Clipboard",
-                        message: "Send this confirmation link to the contingent leader via WhatsApp / Email.",
-                        type: "success",
-                      });
-                    }}
-                    data-testid="btn-copy-token-link"
-                  >
-                    <Copy className="h-3.5 w-3.5 mr-1.5" />
-                    Copy Link
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="text-xs"
+                      onClick={() => {
+                        const snippet = `[Aarohan 2026 Emergency Notice] Attn Leader of ${tokenItem.contingent_id}: Please confirm the ${tokenItem.field} for ${tokenItem.name} (${tokenItem.id}) to finalize room & catering reservations: https://festos.aarohan.org/verify?token=${generatedToken}`;
+                        navigator.clipboard.writeText(snippet);
+                        addToast({
+                          title: "Request Snippet Copied",
+                          message: "Ready to paste into leader WhatsApp chat or SMS.",
+                          type: "success",
+                        });
+                      }}
+                      data-testid="btn-copy-request-snippet"
+                    >
+                      <Copy className="h-3.5 w-3.5 mr-1" />
+                      Copy Message
+                    </Button>
+                    <Button
+                      size="sm"
+                      className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs"
+                      onClick={() => {
+                        navigator.clipboard.writeText(`https://festos.aarohan.org/verify?token=${generatedToken}`);
+                        addToast({
+                          title: "Link Copied to Clipboard",
+                          message: "Send this confirmation link to the contingent leader.",
+                          type: "success",
+                        });
+                      }}
+                      data-testid="btn-copy-token-link"
+                    >
+                      <Link2 className="h-3.5 w-3.5 mr-1.5" />
+                      Copy Link
+                    </Button>
+                  </div>
                 </div>
               </div>
             ) : (
