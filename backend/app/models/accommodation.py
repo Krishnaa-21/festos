@@ -20,9 +20,10 @@ class Room(SQLModel, table=True):
     accessible: bool = Field(default=False)
     accessibility: str = Field(default="no")  # 'yes'|'no' from hostels.csv
     gender_class: str = Field(default="UNKNOWN")  # boys|girls|UNKNOWN
-    status: str = Field(default="available")  # available|maintenance|closed
+    status: str = Field(default="READY")  # READY|OCCUPIED|CLEANING|MAINTENANCE|CLOSED (or available)
     cleaning_status: str = Field(default="READY")  # READY|CLEANING|DIRTY
     cleaning_ready_at: Optional[datetime] = Field(default=None)
+    safety_info: Optional[str] = Field(default=None)
 
     version: int = Field(default=1)
     created_at: datetime = Field(default_factory=now)
@@ -39,9 +40,11 @@ class ExternalProperty(SQLModel, table=True):
     distance_km: float = Field(default=0.0)
     transport_availability: Optional[str] = Field(default="yes")  # 'yes'|'limited'|'no'
     transport_limited: bool = Field(default=False)
+    transport_windows: Optional[str] = Field(default=None)
+    safety_info: Optional[str] = Field(default=None)
     accessibility_verified: bool = Field(default=False)
     gender_suitability_verified: bool = Field(default=False)
-    status: str = Field(default="ACTIVE")
+    status: str = Field(default="ACTIVE")  # ACTIVE|MAINTENANCE|CLOSED
 
     version: int = Field(default=1)
     created_at: datetime = Field(default_factory=now)
@@ -83,6 +86,9 @@ class AccommodationPlan(SQLModel, table=True):
     name: str = Field(default="Plan")
     status: str = Field(default="CANDIDATE")  # CANDIDATE|APPROVED|LIVE|ARCHIVED
 
+    is_frozen: bool = Field(default=False)
+    frozen_at: Optional[datetime] = Field(default=None)
+
     # Plan-level comparison metrics
     on_campus_placed: int = Field(default=0)
     external_placed: int = Field(default=0)
@@ -103,3 +109,32 @@ class AccommodationPlan(SQLModel, table=True):
     version: int = Field(default=1)
     created_at: datetime = Field(default_factory=now)
     updated_at: datetime = Field(default_factory=now)
+
+
+class BedReallocationSuggestion(SQLModel, table=True):
+    __tablename__ = "bed_reallocation_suggestion"
+
+    id: str = Field(default_factory=lambda: f"sug_{uuid.uuid4().hex[:8]}", primary_key=True)
+    freed_bed_key: str = Field(index=True)
+    freed_room_id: Optional[str] = Field(default=None, index=True)
+    freed_by_participant_id: str = Field(index=True)
+    reason: str = Field(default="PARTICIPANT_CANCELLED")
+    suggested_participant_id: Optional[str] = Field(default=None, index=True)
+    suggested_participant_name: Optional[str] = Field(default=None)
+    contingent_id: Optional[str] = Field(default=None, index=True)
+    priority_score: float = Field(default=0.0)
+    cohesion_benefit: Optional[str] = Field(default=None)
+    status: str = Field(default="PENDING")  # PENDING|APPLIED|DISMISSED
+    created_at: datetime = Field(default_factory=now)
+
+
+class CheckinOperationRecord(SQLModel, table=True):
+    __tablename__ = "checkin_operation_record"
+
+    id: str = Field(default_factory=lambda: f"cop_{uuid.uuid4().hex[:8]}", primary_key=True)
+    client_op_id: str = Field(index=True, unique=True)
+    op_type: str = Field(index=True)  # CHECKIN|CHECKOUT|ARRIVAL_UPDATE
+    participant_id: str = Field(index=True)
+    status: str = Field(default="APPLIED")  # APPLIED|DUPLICATE_IGNORED|CONFLICT
+    details: Optional[str] = Field(default=None)
+    created_at: datetime = Field(default_factory=now)
