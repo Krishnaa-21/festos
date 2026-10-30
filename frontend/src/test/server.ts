@@ -2660,6 +2660,8 @@ export const handlers = [
   }),
 ];
 
-export const server = setupServer(...handlers);
+import { incidentHandlers } from "./incidents_msw";
+
+export const server = setupServer(...handlers, ...incidentHandlers);
 
 

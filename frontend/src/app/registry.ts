@@ -15,6 +15,7 @@ export const NAV_GROUPS = [
   "Transportation",
   "Incident Center",
   "Impact Analysis",
+  "Notifications",
   "Scenario Simulator",
   "Fest Pre-Mortem",
   "Unknowns Burn-down",
