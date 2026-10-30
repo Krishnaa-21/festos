@@ -22,6 +22,17 @@ def register_change_handler(action: str):
     return decorator
 
 def get_change_handler(action: str) -> Optional[Any]:
+    if action not in _change_handlers:
+        module_slug = action.split(".")[0]
+        try:
+            importlib.import_module(f"app.services.{module_slug}.handlers")
+        except Exception:
+            pass
+        if action not in _change_handlers:
+            try:
+                importlib.import_module(f"app.services.{module_slug}")
+            except Exception:
+                pass
     return _change_handlers.get(action)
 
 def register_seeder(name: str, order: int = 100):

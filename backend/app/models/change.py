@@ -1,7 +1,7 @@
 # OWNER: P1
 import uuid
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 from sqlalchemy import JSON, Column
 from sqlmodel import Field, SQLModel
@@ -44,7 +44,10 @@ class Scenario(SQLModel, table=True):
     description: Optional[str] = Field(default=None)
     created_at: datetime = Field(default_factory=now)
     created_by: str = Field(default="SYSTEM")
-    status: str = Field(default="DRAFT")
+    status: str = Field(default="DRAFT")  # DRAFT|COMMITTED|DISCARDED
+    forked_at: datetime = Field(default_factory=now)
+    live_changeset_count_at_fork: int = Field(default=0)
+    recorded_actions: List[Dict[str, Any]] = Field(default_factory=list, sa_column=Column(JSON))
 
 class Assumption(SQLModel, table=True):
     __tablename__ = "assumption"
