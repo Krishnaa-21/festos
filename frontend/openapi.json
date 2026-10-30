@@ -1574,6 +1574,126 @@
         }
       }
     },
+    "/api/v1/commands/parse": {
+      "post": {
+        "tags": [
+          "Commands"
+        ],
+        "summary": "Parse Natural Command",
+        "description": "Parses natural-language text into a strict structured command schema with operator explanation.",
+        "operationId": "parse_natural_command_api_v1_commands_parse_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ParseRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_ParseResponseData_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/commands/execute": {
+      "post": {
+        "tags": [
+          "Commands"
+        ],
+        "summary": "Execute Structured Command",
+        "description": "Executes a structured command deterministically.\n- Read-only commands execute and return results immediately (HTTP 200).\n- Mutating commands create a dry-run proposal requiring approval (HTTP 202).",
+        "operationId": "execute_structured_command_api_v1_commands_execute_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExecuteRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_ExecuteResponseData_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/contingents": {
       "get": {
         "tags": [
@@ -3041,28 +3161,6 @@
               "title": "X-Actor-Role"
             }
           },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/imports": {
-      "post": {
-        "tags": [
-          "Imports"
-        ],
-        "summary": "Upload Import File",
-        "description": "Uploads and ingests a raw CSV file into raw_record, staging, and quarantine.",
-        "operationId": "upload_import_file_api_v1_imports_post",
-        "parameters": [
           {
             "name": "x-actor-id",
             "in": "header",
@@ -4153,31 +4251,6 @@
         "description": "Complete an in-transit transfer.",
         "operationId": "complete_transfer_api_v1_logistics_transfers__id__complete_post",
         "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Id"
-            }
-          },
-          {
-            "name": "Idempotency-Key",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Idempotency-Key"
-            }
-          },
           {
             "name": "id",
             "in": "path",
@@ -6588,6 +6661,245 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reports": {
+      "get": {
+        "tags": [
+          "Reports"
+        ],
+        "summary": "List Reports",
+        "description": "Returns the catalog of all 20 spec Section 14 reports with access permissions and metadata.",
+        "operationId": "list_reports_api_v1_reports_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_List_Dict_str__Any___"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reports/bundle.zip": {
+      "get": {
+        "tags": [
+          "Reports"
+        ],
+        "summary": "Download Reports Bundle",
+        "description": "Generates and downloads a zip archive containing all reports authorized for the caller.",
+        "operationId": "download_reports_bundle_api_v1_reports_bundle_zip_get",
+        "parameters": [
+          {
+            "name": "mask",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Enforce role-based masking on sensitive columns",
+              "default": true,
+              "title": "Mask"
+            },
+            "description": "Enforce role-based masking on sensitive columns"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reports/post-festival": {
+      "get": {
+        "tags": [
+          "Reports"
+        ],
+        "summary": "Get Post Festival Summary",
+        "description": "Generates the post-festival comprehensive operational report from live state and cryptographic audit history.",
+        "operationId": "get_post_festival_summary_api_v1_reports_post_festival_get",
+        "parameters": [
+          {
+            "name": "format",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Output format: 'html' or 'csv'",
+              "default": "html",
+              "title": "Format"
+            },
+            "description": "Output format: 'html' or 'csv'"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reports/{name}": {
+      "get": {
+        "tags": [
+          "Reports"
+        ],
+        "summary": "Download Report",
+        "description": "Generates and downloads a single spec report by name (e.g. reconciliation_report.csv).",
+        "operationId": "download_report_api_v1_reports__name__get",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Name"
+            }
+          },
+          {
+            "name": "mask",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Enforce role-based masking on sensitive columns",
+              "default": true,
+              "title": "Mask"
+            },
+            "description": "Enforce role-based masking on sensitive columns"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
                 }
               }
             }
@@ -10802,6 +11114,19 @@
         ],
         "title": "ChangeResult"
       },
+      "CommandIntent": {
+        "type": "string",
+        "enum": [
+          "show_impact",
+          "find_accommodation_for_unplaced",
+          "affected_events_by_equipment",
+          "alternative_vendors_for_diet",
+          "list_late_arrivals",
+          "query",
+          "navigate"
+        ],
+        "title": "CommandIntent"
+      },
       "CommitScenarioBody": {
         "properties": {
           "reason": {
@@ -11623,6 +11948,30 @@
         ],
         "title": "Envelope[Dict[str, Any]]"
       },
+      "Envelope_ExecuteResponseData_": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/ExecuteResponseData"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Meta"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "Envelope[ExecuteResponseData]"
+      },
       "Envelope_ImportBatchItem_": {
         "properties": {
           "data": {
@@ -11800,6 +12149,30 @@
         ],
         "title": "Envelope[Page[QuarantineIssueItem]]"
       },
+      "Envelope_ParseResponseData_": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/ParseResponseData"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Meta"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "Envelope[ParseResponseData]"
+      },
       "EventMutationBody": {
         "properties": {
           "expected_version": {
@@ -11837,6 +12210,136 @@
         },
         "type": "object",
         "title": "EventMutationBody"
+      },
+      "ExecuteRequest": {
+        "properties": {
+          "command": {
+            "$ref": "#/components/schemas/StructuredCommand"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "confirmed": {
+            "type": "boolean",
+            "title": "Confirmed",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "command"
+        ],
+        "title": "ExecuteRequest"
+      },
+      "ExecuteResponseData": {
+        "properties": {
+          "intent": {
+            "$ref": "#/components/schemas/CommandIntent"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "EXECUTED",
+              "PROPOSAL_CREATED",
+              "REJECTED"
+            ],
+            "title": "Status"
+          },
+          "is_mutating": {
+            "type": "boolean",
+            "title": "Is Mutating"
+          },
+          "proposal_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Proposal Id"
+          },
+          "approval_required": {
+            "type": "boolean",
+            "title": "Approval Required",
+            "default": false
+          },
+          "change_set_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Change Set Id"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Result"
+          },
+          "impact": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Impact"
+          },
+          "dry_run_result": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dry Run Result"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "intent",
+          "status",
+          "is_mutating",
+          "message"
+        ],
+        "title": "ExecuteResponseData"
       },
       "GenerateTokenBody": {
         "properties": {
@@ -12339,6 +12842,66 @@
           "total_pages"
         ],
         "title": "Page[QuarantineIssueItem]"
+      },
+      "ParseRequest": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 1,
+            "title": "Text"
+          },
+          "context": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "text"
+        ],
+        "title": "ParseRequest"
+      },
+      "ParseResponseData": {
+        "properties": {
+          "command": {
+            "$ref": "#/components/schemas/StructuredCommand"
+          },
+          "explanation": {
+            "type": "string",
+            "title": "Explanation"
+          },
+          "confidence": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Confidence"
+          },
+          "parser_mode": {
+            "type": "string",
+            "enum": [
+              "LLM",
+              "OFFLINE_FALLBACK"
+            ],
+            "title": "Parser Mode"
+          }
+        },
+        "type": "object",
+        "required": [
+          "command",
+          "explanation",
+          "confidence",
+          "parser_mode"
+        ],
+        "title": "ParseResponseData"
       },
       "ParticipantCreateBody": {
         "properties": {
@@ -12894,6 +13457,33 @@
           "payload"
         ],
         "title": "StocktakeAdjustBody"
+      },
+      "StructuredCommand": {
+        "properties": {
+          "intent": {
+            "$ref": "#/components/schemas/CommandIntent"
+          },
+          "parameters": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Parameters"
+          },
+          "is_mutating": {
+            "type": "boolean",
+            "title": "Is Mutating",
+            "default": false
+          },
+          "raw_text": {
+            "type": "string",
+            "title": "Raw Text",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "intent"
+        ],
+        "title": "StructuredCommand"
       },
       "SyncOfflineBody": {
         "properties": {
