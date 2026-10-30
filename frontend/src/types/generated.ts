@@ -17,6 +17,109 @@ export interface paths {
     /** Post Create Example Item */
     post: operations["post_create_example_item_api_v1__example_items_post"];
   };
+  "/api/v1/approvals": {
+    /**
+     * List Approvals
+     * @description List operational approvals inbox with filtering and pagination.
+     */
+    get: operations["list_approvals_api_v1_approvals_get"];
+  };
+  "/api/v1/approvals/policies": {
+    /**
+     * Get Approval Policies
+     * @description Retrieve risk-to-role operational approval policy definitions.
+     */
+    get: operations["get_approval_policies_api_v1_approvals_policies_get"];
+  };
+  "/api/v1/approvals/{id}": {
+    /**
+     * Get Approval Detail
+     * @description Retrieve complete approval details including stored ChangeSet payload.
+     */
+    get: operations["get_approval_detail_api_v1_approvals__id__get"];
+  };
+  "/api/v1/approvals/{id}/approve": {
+    /**
+     * Post Approve
+     * @description Approve a pending operational change and execute the stored mutation.
+     */
+    post: operations["post_approve_api_v1_approvals__id__approve_post"];
+  };
+  "/api/v1/approvals/{id}/reject": {
+    /**
+     * Post Reject
+     * @description Reject a pending operational change with a mandatory recorded explanation.
+     */
+    post: operations["post_reject_api_v1_approvals__id__reject_post"];
+  };
+  "/api/v1/audit/events": {
+    /**
+     * List Audit Events
+     * @description Query immutable audit events with pagination, filtering, and role-based masking.
+     */
+    get: operations["list_audit_events_api_v1_audit_events_get"];
+  };
+  "/api/v1/audit/timeline/{entity_type}/{entity_id}": {
+    /**
+     * Get Entity Timeline
+     * @description Retrieve chronological timeline of mutations for a specific entity.
+     */
+    get: operations["get_entity_timeline_api_v1_audit_timeline__entity_type___entity_id__get"];
+  };
+  "/api/v1/audit/verify": {
+    /**
+     * Verify Audit Hash Chain
+     * @description Cryptographically verify the integrity of the audit log hash chain.
+     */
+    get: operations["verify_audit_hash_chain_api_v1_audit_verify_get"];
+  };
+  "/api/v1/audit/export/csv": {
+    /**
+     * Export Audit Csv
+     * @description Export audit events as CSV respecting role-based masking and export permissions.
+     */
+    get: operations["export_audit_csv_api_v1_audit_export_csv_get"];
+  };
+  "/api/v1/auth/login": {
+    /**
+     * Post Login
+     * @description Authenticate with email and password. Returns access and refresh JWT tokens.
+     */
+    post: operations["post_login_api_v1_auth_login_post"];
+  };
+  "/api/v1/auth/refresh": {
+    /**
+     * Post Refresh
+     * @description Obtain a new access token using a valid refresh token.
+     */
+    post: operations["post_refresh_api_v1_auth_refresh_post"];
+  };
+  "/api/v1/auth/me": {
+    /**
+     * Get Me
+     * @description Retrieve profile and permissions for the current authenticated user.
+     */
+    get: operations["get_me_api_v1_auth_me_get"];
+  };
+  "/api/v1/auth/permissions": {
+    /**
+     * Get Permissions
+     * @description Retrieve full RBAC permission matrix for all festival roles.
+     */
+    get: operations["get_permissions_api_v1_auth_permissions_get"];
+  };
+  "/api/v1/auth/break-glass": {
+    /**
+     * List Break Glass Grants
+     * @description List active break-glass grants.
+     */
+    get: operations["list_break_glass_grants_api_v1_auth_break_glass_get"];
+    /**
+     * Post Break Glass
+     * @description Request temporary unmasking of a sensitive entity field. Requires mandatory reason and logs to audit.
+     */
+    post: operations["post_break_glass_api_v1_auth_break_glass_post"];
+  };
   "/api/v1/contingents": {
     /**
      * Get Contingents List
@@ -42,6 +145,25 @@ export interface paths {
      * @description Retrieve full operational view: attendance, travel windows, events, diet, merchandise, and housing.
      */
     get: operations["get_contingent_operational_status_api_v1_contingents__id__status_get"];
+  };
+  "/api/v1/overrides": {
+    /**
+     * List Overrides
+     * @description Query the override register with filtering and pagination.
+     */
+    get: operations["list_overrides_api_v1_overrides_get"];
+    /**
+     * Post Create Override
+     * @description Record an operational override directly into the register. Enforces mandatory reason.
+     */
+    post: operations["post_create_override_api_v1_overrides_post"];
+  };
+  "/api/v1/overrides/{id}": {
+    /**
+     * Get Override Detail
+     * @description Retrieve details for a single recorded override.
+     */
+    get: operations["get_override_detail_api_v1_overrides__id__get"];
   };
   "/api/v1/participants": {
     /**
@@ -193,6 +315,30 @@ export type webhooks = Record<string, never>;
 
 export interface components {
   schemas: {
+    /** BreakGlassRequest */
+    BreakGlassRequest: {
+      /**
+       * Entity
+       * @description Target entity identifier, e.g., participant:P10023
+       */
+      entity: string;
+      /**
+       * Field
+       * @description Sensitive field name, e.g., medical_notes
+       */
+      field: string;
+      /**
+       * Reason
+       * @description Mandatory operational or emergency rationale
+       */
+      reason: string;
+      /**
+       * Minutes
+       * @description Grant TTL in minutes (max 60)
+       * @default 15
+       */
+      minutes?: number;
+    };
     /** ChangeResult */
     ChangeResult: {
       /** Change Set Id */
@@ -269,6 +415,43 @@ export interface components {
       /** Expected Version */
       expected_version?: number | null;
     };
+    /** CreateOverrideRequest */
+    CreateOverrideRequest: {
+      /**
+       * Entity Type
+       * @description Entity being relaxed, e.g., room, event, schedule
+       */
+      entity_type: string;
+      /**
+       * Entity Id
+       * @description Target entity ID
+       */
+      entity_id: string;
+      /**
+       * Constraint Code
+       * @description Constraint identifier being bypassed
+       */
+      constraint_code: string;
+      /**
+       * Reason
+       * @description Mandatory rationale under FestOS principles
+       */
+      reason: string;
+      /**
+       * Risk Level
+       * @description Risk level: LOW | HIGH | CRITICAL
+       * @default HIGH
+       */
+      risk_level?: string;
+    };
+    /** DecisionRequest */
+    DecisionRequest: {
+      /**
+       * Reason
+       * @description Mandatory operational justification
+       */
+      reason: string;
+    };
     /** EntityRef */
     EntityRef: {
       /** Type */
@@ -312,6 +495,16 @@ export interface components {
       /** Warnings */
       warnings?: string[];
     };
+    /** Envelope[Page[Dict[str, Any]]] */
+    Envelope_Page_Dict_str__Any___: {
+      data: components["schemas"]["Page_Dict_str__Any__"];
+      /** Meta */
+      meta?: {
+        [key: string]: unknown;
+      };
+      /** Warnings */
+      warnings?: string[];
+    };
     /** GenerateTokenBody */
     GenerateTokenBody: {
       /**
@@ -346,6 +539,13 @@ export interface components {
       /** Reason */
       reason: string;
     };
+    /** LoginRequest */
+    LoginRequest: {
+      /** Email */
+      email: string;
+      /** Password */
+      password: string;
+    };
     /** MergeRequestBody */
     MergeRequestBody: {
       /** Expected Version */
@@ -361,6 +561,21 @@ export interface components {
       payload: {
         [key: string]: unknown;
       };
+    };
+    /** Page[Dict[str, Any]] */
+    Page_Dict_str__Any__: {
+      /** Items */
+      items: {
+          [key: string]: unknown;
+        }[];
+      /** Total */
+      total: number;
+      /** Page */
+      page: number;
+      /** Page Size */
+      page_size: number;
+      /** Total Pages */
+      total_pages: number;
     };
     /** ParticipantCreateBody */
     ParticipantCreateBody: {
@@ -409,6 +624,11 @@ export interface components {
       payload: {
         [key: string]: unknown;
       };
+    };
+    /** RefreshRequest */
+    RefreshRequest: {
+      /** Refresh Token */
+      refresh_token: string;
     };
     /**
      * Severity
@@ -547,6 +767,421 @@ export interface operations {
     };
   };
   /**
+   * List Approvals
+   * @description List operational approvals inbox with filtering and pagination.
+   */
+  list_approvals_api_v1_approvals_get: {
+    parameters: {
+      query?: {
+        page?: number;
+        page_size?: number;
+        status?: string | null;
+        entity_type?: string | null;
+        required_role?: string | null;
+      };
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Page_Dict_str__Any___"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Approval Policies
+   * @description Retrieve risk-to-role operational approval policy definitions.
+   */
+  get_approval_policies_api_v1_approvals_policies_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Approval Detail
+   * @description Retrieve complete approval details including stored ChangeSet payload.
+   */
+  get_approval_detail_api_v1_approvals__id__get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Post Approve
+   * @description Approve a pending operational change and execute the stored mutation.
+   */
+  post_approve_api_v1_approvals__id__approve_post: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+      path: {
+        id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["DecisionRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Post Reject
+   * @description Reject a pending operational change with a mandatory recorded explanation.
+   */
+  post_reject_api_v1_approvals__id__reject_post: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+      path: {
+        id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["DecisionRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * List Audit Events
+   * @description Query immutable audit events with pagination, filtering, and role-based masking.
+   */
+  list_audit_events_api_v1_audit_events_get: {
+    parameters: {
+      query?: {
+        page?: number;
+        page_size?: number;
+        entity_type?: string | null;
+        entity_id?: string | null;
+        actor_id?: string | null;
+        action?: string | null;
+        from_time?: string | null;
+        to_time?: string | null;
+      };
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Page_Dict_str__Any___"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Entity Timeline
+   * @description Retrieve chronological timeline of mutations for a specific entity.
+   */
+  get_entity_timeline_api_v1_audit_timeline__entity_type___entity_id__get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+      path: {
+        entity_type: string;
+        entity_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Verify Audit Hash Chain
+   * @description Cryptographically verify the integrity of the audit log hash chain.
+   */
+  verify_audit_hash_chain_api_v1_audit_verify_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Export Audit Csv
+   * @description Export audit events as CSV respecting role-based masking and export permissions.
+   */
+  export_audit_csv_api_v1_audit_export_csv_get: {
+    parameters: {
+      query?: {
+        entity_type?: string | null;
+        action?: string | null;
+        from_time?: string | null;
+        to_time?: string | null;
+      };
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Post Login
+   * @description Authenticate with email and password. Returns access and refresh JWT tokens.
+   */
+  post_login_api_v1_auth_login_post: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["LoginRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Post Refresh
+   * @description Obtain a new access token using a valid refresh token.
+   */
+  post_refresh_api_v1_auth_refresh_post: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RefreshRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Me
+   * @description Retrieve profile and permissions for the current authenticated user.
+   */
+  get_me_api_v1_auth_me_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Permissions
+   * @description Retrieve full RBAC permission matrix for all festival roles.
+   */
+  get_permissions_api_v1_auth_permissions_get: {
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+    };
+  };
+  /**
+   * List Break Glass Grants
+   * @description List active break-glass grants.
+   */
+  list_break_glass_grants_api_v1_auth_break_glass_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Post Break Glass
+   * @description Request temporary unmasking of a sensitive entity field. Requires mandatory reason and logs to audit.
+   */
+  post_break_glass_api_v1_auth_break_glass_post: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["BreakGlassRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
    * Get Contingents List
    * @description List all contingents with declared vs actual strength and leader/escort statuses.
    */
@@ -640,6 +1275,97 @@ export interface operations {
    */
   get_contingent_operational_status_api_v1_contingents__id__status_get: {
     parameters: {
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * List Overrides
+   * @description Query the override register with filtering and pagination.
+   */
+  list_overrides_api_v1_overrides_get: {
+    parameters: {
+      query?: {
+        page?: number;
+        page_size?: number;
+        entity_type?: string | null;
+        constraint_code?: string | null;
+        risk_level?: string | null;
+        status?: string | null;
+      };
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Page_Dict_str__Any___"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Post Create Override
+   * @description Record an operational override directly into the register. Enforces mandatory reason.
+   */
+  post_create_override_api_v1_overrides_post: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CreateOverrideRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Override Detail
+   * @description Retrieve details for a single recorded override.
+   */
+  get_override_detail_api_v1_overrides__id__get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
       path: {
         id: string;
       };
