@@ -357,4 +357,34 @@ Format:
 - **Action Required**:
   - None; new tables are automatically created on startup.
 
+### 2026-10-31: P1/19-commands-reports (Natural-Language Command Bar & Section 14 Reports Engine)
+- **Author**: P1 Lead
+- **Branch**: `p1/19-commands-reports`
+- **Contracts Added**:
+  - `docs/api/commands.md`: Schema definition for structured commands, prompt sanitization protocol, and execution pipeline.
+  - `docs/api/reports.md`: Comprehensive catalog of all 20 Section 14 reports, export masking rules, and formula injection mitigation.
+- **Endpoints Added**:
+  - `POST /api/v1/commands/parse`: Parses free-text operator input into strict structured command schema (`CommandIntent` enum + typed parameters). Provider-agnostic LLM adapter with deterministic offline fallback (`RapidFuzz` + regex). Privacy-enforced context stripping (no contact, medical, or accessibility data). Returns structured command with confidence, provider origin, and explanation string.
+  - `POST /api/v1/commands/execute`: Deterministic validation and permission checking. Read-only intents (`show_impact`, `affected_events_by_equipment`, `alternative_vendors_for_diet`, `list_late_arrivals`, `navigate`, `query`) execute immediately with live data. Mutating intents (`find_accommodation_for_unplaced`) strictly create a proposed `Approval` record with `ChangeService(dry_run=True)` impact preview requiring `FESTIVAL_DIRECTOR` approval. Sliding-window rate-limiting (60 req/min) and comprehensive audit logging.
+  - `GET /api/v1/reports`: Catalog of all 20 Section 14 reports with metadata, export formats, categories, and required permissions.
+  - `GET /api/v1/reports/{name}`: Generates and streams a single report (`.csv` or `.md`). Enforces formula injection sanitization (neutralizes cells starting with `=`, `+`, `-`, `@`, `\t`, `\r`) and role-based masking. Audited via `AuditEvent(action="report.export")`.
+  - `GET /api/v1/reports/bundle.zip`: Assembles and streams all 20 reports in an in-memory ZIP archive bundle.
+  - `GET /api/v1/reports/post-festival`: Multi-domain post-festival report synthesized from audit trail and live database across attendance, accommodation utilisation, event completion, inventory usage, vendor performance, incident history, financial expenditure, operational delays, and outstanding settlements. Supports HTML and CSV output formats.
+- **Public Functions Added**:
+  - `services/commands/public.py`: `summary`, `risks` (unapproved command proposals, rate-limiting pressure), `dependents`.
+  - `services/reports/public.py`: `summary`, `risks` (unverified reports, unmasked exports), `dependents`.
+  - `services/reports/registry.py`: Registry mapping all 20 spec Section 14 reports (`REPORT_REGISTRY`).
+  - `services/reports/csv_sanitizer.py`: `sanitize_csv_value` and `write_sanitized_csv`.
+  - `services/reports/samples.py`: `generate_all_sample_plans()` writing deliverable 02 sample plans into `data/golden/`.
+- **Sample Plans & Golden Outputs**:
+  - Added `make samples` target to `Makefile` executing `python -m app.services.reports.samples`.
+  - Deliverable 02 files generated into `data/golden/`: `accommodation_plan_A.csv`, `accommodation_plan_B.csv`, `accommodation_plan_C.csv`, `schedule_plan.csv`, `inventory_plan.csv`.
+- **Tests Added & Passing**:
+  - `backend/tests/commands/test_commands.py`: 6 tests covering spec example command mappings (both offline fallback and LLM adapter), prompt injection resilience inside names, immediate read-only impact execution, mutating commands strictly creating pending proposals, RBAC permission denial for volunteers, and audit trail logging.
+  - `backend/tests/reports/test_reports.py`: 26 tests covering catalog listing, download of all 20 reports, bundle.zip generation, CSV injection neutralization, role-based PII masking, post-festival report generation (HTML/CSV), and export auditing.
+  - `backend/tests/reports/test_golden_outputs.py`: Golden output file integrity and regression stability test.
+- **Action Required**:
+  - Run `make samples` to refresh deliverable 02 outputs in `data/golden/`.
+
+
 
