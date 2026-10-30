@@ -52,11 +52,13 @@ async def get_actor(
 
     # If AUTH_DISABLED is explicitly enabled in environment (tests/dev only)
     if settings.AUTH_DISABLED:
+        role_hdr = request.headers.get("X-Actor-Role")
+        id_hdr = request.headers.get("X-Actor-Id")
         return Actor(
-            id="usr_director_dev",
-            name="Festival Director (Dev)",
-            role=Role.FESTIVAL_DIRECTOR.value,
-            contingent_id=None
+            id=id_hdr or "usr_director_dev",
+            name=f"Test Actor ({role_hdr or 'Dev'})",
+            role=role_hdr or Role.FESTIVAL_DIRECTOR.value,
+            contingent_id=None,
         )
 
     # In production/enforced mode, unauthenticated requests are rejected
@@ -75,3 +77,7 @@ def require_permission(permission: str) -> Callable:
         return actor
 
     return _permission_dependency
+
+
+# Backwards compatibility alias
+get_current_actor = get_actor
