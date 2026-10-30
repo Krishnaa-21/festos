@@ -33,6 +33,7 @@ class ChangeResult(BaseModel):
     violations: List[Violation] = Field(default_factory=list)
     audit_event_ids: List[str] = Field(default_factory=list)
     impact: Optional[Dict[str, Any]] = None
+    data: Optional[Dict[str, Any]] = None
     recommendations: List[str] = Field(default_factory=list)
     warnings: List[str] = Field(default_factory=list)
 
@@ -65,18 +66,28 @@ class ChangeHandler:
         pass
 
 def _stubbed_approvals_require(session: Session, req: ChangeRequest, change_set_id: str) -> None:
-    """Stubbed interface for P3 approvals requirement."""
+    """Interface for P3 approvals requirement."""
     try:
-        from app.models.audit import Approval
-        approval = Approval(
-            id=f"appr_{uuid.uuid4().hex[:12]}",
-            change_set_id=change_set_id,
+        import app.core.approvals as approvals_core
+        from app.models.change import ChangeSet
+
+        # Persist pending change set so approval can execute it
+        change_set = ChangeSet(
+            id=change_set_id,
+            action=req.action,
             entity_type=req.entity_type,
             entity_id=req.entity_id,
-            status="PENDING",
-            required_role="FESTIVAL_DIRECTOR"
+            actor_id=req.actor.id,
+            actor_role=req.actor.role,
+            payload=req.payload,
+            previous_state={},
+            status="PENDING_APPROVAL",
+            reason=req.reason,
+            applied_at=now()
         )
-        session.add(approval)
+        session.add(change_set)
+        approvals_core.require(session, req, change_set_id)
+        session.commit()
     except Exception:
         pass
 
@@ -214,7 +225,8 @@ def execute_change(req: ChangeRequest, session: Session) -> ChangeResult:
             status="APPLIED",
             violations=violations,
             audit_event_ids=audit_event_ids,
-            impact=impact_data or None
+            impact=impact_data or None,
+            data=apply_result,
         )
 
     except Exception as e:

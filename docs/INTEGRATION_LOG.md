@@ -56,4 +56,129 @@ Format:
   - Re-imports are idempotent based on SHA-256 batch content hash.
 - **Action Required**:
   - Run `make reset` or `python -m app.seed reset` (runs seeder order 10, importing and promoting all 11 raw CSVs).
+### 2026-10-30: P3/03-security-ui (Security, RBAC, Masking, Audit Hardening, Approvals, & Ops-Centre UI)
+- **Author**: P3 Lead
+- **Branch**: `p3/03-security-ui`
+- **Endpoints Added**:
+  - `POST /api/v1/auth/login` (JWT token issuance, argon2/bcrypt hashing, 5-attempt/15m lockout)
+  - `POST /api/v1/auth/refresh`
+  - `GET /api/v1/auth/me`
+  - `GET /api/v1/auth/permissions` (Full RBAC matrix & caller permissions)
+  - `POST /api/v1/auth/break-glass` (Emergency 15-min field elevation, mandatory reason, fully audited)
+  - `GET /api/v1/auth/break-glass` (Active break-glass grants list)
+  - `GET /api/v1/audit/events` (Paged, filtered, masked query API)
+  - `GET /api/v1/audit/timeline/{entity_type}/{entity_id}` (Chronological entity history)
+  - `GET /api/v1/audit/verify` (Cryptographic SHA-256 hash-chain verification)
+  - `GET /api/v1/audit/export/csv` (CSV streaming respecting role field masking and export permissions)
+  - `GET /api/v1/approvals` (Paged approval requests)
+  - `GET /api/v1/approvals/policies` (Configured risk categories & approver role matrix)
+  - `GET /api/v1/approvals/{id}`
+  - `POST /api/v1/approvals/{id}/approve` (Executes pending ChangeSet on sign-off)
+  - `POST /api/v1/approvals/{id}/reject` (Marks change rejected with mandatory reason)
+  - `GET /api/v1/overrides` (Override register query API)
+  - `POST /api/v1/overrides` (Records override with mandatory justification)
+  - `GET /api/v1/overrides/{id}`
+- **Public Functions Added / Hardened**:
+  - `app/core/rbac.py`: Full RBAC matrix for all 9 roles, `has_permission`, `check_permission`, `get_role_permissions`, `get_all_permissions_matrix`
+  - `app/core/masking.py`: `mask_fields(model, actor, entity_key, session)` supporting role exemptions and active break-glass checks; partial phone/email masking; `mask_log_message`; `export_allowed` decorator
+  - `app/core/audit.py`: Append-only audit logging with SHA-256 hash chaining (`prev_hash`, `current_hash`), `verify_chain`
+  - `app/core/overrides.py`: `record(...)` with mandatory reason validation
+  - `app/core/approvals.py`: Configurable `APPROVAL_POLICIES`, `require(...)`, `approve_request(...)`, `reject_request(...)`
+  - `app/services/{auth,audit,approvals,overrides}/public.py`: Implemented real read-only summary, risks, dependents contracts
+  - `app/seed/users.py`: Seeder (order 20) provisioning 9 primary role accounts and extra volunteers with bcrypt hashes (documented in `docs/TEST_CREDENTIALS.md`)
+- **Frontend Components & Shell**:
+  - UI tokens & dark ops-centre theme (with light theme option) and HSL color palette
+  - UI components in `src/components/ui`: `Button`, `Card`, `Badge` (severity icons + status + Tri-state YES/NO/UNKNOWN with distinct icons), `DataTable` (paged, sorted, virtualized/skeletons), `Modal`, `Drawer`, `ConfirmWithReason` (mandatory reason), `MaskedField` (click triggers emergency break-glass elevation), `WhyCard`, `Toast`, `Tabs`, `EmptyState`, `Skeleton`, `KpiTile`, `SeverityPill`, `ErrorBoundary`
+  - `AppShell`: Permission-filtered sidebar per Section 18, operational clock, user profile menu, approvals bell with pending count badge, command bar with `/` shortcut, `g` then `o` overview navigation
+  - `LoginPage`: Integrated login with quick role switcher for demonstration
+  - `AuditPage`: Audit timeline, override register, approvals inbox with approve/reject, break-glass log with test bench, 9-role permission matrix, hash-chain verify modal, CSV export
+  - Route guards: `RequireAuth` and `RequirePermission`
+- **Breaking Changes / Schema Migrations**:
+  - `audit_event` updated with `prev_hash`, `current_hash`, `approval_id`, `related_incident_id` and SQLite trigger preventing UPDATE / DELETE.
+  - New database tables: `user` (with lockout tracking), `break_glass_grant`, `approval`, `override`.
+- **Action Required**:
+  - Backend: `python3 -m app.seed load`
+  - Frontend: `npm install && npm run build`
 
+### 2026-10-30: P1/04-participants (Canonical Participants, Contingents, Reconciliation, and Unknowns)
+- **Author**: P1 Lead
+- **Branch**: `p1/04-participants`
+- **Endpoints Added**:
+  - `GET /api/v1/participants`: List, fuzzy search, and multi-faceted filtering.
+  - `POST /api/v1/participants`: Create participant via ChangeService.
+  - `GET /api/v1/participants/{id}`: Single participant with role masking.
+  - `PATCH /api/v1/participants/{id}`: Update profile via ChangeService.
+  - `GET /api/v1/participants/{id}/360`: Full 360-degree operational view with dynamic sections.
+  - `POST /api/v1/participants/{id}/status`: State machine transition publishing `participant.status_changed` on `core.bus`.
+  - `GET /api/v1/participants/{id}/timeline`: Audit event timeline.
+  - `GET /api/v1/contingents`: Contingents list with declared vs actual strength.
+  - `GET /api/v1/contingents/{id}`: Contingent profile.
+  - `GET /api/v1/contingents/{id}/status`: Contingent operational view (attendance, travel, events, diet, merchandise, alerts, housing fragmentation).
+  - `PATCH /api/v1/contingents/{id}`: Update contingent profile via ChangeService.
+  - `GET /api/v1/reconciliation/waterfall`: Counts panel and reconciliation waterfall explaining the 2,836 vs 2,842 vs 2,400 gap.
+  - `GET /api/v1/reconciliation/duplicates`: Candidate pairs list filtered by classification or status.
+  - `GET /api/v1/reconciliation/compare`: Side-by-side compare with linked registrations and claims.
+  - `POST /api/v1/reconciliation/merge`: Merges duplicate into canonical record (blocks on conflicting merch claims).
+  - `POST /api/v1/reconciliation/undo-merge/{merge_id}`: Byte-identical pre-merge state restoration.
+  - `POST /api/v1/reconciliation/keep-separate`: Dismisses candidate pair with recorded rationale.
+  - `GET /api/v1/reconciliation/history`: Chronological merge and revert history.
+  - `GET /api/v1/reconciliation/flags`: Operational edge-case detection.
+  - `GET /api/v1/unknowns/queue`: Unknown fields ranked by Count x Criticality.
+  - `GET /api/v1/unknowns/items`: Unknown field items list.
+  - `POST /api/v1/unknowns/verify`: Record verified values through ChangeService.
+  - `POST /api/v1/unknowns/token`: Generate cryptographically signed, expiring confirmation token.
+  - `POST /api/v1/unknowns/confirm/{token}`: Public / semi-public token confirmation endpoint.
+  - `GET /api/v1/unknowns/history/{entity_type}/{entity_id}/{field}`: Field verification progression history.
+- **Public Functions Added**:
+  - `services/participants/public.py`: `summary`, `risks` (unresolved duplicates, incoming unknowns, overdue arrivals), `dependents`
+  - `services/contingents/public.py`: `summary`, `risks` (strength mismatches), `dependents`
+  - `services/reconciliation/public.py`: `summary`, `risks`, `dependents`
+  - `services/unknowns/public.py`: `summary`, `risks`, `dependents`
+- **Breaking Changes / Schema Migrations**:
+  - Added `classification` to `DuplicateCandidate`.
+  - Added `reason`, `reverted_at`, `reverted_by` to `MergeRecord`.
+  - Added `data` field to `ChangeResult` in `core.change_service`.
+  - Seed order 15 ingests `contingents.csv`, `participants.csv`, `events.csv`, `registrations.csv`, and runs pure deduplication engine persisting 312 candidates.
+### 2026-10-30: P1/07-scheduling (Scheduler, Conflict Detector, Team Reconciliation, and Version Management)
+- **Author**: P1 Lead
+- **Branch**: `p1/07-scheduling`
+- **Endpoints Added**:
+  - `GET /api/v1/events`: List events with filtering.
+  - `POST /api/v1/events`: Create event profile via ChangeService.
+  - `GET /api/v1/events/{id}`: Event profile with requirements and rounds.
+  - `PATCH /api/v1/events/{id}`: Update event profile via ChangeService.
+  - `POST /api/v1/events/{id}/cancel`: Cancel event and cascade to active sessions.
+  - `POST /api/v1/events/{id}/merge`: Merge event and repoint registrations.
+  - `POST /api/v1/events/{id}/extend-duration`: Extend duration and cascade session end times.
+  - `GET /api/v1/events/{id}/registrations`: Event registrations view.
+  - `GET /api/v1/events/teams/provisional`: Provisional teams view reconciling 1,810 team registrations without team IDs.
+  - `GET /api/v1/events/judges`: Judge registry and explicit UNASSIGNED slot gap analysis.
+  - `POST /api/v1/events/judges`: Manual judge registration with competitor/contingent conflict detection.
+  - `GET /api/v1/venues`: List venues with capacity and tags.
+  - `POST /api/v1/venues`: Create venue via ChangeService.
+  - `GET /api/v1/venues/{id}`: Venue profile with operating windows and feature tags.
+  - `PATCH /api/v1/venues/{id}`: Update venue via ChangeService.
+  - `GET /api/v1/venues/matrix/travel-times`: Travel time matrix with per-pair overrides.
+  - `GET /api/v1/venues/matrix/compatibility`: ASSUMED venue-event compatibility mapping.
+  - `POST /api/v1/schedule/generate`: Pure scheduler session generator with arrival waves (E, M, L), fairness proposals, and prototype benchmark comparison.
+  - `GET /api/v1/schedule/versions`: Schedule versions with status, solver, and count metrics.
+  - `POST /api/v1/schedule/versions/{id}/restore`: Restores full schedule version snapshot (requires FESTIVAL_DIRECTOR approval).
+  - `GET /api/v1/schedule/sessions`: Event sessions list with volunteer & equipment requirements.
+  - `POST /api/v1/schedule/sessions/{id}/move`: Move session with 60m downstream round cascade.
+  - `POST /api/v1/schedule/sessions/{id}/change-venue`: Reassign venue with capacity violation check.
+  - `GET /api/v1/schedule/conflicts`: Sweep-line conflict detector covering all 10 types.
+  - `GET /api/v1/schedule/conflicts/{id}/resolutions`: Candidate time/venue moves ranked by conflicts resolved, new conflicts created, and people affected.
+  - `POST /api/v1/schedule/conflicts/{id}/apply-resolution`: Apply selected ranked resolution.
+  - `GET /api/v1/schedule/unscheduled`: Unscheduled participants report with reasons and alternatives.
+  - `GET /api/v1/schedule/timeline`: Venue Gantt timeline data.
+- **Public Functions Added**:
+  - `services/events/public.py`: `summary`, `risks` (zero registration events), `dependents`
+  - `services/venues/public.py`: `summary`, `risks` (unreachable venues), `dependents`
+  - `services/schedule/public.py`: `summary`, `risks` (blocking conflicts in next 4h, unscheduled entrants, judge gaps), `dependents`, and report generators (`schedule_plan_csv`, `conflicts_report_csv`, `unscheduled_entrants_csv`, `resource_load_timeline_csv`)
+- **Breaking Changes / Schema Migrations**:
+  - Added `judges_needed` to `Event`.
+  - Added `setup_time_min`, `teardown_time_min`, `feature_tags` to `Venue`.
+  - Added `EventSession`, `ScheduleVersion`, `Conflict`, `Judge`, `ProvisionalTeam` models.
+  - Baseline `ASSUMED` schedule generated during seeding with 312 provisional teams covering all 1,810 registrations without team IDs.
+- **Action Required**:
+  - Run `make reset` to drop/recreate tables and ingest the raw data pack, then seed venue availability windows and the baseline assumed schedule.

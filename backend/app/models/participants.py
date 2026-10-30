@@ -96,8 +96,9 @@ class DuplicateCandidate(SQLModel, table=True):
     participant_a_id: str = Field(index=True)
     participant_b_id: str = Field(index=True)
     score: float = Field(default=0.0)
+    classification: str = Field(default="POSSIBLE", index=True)  # EXACT|LIKELY|POSSIBLE
     reasons: Dict[str, Any] = Field(default_factory=dict, sa_column=Column(JSON))
-    status: str = Field(default="PENDING")  # PENDING|RESOLVED|IGNORED
+    status: str = Field(default="PENDING", index=True)  # PENDING|RESOLVED|IGNORED
     created_at: datetime = Field(default_factory=now)
 
 class MergeRecord(SQLModel, table=True):
@@ -107,9 +108,12 @@ class MergeRecord(SQLModel, table=True):
     canonical_participant_id: str = Field(index=True)
     merged_participant_id: str = Field(index=True)
     merge_details: Dict[str, Any] = Field(default_factory=dict, sa_column=Column(JSON))
+    reason: Optional[str] = Field(default=None)
     merged_by: str = Field(default="SYSTEM")
     merged_at: datetime = Field(default_factory=now)
     is_reverted: bool = Field(default=False)
+    reverted_at: Optional[datetime] = Field(default=None)
+    reverted_by: Optional[str] = Field(default=None)
 
 class RawRecord(SQLModel, table=True):
     __tablename__ = "raw_record"
