@@ -52,6 +52,45 @@ export interface paths {
      */
     post: operations["post_reject_api_v1_approvals__id__reject_post"];
   };
+  "/api/v1/assumptions": {
+    /**
+     * Get Assumptions
+     * @description Lists all system operational assumptions, sources, reasons, and typed values.
+     */
+    get: operations["get_assumptions_api_v1_assumptions_get"];
+    /**
+     * Put Update Assumption
+     * @description Mutates an assumption through ChangeService handler assumptions.update.
+     * Audited, validates typed value, and invalidates in-memory cache.
+     */
+    put: operations["put_update_assumption_api_v1_assumptions_put"];
+  };
+  "/api/v1/assumptions/{key}": {
+    /**
+     * Get Assumption By Key
+     * @description Fetches details of a specific assumption key.
+     */
+    get: operations["get_assumption_by_key_api_v1_assumptions__key__get"];
+    /**
+     * Put Update Assumption By Key
+     * @description Mutates a specific assumption through ChangeService handler assumptions.update.
+     */
+    put: operations["put_update_assumption_by_key_api_v1_assumptions__key__put"];
+  };
+  "/api/v1/assumptions/{key}/history": {
+    /**
+     * Get Assumption Change History
+     * @description Fetches audit history and prior values for a specific assumption key.
+     */
+    get: operations["get_assumption_change_history_api_v1_assumptions__key__history_get"];
+  };
+  "/api/v1/assumptions/{key}/dependents": {
+    /**
+     * Get Assumption Module Dependents
+     * @description Previews which system modules and planning engines read this assumption key.
+     */
+    get: operations["get_assumption_module_dependents_api_v1_assumptions__key__dependents_get"];
+  };
   "/api/v1/audit/events": {
     /**
      * List Audit Events
@@ -146,6 +185,16 @@ export interface paths {
      */
     get: operations["get_contingent_operational_status_api_v1_contingents__id__status_get"];
   };
+  "/api/v1/data-quality": {
+    /**
+     * Get Data Quality
+     * @description Retrieves comprehensive data quality report:
+     * - Reconciliation shell summary (2,836 raw vs 2,400 narrative vs 2,842 declared)
+     * - Counts of UNKNOWN per field with operational impact
+     * - List of detected anomalies and validation issues across all files
+     */
+    get: operations["get_data_quality_api_v1_data_quality_get"];
+  };
   "/api/v1/events": {
     /** Get All Events */
     get: operations["get_all_events_api_v1_events_get"];
@@ -183,6 +232,190 @@ export interface paths {
   "/api/v1/events/{event_id}/extend-duration": {
     /** Extend Event Duration */
     post: operations["extend_event_duration_api_v1_events__event_id__extend_duration_post"];
+  };
+  "/api/v1/imports": {
+    /**
+     * Get Import History
+     * @description Lists import batch history with pagination and status filtering.
+     */
+    get: operations["get_import_history_api_v1_imports_get"];
+    /**
+     * Upload Import File
+     * @description Uploads and ingests a raw CSV file into raw_record, staging, and quarantine.
+     */
+    post: operations["upload_import_file_api_v1_imports_post"];
+  };
+  "/api/v1/imports/{id}": {
+    /**
+     * Get Import Batch Details
+     * @description Fetches details for a specific import batch.
+     */
+    get: operations["get_import_batch_details_api_v1_imports__id__get"];
+  };
+  "/api/v1/imports/{id}/issues": {
+    /**
+     * Get Import Batch Issues
+     * @description Retrieves quarantined rows and validation reasons for an import batch.
+     */
+    get: operations["get_import_batch_issues_api_v1_imports__id__issues_get"];
+  };
+  "/api/v1/imports/{id}/promote": {
+    /**
+     * Post Promote Import Batch
+     * @description Promotes staged records to canonical tables through ChangeService handler imports.promote.
+     */
+    post: operations["post_promote_import_batch_api_v1_imports__id__promote_post"];
+  "/api/v1/logistics/items": {
+    /**
+     * List Items
+     * @description List inventory items with projected stock buckets.
+     */
+    get: operations["list_items_api_v1_logistics_items_get"];
+  };
+  "/api/v1/logistics/items/{id}": {
+    /**
+     * Get Item
+     * @description Get single inventory item profile with location breakdown.
+     */
+    get: operations["get_item_api_v1_logistics_items__id__get"];
+  };
+  "/api/v1/logistics/locations": {
+    /**
+     * List Locations
+     * @description List inventory locations.
+     */
+    get: operations["list_locations_api_v1_logistics_locations_get"];
+  };
+  "/api/v1/logistics/movements": {
+    /**
+     * List Movements
+     * @description List inventory movements from the immutable ledger.
+     */
+    get: operations["list_movements_api_v1_logistics_movements_get"];
+    /**
+     * Record Movement
+     * @description Record an inventory movement in the ledger via ChangeService.
+     */
+    post: operations["record_movement_api_v1_logistics_movements_post"];
+  };
+  "/api/v1/logistics/transfers": {
+    /**
+     * List Transfers
+     * @description List transfers.
+     */
+    get: operations["list_transfers_api_v1_logistics_transfers_get"];
+    /**
+     * Create Transfer
+     * @description Initiate an equipment transfer between locations.
+     */
+    post: operations["create_transfer_api_v1_logistics_transfers_post"];
+  };
+  "/api/v1/logistics/transfers/{id}/complete": {
+    /**
+     * Complete Transfer
+     * @description Complete an in-transit transfer.
+     */
+    post: operations["complete_transfer_api_v1_logistics_transfers__id__complete_post"];
+  };
+  "/api/v1/logistics/equipment/find": {
+    /**
+     * Find Equipment
+     * @description Searches equipment units for a venue session window and evaluates transfer feasibility.
+     */
+    get: operations["find_equipment_api_v1_logistics_equipment_find_get"];
+  };
+  "/api/v1/logistics/equipment/{id}/failure-analysis": {
+    /**
+     * Failure Analysis
+     * @description Analyzes dependent sessions, alternatives, and transfer feasibility for equipment failure.
+     */
+    get: operations["failure_analysis_api_v1_logistics_equipment__id__failure_analysis_get"];
+  };
+  "/api/v1/logistics/stocktake": {
+    /**
+     * Stocktake Adjust
+     * @description Records stocktake discrepancy adjustment with mandatory justification reason.
+     */
+    post: operations["stocktake_adjust_api_v1_logistics_stocktake_post"];
+  };
+  "/api/v1/logistics/ledger/balance": {
+    /**
+     * Verify Ledger Balance
+     * @description Verifies double-entry ledger balance consistency across all items and locations.
+     */
+    get: operations["verify_ledger_balance_api_v1_logistics_ledger_balance_get"];
+  };
+  "/api/v1/logistics/reconciliation-flags": {
+    /**
+     * Get Reconciliation Flags
+     * @description Surfaces ambiguous data flags (the 'camera' case and 'tables' needs check).
+     */
+    get: operations["get_reconciliation_flags_api_v1_logistics_reconciliation_flags_get"];
+  };
+  "/api/v1/logistics/reports/inventory-plan": {
+    /**
+     * Get Inventory Plan Report
+     * @description Exports inventory_plan.csv.
+     */
+    get: operations["get_inventory_plan_report_api_v1_logistics_reports_inventory_plan_get"];
+  };
+  "/api/v1/logistics/reports/equipment-gap": {
+    /**
+     * Get Equipment Gap Report
+     * @description Exports equipment_gap.csv.
+     */
+    get: operations["get_equipment_gap_report_api_v1_logistics_reports_equipment_gap_get"];
+  };
+  "/api/v1/merchandise/catalog": {
+    /**
+     * Get Catalog
+     * @description Returns merchandise catalog items with stock buckets.
+     */
+    get: operations["get_catalog_api_v1_merchandise_catalog_get"];
+  };
+  "/api/v1/merchandise/policy": {
+    /**
+     * Get Policy
+     * @description Returns entitlement policy rules and size-wise demand vs stock analysis.
+     */
+    get: operations["get_policy_api_v1_merchandise_policy_get"];
+  };
+  "/api/v1/merchandise/issue": {
+    /**
+     * Issue Item
+     * @description Issues merchandise to a canonical participant. Idempotent and atomic.
+     * Returns 409 ALREADY_ISSUED with original details if already claimed.
+     */
+    post: operations["issue_item_api_v1_merchandise_issue_post"];
+  };
+  "/api/v1/merchandise/void": {
+    /**
+     * Void Claim
+     * @description Voids an issued merch claim and returns item to awaiting_return. Requires approval.
+     */
+    post: operations["void_claim_api_v1_merchandise_void_post"];
+  };
+  "/api/v1/merchandise/qr/{participant_id}": {
+    /**
+     * Get Qr
+     * @description Returns signed HMAC QR token, SVG graphic, and entitlement checklist.
+     */
+    get: operations["get_qr_api_v1_merchandise_qr__participant_id__get"];
+  };
+  "/api/v1/merchandise/scan": {
+    /**
+     * Scan Qr
+     * @description Validates QR token and returns canonical participant entitlements.
+     * Volunteers receive minimal verification data.
+     */
+    post: operations["scan_qr_api_v1_merchandise_scan_post"];
+  };
+  "/api/v1/merchandise/sync": {
+    /**
+     * Sync Offline
+     * @description Batch synchronizes offline issuance operations keyed idempotently by client_op_id.
+     */
+    post: operations["sync_offline_api_v1_merchandise_sync_post"];
   };
   "/api/v1/overrides": {
     /**
@@ -425,6 +658,104 @@ export type webhooks = Record<string, never>;
 
 export interface components {
   schemas: {
+    /** AssumptionDependentsResponse */
+    AssumptionDependentsResponse: {
+      /** Key */
+      key: string;
+      /** Dependent Modules */
+      dependent_modules?: string[];
+      /** Description */
+      description: string;
+    };
+    /** AssumptionHistoryItem */
+    AssumptionHistoryItem: {
+      /** Change Set Id */
+      change_set_id: string;
+      /**
+       * Action
+       * @default assumptions.update
+       */
+      action?: string;
+      /** Actor Id */
+      actor_id: string;
+      /** Actor Role */
+      actor_role: string;
+      /** Previous Value */
+      previous_value?: string | null;
+      /** New Value */
+      new_value: string;
+      /** Reason */
+      reason?: string | null;
+      /**
+       * Applied At
+       * Format: date-time
+       */
+      applied_at: string;
+    };
+    /** AssumptionHistoryResponse */
+    AssumptionHistoryResponse: {
+      /** Key */
+      key: string;
+      /** History */
+      history?: components["schemas"]["AssumptionHistoryItem"][];
+    };
+    /** AssumptionItem */
+    AssumptionItem: {
+      /** Id */
+      id: string;
+      /** Key */
+      key: string;
+      /** Value */
+      value: string;
+      /** Typed Value */
+      typed_value: unknown;
+      /** Type */
+      type: string;
+      /** Owner */
+      owner: string;
+      /** Source */
+      source: string;
+      /** Reason */
+      reason: string;
+      /** Impact If Changed */
+      impact_if_changed: string;
+      /**
+       * Updated At
+       * Format: date-time
+       */
+      updated_at: string;
+    };
+    /** AssumptionUpdateRequest */
+    AssumptionUpdateRequest: {
+      /** Key */
+      key?: string | null;
+      /** Value */
+      value: string;
+      /**
+       * Reason
+       * @default Operational baseline adjustment
+       */
+      reason?: string | null;
+      /** Expected Version */
+      expected_version?: number | null;
+      /**
+       * Dry Run
+       * @default false
+       */
+      dry_run?: boolean;
+    };
+    /** Body_upload_import_file_api_v1_imports_post */
+    Body_upload_import_file_api_v1_imports_post: {
+      /** File */
+      file: string;
+      /** Sheet Name */
+      sheet_name?: string | null;
+      /**
+       * Dry Run
+       * @default false
+       */
+      dry_run?: boolean;
+    };
     /** BreakGlassRequest */
     BreakGlassRequest: {
       /**
@@ -577,6 +908,131 @@ export interface components {
        */
       risk_level?: string;
     };
+    /** DataQualityIssueItem */
+    DataQualityIssueItem: {
+      /** File */
+      file: string;
+      /** Field */
+      field: string;
+      /** Severity */
+      severity: number;
+      /** Code */
+      code: string;
+      /** Message */
+      message: string;
+      /**
+       * Count
+       * @default 1
+       */
+      count?: number;
+      /** Details */
+      details?: {
+        [key: string]: unknown;
+      };
+    };
+    /** DataQualityReport */
+    DataQualityReport: {
+      summary: components["schemas"]["DataQualitySummary"];
+      /** Unknown Fields */
+      unknown_fields?: components["schemas"]["DataQualityUnknownField"][];
+      /** Issues */
+      issues?: components["schemas"]["DataQualityIssueItem"][];
+    };
+    /** DataQualitySummary */
+    DataQualitySummary: {
+      /**
+       * Raw Participant Count
+       * @default 2836
+       */
+      raw_participant_count?: number;
+      /**
+       * Raw Participants
+       * @default 2836
+       */
+      raw_participants?: number;
+      /**
+       * Narrative Expected Count
+       * @default 2400
+       */
+      narrative_expected_count?: number;
+      /**
+       * Narrative Expected
+       * @default 2400
+       */
+      narrative_expected?: number;
+      /**
+       * Contingent Declared Total
+       * @default 2842
+       */
+      contingent_declared_total?: number;
+      /**
+       * Declared Contingent
+       * @default 2842
+       */
+      declared_contingent?: number;
+      /**
+       * Difference Raw Vs Narrative
+       * @default 436
+       */
+      difference_raw_vs_narrative?: number;
+      /**
+       * Difference Raw Vs Declared
+       * @default -6
+       */
+      difference_raw_vs_declared?: number;
+      /**
+       * Contingent Strength Gap
+       * @default 6
+       */
+      contingent_strength_gap?: number;
+      /**
+       * Total Quarantined
+       * @default 3
+       */
+      total_quarantined?: number;
+      /**
+       * Quarantined Participants
+       * @default 3
+       */
+      quarantined_participants?: number;
+      /**
+       * Total Issues
+       * @default 0
+       */
+      total_issues?: number;
+      /**
+       * Reconciliation Narrative
+       * @default Reconciliation narrative: Raw roster contains 2,836 participant rows (2,833 valid staged/canonical records and 3 quarantined records with arrival at or after departure). The planning narrative assumption expected 2,400 participants (+436 over narrative). The 38 contingent colleges declared a total strength of 2,842 (-6 gap vs raw total of 2,836).
+       */
+      reconciliation_narrative?: string;
+    };
+    /** DataQualityUnknownField */
+    DataQualityUnknownField: {
+      /** Entity */
+      entity: string;
+      /** Field */
+      field: string;
+      /** Unknown Count */
+      unknown_count: number;
+      /** Operational Impact */
+      operational_impact: string;
+    };
+    /** CreateTransferBody */
+    CreateTransferBody: {
+      /** Expected Version */
+      expected_version?: number | null;
+      /** Reason */
+      reason?: string | null;
+      /**
+       * Dry Run
+       * @default false
+       */
+      dry_run?: boolean;
+      /** Payload */
+      payload: {
+        [key: string]: unknown;
+      };
+    };
     /** DecisionRequest */
     DecisionRequest: {
       /**
@@ -605,9 +1061,49 @@ export interface components {
       /** Warnings */
       warnings?: string[];
     };
+    /** Envelope[AssumptionDependentsResponse] */
+    Envelope_AssumptionDependentsResponse_: {
+      data: components["schemas"]["AssumptionDependentsResponse"];
+      /** Meta */
+      meta?: {
+        [key: string]: unknown;
+      };
+      /** Warnings */
+      warnings?: string[];
+    };
+    /** Envelope[AssumptionHistoryResponse] */
+    Envelope_AssumptionHistoryResponse_: {
+      data: components["schemas"]["AssumptionHistoryResponse"];
+      /** Meta */
+      meta?: {
+        [key: string]: unknown;
+      };
+      /** Warnings */
+      warnings?: string[];
+    };
+    /** Envelope[AssumptionItem] */
+    Envelope_AssumptionItem_: {
+      data: components["schemas"]["AssumptionItem"];
+      /** Meta */
+      meta?: {
+        [key: string]: unknown;
+      };
+      /** Warnings */
+      warnings?: string[];
+    };
     /** Envelope[ChangeResult] */
     Envelope_ChangeResult_: {
       data: components["schemas"]["ChangeResult"];
+      /** Meta */
+      meta?: {
+        [key: string]: unknown;
+      };
+      /** Warnings */
+      warnings?: string[];
+    };
+    /** Envelope[DataQualityReport] */
+    Envelope_DataQualityReport_: {
+      data: components["schemas"]["DataQualityReport"];
       /** Meta */
       meta?: {
         [key: string]: unknown;
@@ -628,9 +1124,66 @@ export interface components {
       /** Warnings */
       warnings?: string[];
     };
+    /** Envelope[ImportBatchItem] */
+    Envelope_ImportBatchItem_: {
+      data: components["schemas"]["ImportBatchItem"];
+      /** Meta */
+      meta?: {
+        [key: string]: unknown;
+      };
+      /** Warnings */
+      warnings?: string[];
+    };
+    /** Envelope[ImportBatchResponse] */
+    Envelope_ImportBatchResponse_: {
+      data: components["schemas"]["ImportBatchResponse"];
+      /** Meta */
+      meta?: {
+        [key: string]: unknown;
+      };
+      /** Warnings */
+      warnings?: string[];
+    };
+    /** Envelope[List[AssumptionItem]] */
+    Envelope_List_AssumptionItem__: {
+      /** Data */
+      data: components["schemas"]["AssumptionItem"][];
+    /** Envelope[List[Dict[str, Any]]] */
+    Envelope_List_Dict_str__Any___: {
+      /** Data */
+      data: {
+          [key: string]: unknown;
+        }[];
+      /** Meta */
+      meta?: {
+        [key: string]: unknown;
+      };
+      /** Warnings */
+      warnings?: string[];
+    };
     /** Envelope[Page[Dict[str, Any]]] */
     Envelope_Page_Dict_str__Any___: {
       data: components["schemas"]["Page_Dict_str__Any__"];
+      /** Meta */
+      meta?: {
+        [key: string]: unknown;
+      };
+      /** Warnings */
+      warnings?: string[];
+    };
+    /** Envelope[Page[ImportBatchItem]] */
+    Envelope_Page_ImportBatchItem__: {
+      data: components["schemas"]["Page_ImportBatchItem_"];
+      /** Meta */
+      meta?: {
+        [key: string]: unknown;
+      };
+      /** Warnings */
+      warnings?: string[];
+    };
+    /** Envelope[Page[QuarantineIssueItem]] */
+    Envelope_Page_QuarantineIssueItem__: {
+      data: components["schemas"]["Page_QuarantineIssueItem_"];
       /** Meta */
       meta?: {
         [key: string]: unknown;
@@ -680,6 +1233,99 @@ export interface components {
     HTTPValidationError: {
       /** Detail */
       detail?: components["schemas"]["ValidationError"][];
+    };
+    /** ImportBatchItem */
+    ImportBatchItem: {
+      /** Id */
+      id: string;
+      /** Filename */
+      filename: string;
+      /** Sheet Name */
+      sheet_name: string;
+      /** Content Hash */
+      content_hash: string;
+      /** Total Rows */
+      total_rows: number;
+      /** Imported Rows */
+      imported_rows: number;
+      /** Quarantined Rows */
+      quarantined_rows: number;
+      /** Status */
+      status: string;
+      /**
+       * Imported At
+       * Format: date-time
+       */
+      imported_at: string;
+    };
+    /** ImportBatchResponse */
+    ImportBatchResponse: {
+      /** Batch Id */
+      batch_id: string;
+      /** Filename */
+      filename: string;
+      /** Sheet Name */
+      sheet_name: string;
+      /** Content Hash */
+      content_hash: string;
+      /** Total Rows */
+      total_rows: number;
+      /** Imported Rows */
+      imported_rows: number;
+      /** Quarantined Rows */
+      quarantined_rows: number;
+      /** Status */
+      status: string;
+      /**
+       * Dry Run
+       * @default false
+       */
+      dry_run?: boolean;
+      /**
+       * Imported At
+       * Format: date-time
+       */
+      imported_at: string;
+    };
+    /** ImportPromoteRequest */
+    ImportPromoteRequest: {
+      /**
+       * Expected Version
+       * @default 1
+       */
+      expected_version?: number | null;
+      /**
+       * Reason
+       * @default Promoting verified import batch to canonical database
+       */
+      reason?: string | null;
+      /**
+       * Dry Run
+       * @default false
+       */
+      dry_run?: boolean;
+      /** Payload */
+      payload?: {
+        [key: string]: unknown;
+      };
+    /** IssueItemBody */
+    IssueItemBody: {
+      /** Participant Id */
+      participant_id: string;
+      /** Item Id */
+      item_id: string;
+      /**
+       * Counter Id
+       * @default DESK_CENTRAL
+       */
+      counter_id?: string | null;
+      /** Size Override */
+      size_override?: string | null;
+      /**
+       * Reason
+       * @default Registration desk kit handover
+       */
+      reason?: string | null;
     };
     /** JudgeCreateBody */
     JudgeCreateBody: {
@@ -741,6 +1387,32 @@ export interface components {
       /** Total Pages */
       total_pages: number;
     };
+    /** Page[ImportBatchItem] */
+    Page_ImportBatchItem_: {
+      /** Items */
+      items: components["schemas"]["ImportBatchItem"][];
+      /** Total */
+      total: number;
+      /** Page */
+      page: number;
+      /** Page Size */
+      page_size: number;
+      /** Total Pages */
+      total_pages: number;
+    };
+    /** Page[QuarantineIssueItem] */
+    Page_QuarantineIssueItem_: {
+      /** Items */
+      items: components["schemas"]["QuarantineIssueItem"][];
+      /** Total */
+      total: number;
+      /** Page */
+      page: number;
+      /** Page Size */
+      page_size: number;
+      /** Total Pages */
+      total_pages: number;
+    };
     /** ParticipantCreateBody */
     ParticipantCreateBody: {
       /** Expected Version */
@@ -789,10 +1461,60 @@ export interface components {
         [key: string]: unknown;
       };
     };
+    /** QuarantineIssueItem */
+    QuarantineIssueItem: {
+      /** Id */
+      id: string;
+      /** Batch Id */
+      batch_id?: string | null;
+      /** Reason */
+      reason: string;
+      /**
+       * Severity
+       * @default 4
+       */
+      severity?: number;
+      /** Raw Payload */
+      raw_payload?: {
+        [key: string]: unknown;
+      };
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+    /** RecordMovementBody */
+    RecordMovementBody: {
+      /** Expected Version */
+      expected_version?: number | null;
+      /** Reason */
+      reason?: string | null;
+      /**
+       * Dry Run
+       * @default false
+       */
+      dry_run?: boolean;
+      /** Payload */
+      payload: {
+        [key: string]: unknown;
+      };
+    };
     /** RefreshRequest */
     RefreshRequest: {
       /** Refresh Token */
       refresh_token: string;
+    };
+    /** ScanQrBody */
+    ScanQrBody: {
+      /** Token */
+      token: string;
+      /**
+       * Counter Id
+       * @default DESK_CENTRAL
+       */
+      counter_id?: string | null;
+      /** Auto Issue Items */
+      auto_issue_items?: string[] | null;
     };
     /** ScheduleGenerateBody */
     ScheduleGenerateBody: {
@@ -859,6 +1581,29 @@ export interface components {
      * @enum {integer}
      */
     Severity: 1 | 2 | 3 | 4;
+    /** StocktakeAdjustBody */
+    StocktakeAdjustBody: {
+      /** Expected Version */
+      expected_version?: number | null;
+      /** Reason */
+      reason?: string | null;
+      /**
+       * Dry Run
+       * @default false
+       */
+      dry_run?: boolean;
+      /** Payload */
+      payload: {
+        [key: string]: unknown;
+      };
+    };
+    /** SyncOfflineBody */
+    SyncOfflineBody: {
+      /** Operations */
+      operations: {
+          [key: string]: unknown;
+        }[];
+    };
     /** TokenConfirmBody */
     TokenConfirmBody: {
       /** Value */
@@ -950,6 +1695,18 @@ export interface components {
       message: string;
       /** Entity Refs */
       entity_refs?: components["schemas"]["EntityRef"][];
+    };
+    /** VoidClaimBody */
+    VoidClaimBody: {
+      /** Claim Id */
+      claim_id: string;
+      /** Reason */
+      reason: string;
+      /**
+       * Return To Awaiting Inspection
+       * @default true
+       */
+      return_to_awaiting_inspection?: boolean;
     };
   };
   responses: never;
@@ -1156,6 +1913,187 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Assumptions
+   * @description Lists all system operational assumptions, sources, reasons, and typed values.
+   */
+  get_assumptions_api_v1_assumptions_get: {
+    parameters: {
+      query?: {
+        /** @description Filter by owner (P1, P2) */
+        owner?: string | null;
+        /** @description Search term for key, reason or impact */
+        q?: string | null;
+      };
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_List_AssumptionItem__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Put Update Assumption
+   * @description Mutates an assumption through ChangeService handler assumptions.update.
+   * Audited, validates typed value, and invalidates in-memory cache.
+   */
+  put_update_assumption_api_v1_assumptions_put: {
+    parameters: {
+      header?: {
+        "Idempotency-Key"?: string | null;
+        authorization?: string | null;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AssumptionUpdateRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_ChangeResult_"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Assumption By Key
+   * @description Fetches details of a specific assumption key.
+   */
+  get_assumption_by_key_api_v1_assumptions__key__get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+      path: {
+        key: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_AssumptionItem_"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Put Update Assumption By Key
+   * @description Mutates a specific assumption through ChangeService handler assumptions.update.
+   */
+  put_update_assumption_by_key_api_v1_assumptions__key__put: {
+    parameters: {
+      header?: {
+        "Idempotency-Key"?: string | null;
+        authorization?: string | null;
+      };
+      path: {
+        key: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AssumptionUpdateRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_ChangeResult_"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Assumption Change History
+   * @description Fetches audit history and prior values for a specific assumption key.
+   */
+  get_assumption_change_history_api_v1_assumptions__key__history_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+      path: {
+        key: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_AssumptionHistoryResponse_"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Assumption Module Dependents
+   * @description Previews which system modules and planning engines read this assumption key.
+   */
+  get_assumption_module_dependents_api_v1_assumptions__key__dependents_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+      path: {
+        key: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_AssumptionDependentsResponse_"];
         };
       };
       /** @description Validation Error */
@@ -1543,6 +2481,38 @@ export interface operations {
       };
     };
   };
+  /**
+   * Get Data Quality
+   * @description Retrieves comprehensive data quality report:
+   * - Reconciliation shell summary (2,836 raw vs 2,400 narrative vs 2,842 declared)
+   * - Counts of UNKNOWN per field with operational impact
+   * - List of detected anomalies and validation issues across all files
+   */
+  get_data_quality_api_v1_data_quality_get: {
+    parameters: {
+      query?: {
+        /** @description Set to 'csv' for exportable data_quality_report.csv */
+        format?: string | null;
+      };
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_DataQualityReport_"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
   /** Get All Events */
   get_all_events_api_v1_events_get: {
     parameters: {
@@ -1802,6 +2772,669 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Import History
+   * @description Lists import batch history with pagination and status filtering.
+   */
+  get_import_history_api_v1_imports_get: {
+   * List Items
+   * @description List inventory items with projected stock buckets.
+   */
+  list_items_api_v1_logistics_items_get: {
+    parameters: {
+      query?: {
+        page?: number;
+        page_size?: number;
+        status?: string | null;
+        kind?: string | null;
+        q?: string | null;
+        location_id?: string | null;
+      };
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Page_ImportBatchItem__"];
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Upload Import File
+   * @description Uploads and ingests a raw CSV file into raw_record, staging, and quarantine.
+   */
+  upload_import_file_api_v1_imports_post: {
+   * Get Item
+   * @description Get single inventory item profile with location breakdown.
+   */
+  get_item_api_v1_logistics_items__id__get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * List Locations
+   * @description List inventory locations.
+   */
+  list_locations_api_v1_logistics_locations_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_List_Dict_str__Any___"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * List Movements
+   * @description List inventory movements from the immutable ledger.
+   */
+  list_movements_api_v1_logistics_movements_get: {
+    parameters: {
+      query?: {
+        item_id?: string | null;
+        location_id?: string | null;
+        page?: number;
+        page_size?: number;
+      };
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Record Movement
+   * @description Record an inventory movement in the ledger via ChangeService.
+   */
+  record_movement_api_v1_logistics_movements_post: {
+    parameters: {
+      header?: {
+        "Idempotency-Key"?: string | null;
+        authorization?: string | null;
+      };
+    };
+    requestBody: {
+      content: {
+        "multipart/form-data": components["schemas"]["Body_upload_import_file_api_v1_imports_post"];
+        "application/json": components["schemas"]["RecordMovementBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_ImportBatchResponse_"];
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Import Batch Details
+   * @description Fetches details for a specific import batch.
+   */
+  get_import_batch_details_api_v1_imports__id__get: {
+   * List Transfers
+   * @description List transfers.
+   */
+  list_transfers_api_v1_logistics_transfers_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_List_Dict_str__Any___"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Create Transfer
+   * @description Initiate an equipment transfer between locations.
+   */
+  create_transfer_api_v1_logistics_transfers_post: {
+    parameters: {
+      header?: {
+        "Idempotency-Key"?: string | null;
+        authorization?: string | null;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CreateTransferBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Complete Transfer
+   * @description Complete an in-transit transfer.
+   */
+  complete_transfer_api_v1_logistics_transfers__id__complete_post: {
+    parameters: {
+      header?: {
+        "Idempotency-Key"?: string | null;
+        authorization?: string | null;
+      };
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_ImportBatchItem_"];
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Import Batch Issues
+   * @description Retrieves quarantined rows and validation reasons for an import batch.
+   */
+  get_import_batch_issues_api_v1_imports__id__issues_get: {
+    parameters: {
+      query?: {
+        page?: number;
+        page_size?: number;
+   * Find Equipment
+   * @description Searches equipment units for a venue session window and evaluates transfer feasibility.
+   */
+  find_equipment_api_v1_logistics_equipment_find_get: {
+    parameters: {
+      query: {
+        item_name: string;
+        venue_id: string;
+        start_at: string;
+        end_at: string;
+        quantity_needed?: number;
+      };
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Failure Analysis
+   * @description Analyzes dependent sessions, alternatives, and transfer feasibility for equipment failure.
+   */
+  failure_analysis_api_v1_logistics_equipment__id__failure_analysis_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Page_QuarantineIssueItem__"];
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Post Promote Import Batch
+   * @description Promotes staged records to canonical tables through ChangeService handler imports.promote.
+   */
+  post_promote_import_batch_api_v1_imports__id__promote_post: {
+   * Stocktake Adjust
+   * @description Records stocktake discrepancy adjustment with mandatory justification reason.
+   */
+  stocktake_adjust_api_v1_logistics_stocktake_post: {
+    parameters: {
+      header?: {
+        "Idempotency-Key"?: string | null;
+        authorization?: string | null;
+      };
+      path: {
+        id: string;
+      };
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["ImportPromoteRequest"];
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["StocktakeAdjustBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Verify Ledger Balance
+   * @description Verifies double-entry ledger balance consistency across all items and locations.
+   */
+  verify_ledger_balance_api_v1_logistics_ledger_balance_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Reconciliation Flags
+   * @description Surfaces ambiguous data flags (the 'camera' case and 'tables' needs check).
+   */
+  get_reconciliation_flags_api_v1_logistics_reconciliation_flags_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_List_Dict_str__Any___"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Inventory Plan Report
+   * @description Exports inventory_plan.csv.
+   */
+  get_inventory_plan_report_api_v1_logistics_reports_inventory_plan_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Equipment Gap Report
+   * @description Exports equipment_gap.csv.
+   */
+  get_equipment_gap_report_api_v1_logistics_reports_equipment_gap_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Catalog
+   * @description Returns merchandise catalog items with stock buckets.
+   */
+  get_catalog_api_v1_merchandise_catalog_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Policy
+   * @description Returns entitlement policy rules and size-wise demand vs stock analysis.
+   */
+  get_policy_api_v1_merchandise_policy_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Issue Item
+   * @description Issues merchandise to a canonical participant. Idempotent and atomic.
+   * Returns 409 ALREADY_ISSUED with original details if already claimed.
+   */
+  issue_item_api_v1_merchandise_issue_post: {
+    parameters: {
+      header?: {
+        "Idempotency-Key"?: string | null;
+        authorization?: string | null;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["IssueItemBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Void Claim
+   * @description Voids an issued merch claim and returns item to awaiting_return. Requires approval.
+   */
+  void_claim_api_v1_merchandise_void_post: {
+    parameters: {
+      header?: {
+        "Idempotency-Key"?: string | null;
+        authorization?: string | null;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["VoidClaimBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Qr
+   * @description Returns signed HMAC QR token, SVG graphic, and entitlement checklist.
+   */
+  get_qr_api_v1_merchandise_qr__participant_id__get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+      path: {
+        participant_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Scan Qr
+   * @description Validates QR token and returns canonical participant entitlements.
+   * Volunteers receive minimal verification data.
+   */
+  scan_qr_api_v1_merchandise_scan_post: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ScanQrBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Sync Offline
+   * @description Batch synchronizes offline issuance operations keyed idempotently by client_op_id.
+   */
+  sync_offline_api_v1_merchandise_sync_post: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SyncOfflineBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_ChangeResult_"];
           "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
         };
       };

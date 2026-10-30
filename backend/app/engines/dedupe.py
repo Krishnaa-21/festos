@@ -241,6 +241,8 @@ def find_duplicate_candidates(
                 p2 = group[j]
                 pid1 = str(p1.get("participant_id") or p1.get("id"))
                 pid2 = str(p2.get("participant_id") or p2.get("id"))
+                if pid1 == pid2:
+                    continue
 
                 p1_ev = events_by_participant.get(pid1)
                 p2_ev = events_by_participant.get(pid2)

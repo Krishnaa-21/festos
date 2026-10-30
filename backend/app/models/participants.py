@@ -39,6 +39,10 @@ class Participant(SQLModel, table=True):
     created_at: datetime = Field(default_factory=now)
     updated_at: datetime = Field(default_factory=now)
 
+    @property
+    def canonical_id(self) -> Optional[str]:
+        return self.canonical_participant_id
+
 class Contingent(SQLModel, table=True):
     __tablename__ = "contingent"
 

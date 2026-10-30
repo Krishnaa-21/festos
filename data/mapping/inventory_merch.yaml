@@ -1,0 +1,20 @@
+file: inventory_merch.csv
+entity: inventory_item
+target_table: inventory_item
+id_prefix: itm_merch_
+primary_key: id
+columns:
+  item:
+    canonical: name
+    synonyms: [item, merch_item, product]
+  size:
+    canonical: size
+    synonyms: [size, tshirt_size]
+  quantity:
+    canonical: quantity
+    synonyms: [quantity, qty, stock]
+    type: integer
+  reserved_quantity:
+    canonical: reserved_quantity
+    synonyms: [reserved_quantity, reserved, hold]
+    type: integer

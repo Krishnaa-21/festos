@@ -31,6 +31,31 @@ Format:
   - Run `make setup` or `pip install -r backend/requirements.txt`
   - Run `python -m app.seed load`
 
+### 2026-10-30: P2/02-import (Raw Data Pack Ingestion & Quality Engine)
+- **Author**: P2 Lead
+- **Branch**: `p2/02-import`
+- **Endpoints Added**:
+  - `POST /api/v1/imports` (Multipart upload with tolerant CSV parser and dry-run)
+  - `GET /api/v1/imports` (Paginated import batch history)
+  - `GET /api/v1/imports/{id}` (Batch detail and status)
+  - `GET /api/v1/imports/{id}/issues` (Quarantine rows with reason codes)
+  - `POST /api/v1/imports/{id}/promote` (Atomic transfer to canonical tables via ChangeService)
+  - `GET /api/v1/data-quality` (Full data quality report, reconciliation summary, JSON/CSV export)
+  - `GET /api/v1/assumptions` (List assumptions with typed parsing and filter)
+  - `GET /api/v1/assumptions/{key}` (Get single assumption)
+  - `PUT /api/v1/assumptions/{key}` (Audited update via ChangeService)
+  - `GET /api/v1/assumptions/{key}/history` (Assumption audit history)
+  - `GET /api/v1/assumptions/{key}/dependents` (Preview dependent modules)
+- **Public Functions Added**:
+  - `services/imports/public.py`: `summary`, `risks` (unresolved quarantine, UNKNOWN gender/diet bottlenecks), `dependents`
+  - `services/assumptions/public.py`: `summary`, `risks` (cleaning buffer tight, minor threshold lax, placeholder assumptions), `dependents`
+  - `services/assumptions/service.py`: `get_assumption(key)` with in-memory caching and ChangeService-driven invalidation
+- **Breaking Changes / Schema Migrations**:
+  - Added operational models `ImportBatchMetadata` and `StagedRecord` in `app.models.ops`.
+  - Raw rows are preserved byte-for-byte in `raw_record`; invalid intervals routed to `quarantine_row`.
+  - Re-imports are idempotent based on SHA-256 batch content hash.
+- **Action Required**:
+  - Run `make reset` or `python -m app.seed reset` (runs seeder order 10, importing and promoting all 11 raw CSVs).
 ### 2026-10-30: P3/03-security-ui (Security, RBAC, Masking, Audit Hardening, Approvals, & Ops-Centre UI)
 - **Author**: P3 Lead
 - **Branch**: `p3/03-security-ui`
@@ -190,3 +215,41 @@ Format:
   - Playwright: `frontend/e2e/accommodation.spec.ts` (E2E flows: generate plans, compare, explain unplaced, assign with reason, hit 409 and recover, search/scan and check in).
 - **Action Required**:
   - Run `npm test` and `npm run typecheck` to verify client suite.
+### 2026-10-31: P1/10-inventory (Ledger-Backed Inventory, Equipment Allocation, and Transactional Merchandise Issuance)
+- **Author**: P1 Lead
+- **Branch**: `p1/10-inventory`
+- **Endpoints Added**:
+  - `GET /api/v1/logistics/items`: List inventory items with projected stock buckets (`on_hand`, `reserved`, `in_transit`, `damaged`, `under_repair`, `awaiting_return`, `available`).
+  - `GET /api/v1/logistics/items/{id}`: Single item profile with breakdown across locations.
+  - `GET /api/v1/logistics/locations`: List inventory locations.
+  - `GET /api/v1/logistics/movements`: Immutable double-entry ledger movements history.
+  - `POST /api/v1/logistics/movements`: Append-only movement recording via ChangeService (`RECEIVE`, `RESERVE`, `RELEASE`, `TRANSFER_OUT`, `TRANSFER_IN`, `ISSUE`, `RETURN`, `DAMAGE`, `SEND_REPAIR`, `REPAIR_DONE`, `ADJUST`).
+  - `GET /api/v1/logistics/transfers`: Active and past inter-venue/location transfers.
+  - `POST /api/v1/logistics/transfers`: Initiates transfer with ETA (stock in `TRANSFER_OUT` counts at neither endpoint).
+  - `POST /api/v1/logistics/transfers/{id}/complete`: Explicit transfer completion step writing `TRANSFER_IN` to destination.
+  - `GET /api/v1/logistics/equipment/find`: Searches equipment units for venue session windows; evaluates on-site units and transfer feasibility based on `travel_time` + 15m transfer buffer.
+  - `GET /api/v1/logistics/equipment/{id}/failure-analysis`: Returns dependent sessions, alternative units, and transfer feasibility.
+  - `POST /api/v1/logistics/stocktake`: Stocktake discrepancy reconciliation with mandatory reason.
+  - `GET /api/v1/logistics/ledger/balance`: Mathematical consistency check proving movements balance across the festival.
+  - `GET /api/v1/logistics/reconciliation-flags`: Surfaces reconciliation flags (the 'camera' 31 units under repair case and 'tables' needs check condition).
+  - `GET /api/v1/logistics/reports/inventory-plan`: Exports `inventory_plan.csv`.
+  - `GET /api/v1/logistics/reports/equipment-gap`: Exports `equipment_gap.csv`.
+  - `GET /api/v1/merchandise/catalog`: Catalog items with size-wise stock buckets.
+  - `GET /api/v1/merchandise/policy`: Entitlement policy (1 per confirmed participant for per-head items: T-shirt, ID card, lanyard, tote; winner medals are not per-head) and size demand/shortage analysis.
+  - `POST /api/v1/merchandise/issue`: Transactional, idempotent merchandise issuance to canonical participant; atomic claim insert + ISSUE ledger movement; returns 409 `ALREADY_ISSUED` on repeat attempt with original timestamp, counter, and staff member.
+  - `POST /api/v1/merchandise/void`: Void claim with mandatory reason and Director review; returns item to `awaiting_return`.
+  - `GET /api/v1/merchandise/qr/{participant_id}`: Signed HMAC token using `QR_SECRET`, SVG generation, and checklist.
+  - `POST /api/v1/merchandise/scan`: Validates QR token and returns canonical participant entitlements (masked for volunteers).
+  - `POST /api/v1/merchandise/sync`: Offline batch synchronization keyed idempotently by `client_op_id`.
+- **Public Functions Added**:
+  - `services/logistics/public.py`: `summary`, `risks` (camera repair deficit, tables unverified, overdue transfers), `dependents`, `inventory_plan_csv`, `equipment_gap_csv`.
+  - `services/merchandise/public.py`: `summary`, `risks` (size shortages, missing sizes requiring collection), `dependents`.
+  - `engines/equipment_allocation.py`: Refined `LedgerEquipmentAvailabilityAdapter` implementing `EquipmentAvailabilityPort` for Prompt 7 conflict detector.
+  - Registered participant 360 dynamic section `'merchandise'`.
+- **Breaking Changes / Schema Migrations**:
+  - Added `inventory_item`, `inventory_location`, `inventory_movement`, `inventory_transfer`, `merch_claim`, `entitlement_policy` tables.
+  - `inventory_movement` enforces double-entry invariant: quantities are strictly positive; physical inventory is never overwritten.
+  - Unique DB constraint on `merch_claim` for `(canonical_participant_id, item_id)` ensures strict single-claim semantics.
+  - Order 40 seeder ingests `inventory_logistics.csv` and `inventory_merch.csv`.
+- **Action Required**:
+  - Run database seeders to populate initial logistics and merchandise inventory.
