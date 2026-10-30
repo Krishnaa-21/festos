@@ -2,6 +2,8 @@
 # Import all model modules so SQLModel metadata discovers every table
 from app.models.accommodation import (
     AccommodationPlan,
+    BedReallocationSuggestion,
+    CheckinOperationRecord,
     ExternalProperty,
     Room,
     StayAssignment,
@@ -88,6 +90,8 @@ __all__ = [
     "ExternalProperty",
     "StayAssignment",
     "AccommodationPlan",
+    "BedReallocationSuggestion",
+    "CheckinOperationRecord",
     "Vendor",
     "MealSlot",
     "VendorAssignment",

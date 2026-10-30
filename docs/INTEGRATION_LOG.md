@@ -354,4 +354,46 @@ Format:
   - Upgraded `AccommodationPlan` with deterministic `plan_hash`, `sacrifices_summary`, `parameters_applied`, and `shortages_data`.
   - Added Order 30 seeder (`app.seed.accommodation`) seeding 200 on-campus rooms (710 beds) and 6 external properties (740 beds).
 
+### 2026-10-30: P2/08-accom-ops (Live Auditable Accommodation Operations, Check-in & Minimal-Change Repair)
+- **Author**: P2 Lead
+- **Branch**: `p2/08-accom-ops`
+- **Contracts Added / Extended**:
+  - `docs/api/accommodation.md`: Extended with live plan commit, approvals, freeze logic, incremental allocation, manual assignment/relocation with hard overrides and decision cards, room/property resource updates, cleaning timer, and minimal-change repair engine.
+  - `docs/api/checkin.md`: Comprehensive check-in API contract (arrival board, QR/search lookup, check-in with room readiness check and alternative suggestions, check-out with cleaning timer, arrival time updates, offline sync batch with APPLIED/DUPLICATE_IGNORED/CONFLICT, and cancellation/no-show advisory reallocation suggestions).
+- **Endpoints Added**:
+  - `POST /api/v1/accommodation/plans/commit`: Commits candidate plan to LIVE via approval workflow (`accommodation.commit_plan`). Auto-approved if within budget and no hard constraints relaxed; escalates to `FESTIVAL_DIRECTOR` if external cost exceeds budget or hard relaxations exist.
+  - `POST /api/v1/accommodation/plans/{id}/freeze`: Freezes plan to prevent re-solvers or mass shifts while allowing audited manual/incremental adjustments.
+  - `POST /api/v1/accommodation/allocate-incremental`: Incremental placement for late arriving contingents or participants, preserving every approved assignment (minimal change).
+  - `PATCH /api/v1/accommodation/rooms/{id}`: Audited resource management for room status, gender class, accessibility, safety info, and maintenance.
+  - `POST /api/v1/accommodation/rooms/{id}/cleaning-complete`: Marks room cleaning complete and sets room and cleaning status to `READY`.
+  - `PATCH /api/v1/accommodation/properties/{id}`: Audited property resource updates (capacity, pricing, transport windows, safety info, verification).
+  - `POST /api/v1/accommodation/assign`: Manual assignment/relocation. Enforces concurrency guard (409 Conflict), checks hard constraints; Director-only override for accessibility/gender/safety with mandatory reason, recording to `core.overrides.record` and structured `DecisionCard`.
+  - `POST /api/v1/accommodation/repair`: Minimal-change replanning engine (`engines/repair/accommodation.py`) for hostel/block/property closures, generating candidate repair plan + diff.
+  - `GET /api/v1/checkin/board`: Real-time arrival board grouped by status (EXPECTED, ARRIVED, DELAYED, CHECKED_IN, CANCELLED, NO_SHOW).
+  - `GET /api/v1/checkin/search`: Fast participant search by QR code, participant ID, name, or contingent.
+  - `GET /api/v1/checkin/participant/{id}`: Detailed participant check-in profile including stay assignment, room readiness, and flags.
+  - `POST /api/v1/checkin/checkin`: Idempotent check-in with `client_op_id`. Verifies room readiness; if not READY, blocks check-in and returns alternative ready rooms.
+  - `POST /api/v1/checkin/verify-arrival`: Updates participant status to ARRIVED upon physical gate entry.
+  - `POST /api/v1/checkin/checkout`: Check-out operation; releases occupant, sets room status to `CLEANING` and starts cleaning buffer countdown timer (`cleaning_buffer_minutes`).
+  - `PATCH /api/v1/checkin/participant/{id}/arrival`: Early/late arrival update with ETA shift recalculation.
+  - `POST /api/v1/checkin/sync`: Offline sync batch processor accepting queued operations from field tablets and returning per-operation status: `APPLIED`, `DUPLICATE_IGNORED`, or `CONFLICT` with explanatory details.
+  - `GET /api/v1/checkin/reallocations/suggestions`: Lists pending reallocation suggestions triggered by cancellations/no-shows.
+- **Event Bus Subscriptions**:
+  - `@subscribe("participant.status_changed")`: On `CANCELLED` or `NO_SHOW`, immediately frees bed assignments (`stay.status = 'CANCELLED'`), excludes the cancelling participant, and computes an advisory reallocation suggestion for eligible unplaced participants (preserving contingent cohesion and leadership priority, NEVER auto-applying changes).
+- **Public Functions Added / Updated**:
+  - `services/accommodation/public.py`:
+    - `summary`: Live metrics (occupancy, available beds, unplaced count).
+    - `risks`: Active risk detection (unplaced participants, accessibility needs unconfirmed with arrival within 6h, capacity shortfalls, minors in external stays without guardian approval).
+    - `dependents`: Dependency mappings (room -> participants, property -> participants, participant -> room).
+    - Registered participant 360 dynamic section `'accommodation'`.
+- **Database Models Added / Updated**:
+  - `Room`: added `safety_info`.
+  - `ExternalProperty`: added `transport_windows` and `safety_info`.
+  - `AccommodationPlan`: added `is_frozen` and `frozen_at`.
+  - Added `BedReallocationSuggestion`: tracking advisory bed suggestions on cancellation/no-show.
+  - Added `CheckinOperationRecord`: tracking client operation IDs and audit records for idempotent offline check-ins.
+- **Tests Added & Passing**:
+  - `backend/tests/accommodation/test_accommodation_ops.py`: 7 tests covering concurrent bed allocation 409 conflict guard, checkout cleaning buffer lock, cancellation releasing bed and generating advisory suggestion (not auto-applied), Director-only hard override enforcement, minimal-change repair after hostel block closure, offline sync idempotent replay, and full acceptance lifecycle (candidate C -> propose commit -> approval -> live plan -> block closure -> repair proposal -> approval -> live diff applied with audit trail).
+  - Total 28 tests in `backend/tests/accommodation/` passing.
+
 

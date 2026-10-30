@@ -4,6 +4,7 @@ from __future__ import annotations
 import csv
 import json
 import logging
+import threading
 from collections import defaultdict
 from datetime import datetime, time, timezone
 from pathlib import Path
@@ -11,7 +12,9 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from sqlmodel import Session, delete, select
 
+from app.core.change_service import ChangeRequest, execute_change
 from app.core.clock import now
+from app.core.errors import FestOSError
 from app.engines.accommodation.demand import (
     compute_bed_demand_timeline,
     partition_demand,
@@ -32,15 +35,18 @@ from app.engines.accommodation.types import (
     RoomSnapshot,
 )
 from app.engines.accommodation.why_not import diagnose_unplaced_participant
+from app.engines.repair.accommodation import replan_accommodation
 from app.models.accommodation import AccommodationPlan, ExternalProperty, Room, StayAssignment
 from app.models.participants import Participant
-from app.schemas.common import DecisionCard
+from app.schemas.accommodation import ManualAssignRequest, RepairPlanRequest
+from app.schemas.common import Actor, DecisionCard
 from app.services.assumptions.service import get_assumption
 
 logger = logging.getLogger("festos.services.accommodation")
 
 # In-memory plan cache for instant response times
 _PLAN_CACHE: Dict[str, PlanResult] = {}
+
 
 
 def _get_raw_data_dir() -> Path:
@@ -690,3 +696,424 @@ def get_decision_card(session: Session, plan_id: str) -> DecisionCard:
         plans = generate_plans(session, ["A", "B", "C"])
         plan_res = next((p for p in plans if p.plan_id == plan_id), plans[0])
     return generate_decision_card(plan_res)
+
+
+def get_live_plan(session: Session) -> Optional[AccommodationPlan]:
+    """Retrieve the currently committed LIVE plan."""
+    return session.exec(select(AccommodationPlan).where(AccommodationPlan.status == "LIVE")).first()
+
+
+def update_room_resource(
+    session: Session,
+    room_id: str,
+    payload: Dict[str, Any],
+    actor: Actor,
+    reason: Optional[str] = None,
+    expected_version: Optional[int] = None,
+) -> Any:
+    """Update room attributes and status via ChangeService."""
+    req = ChangeRequest(
+        action="accommodation.update_room",
+        entity_type="room",
+        entity_id=room_id,
+        payload=payload,
+        reason=reason or "Room status/attribute update",
+        actor=actor,
+        expected_version=expected_version,
+    )
+    result = execute_change(req, session)
+    if not result.success and result.status != "DRY_RUN":
+        err_msg = result.error or "Room update rejected by ChangeService"
+        raise FestOSError(err_msg, code="VALIDATION_ERROR", status_code=422)
+    return result
+
+
+def complete_room_cleaning(
+    session: Session,
+    room_id: str,
+    actor: Actor,
+    notes: Optional[str] = None,
+    expected_version: Optional[int] = None,
+) -> Any:
+    """Mark room cleaning complete via ChangeService."""
+    req = ChangeRequest(
+        action="accommodation.cleaning_complete",
+        entity_type="room",
+        entity_id=room_id,
+        payload={"notes": notes},
+        reason=notes or "Room cleaning and inspection completed",
+        actor=actor,
+        expected_version=expected_version,
+    )
+    result = execute_change(req, session)
+    if not result.success:
+        err_msg = result.error or "Cleaning complete rejected by ChangeService"
+        raise FestOSError(err_msg, code="VALIDATION_ERROR", status_code=422)
+    return result
+
+
+def close_block_rooms(
+    session: Session,
+    block: str,
+    actor: Actor,
+    reason: Optional[str] = None,
+    status: str = "CLOSED",
+) -> Any:
+    """Close an entire block of rooms via ChangeService."""
+    req = ChangeRequest(
+        action="accommodation.close_block",
+        entity_type="hostel_block",
+        entity_id=block,
+        payload={"block": block, "status": status},
+        reason=reason or f"Block {block} closed for operations/repairs",
+        actor=actor,
+    )
+    result = execute_change(req, session)
+    if not result.success:
+        err_msg = result.error or "Close block rejected by ChangeService"
+        raise FestOSError(err_msg, code="VALIDATION_ERROR", status_code=422)
+    return result
+
+
+def update_property_resource(
+    session: Session,
+    property_id: str,
+    payload: Dict[str, Any],
+    actor: Actor,
+    reason: Optional[str] = None,
+    expected_version: Optional[int] = None,
+) -> Any:
+    """Update external property parameters and status via ChangeService."""
+    req = ChangeRequest(
+        action="accommodation.update_property",
+        entity_type="external_property",
+        entity_id=property_id,
+        payload=payload,
+        reason=reason or "Property update",
+        actor=actor,
+        expected_version=expected_version,
+    )
+    result = execute_change(req, session)
+    if not result.success:
+        err_msg = result.error or "Property update rejected by ChangeService"
+        raise FestOSError(err_msg, code="VALIDATION_ERROR", status_code=422)
+    return result
+
+
+def commit_plan_to_live(
+    session: Session,
+    plan_id: str,
+    actor: Actor,
+    reason: Optional[str] = None,
+    override_budget_rationale: Optional[str] = None,
+) -> Dict[str, Any]:
+    """Commit candidate plan to LIVE via approval workflow.
+
+    Accommodation Lead proposes; Festival Director approves when external cost
+    exceeds budget or hard-constraint relaxation exists.
+    """
+    plan = session.exec(select(AccommodationPlan).where(AccommodationPlan.plan_id == plan_id)).first()
+    if not plan:
+        raise FestOSError(f"Plan '{plan_id}' not found", code="NOT_FOUND", status_code=404)
+
+    req = ChangeRequest(
+        action="accommodation.commit_plan",
+        entity_type="accommodation_plan",
+        entity_id=plan_id,
+        payload={"override_budget_rationale": override_budget_rationale, "is_high_risk": True},
+        reason=reason or "Commit candidate plan to LIVE operations",
+        actor=actor,
+    )
+
+    result = execute_change(req, session)
+    if result.status == "PENDING_APPROVAL":
+        return {
+            "plan_id": plan_id,
+            "status": "PENDING_APPROVAL",
+            "change_set_id": result.change_set_id,
+            "requires_director_approval": True,
+            "message": "Plan commit requires Festival Director approval (external budget or constraint relaxation).",
+            "recommendations": result.recommendations,
+        }
+    elif result.status == "APPLIED":
+        return {
+            "plan_id": plan_id,
+            "status": "LIVE",
+            "change_set_id": result.change_set_id,
+            "requires_director_approval": False,
+            "live_assignments_count": result.data.get("live_assignments_count", 0) if result.data else 0,
+            "committed_at": result.data.get("committed_at", now().isoformat()) if result.data else now().isoformat(),
+        }
+    else:
+        raise FestOSError(result.error or "Commit failed", code="VALIDATION_ERROR", status_code=422)
+
+
+def freeze_live_plan(
+    session: Session,
+    plan_id: Optional[str] = None,
+    actor: Optional[Actor] = None,
+    reason: Optional[str] = None,
+) -> Dict[str, Any]:
+    """Freeze live plan against automated batch overrides."""
+    if not plan_id:
+        live = get_live_plan(session)
+        if not live:
+            raise FestOSError("No LIVE plan currently found to freeze.", code="NOT_FOUND", status_code=404)
+        plan_id = live.plan_id
+
+    req = ChangeRequest(
+        action="accommodation.freeze_plan",
+        entity_type="accommodation_plan",
+        entity_id=plan_id,
+        payload={},
+        reason=reason or "Locking allocations ahead of festival commencement",
+        actor=actor or Actor(id="system", role="FESTIVAL_DIRECTOR", name="Director"),
+    )
+    result = execute_change(req, session)
+    if not result.success:
+        raise FestOSError(result.error or "Freeze failed", code="VALIDATION_ERROR", status_code=422)
+    return result.data or {"plan_id": plan_id, "is_frozen": True}
+
+
+def allocate_incremental(
+    session: Session,
+    participant_ids: Optional[List[str]] = None,
+    contingent_id: Optional[str] = None,
+    actor: Optional[Actor] = None,
+) -> Dict[str, Any]:
+    """Incremental allocation for late or post-freeze arrivals.
+
+    Preserves EVERY existing approved stay assignment (minimal change).
+    """
+    live_plan = get_live_plan(session)
+    if not live_plan:
+        # Fallback to Plan C or latest
+        live_plan = session.exec(
+            select(AccommodationPlan).where(AccommodationPlan.kind == "C")
+        ).first()
+        if not live_plan:
+            generate_plans(session, ["C"])
+            live_plan = session.exec(
+                select(AccommodationPlan).where(AccommodationPlan.kind == "C")
+            ).first()
+
+    target_plan_id = live_plan.plan_id if live_plan else "LIVE"
+
+    # Fetch existing active stays to preserve
+    existing_stays = session.exec(
+        select(StayAssignment).where(
+            StayAssignment.plan_id == target_plan_id,
+            StayAssignment.status == "ACTIVE",
+        )
+    ).all()
+    occupied_bed_keys = {s.bed_key for s in existing_stays}
+    assigned_part_ids = {s.participant_id for s in existing_stays}
+
+    # Occupancy per room & property
+    all_rooms = session.exec(select(Room)).all()
+    all_props = session.exec(select(ExternalProperty)).all()
+
+    room_occ: Dict[str, int] = {}
+
+    prop_occ: Dict[str, int] = {}
+    for s in existing_stays:
+        if s.room_id:
+            room_occ[s.room_id] = room_occ.get(s.room_id, 0) + 1
+        elif s.property_id:
+            prop_occ[s.property_id] = prop_occ.get(s.property_id, 0) + 1
+
+    # Resolve participants to allocate
+    query = select(Participant)
+    if participant_ids:
+        query = query.where(Participant.id.in_(participant_ids))
+    elif contingent_id:
+        query = query.where(Participant.contingent_id == contingent_id)
+    else:
+        query = query.where(Participant.accommodation_requested == "YES")
+
+    candidates = session.exec(query).all()
+    unplaced_candidates = [p for p in candidates if p.id not in assigned_part_ids]
+
+    new_stays: List[StayAssignment] = []
+    unplaced_list = []
+
+    for p in unplaced_candidates:
+        gender = (p.gender or "UNKNOWN").lower().strip()
+        needs_acc = bool(p.accessibility_needs and p.accessibility_needs not in ["none", ""])
+        placed = False
+
+        # Try on-campus room first
+        candidate_rooms = []
+        for r in all_rooms:
+            if r.status in ["CLOSED", "MAINTENANCE"]:
+                continue
+            if room_occ.get(r.id, 0) >= r.capacity:
+                continue
+            if needs_acc and (not r.accessible or r.floor != 0):
+                continue
+            if gender in ["male", "boy", "m"] and r.gender_class.lower() not in ["boys", "male", "neutral"]:
+                continue
+            if gender in ["female", "girl", "f"] and r.gender_class.lower() not in ["girls", "female", "neutral"]:
+                continue
+            candidate_rooms.append(r)
+
+        if candidate_rooms:
+            # Pick room with capacity
+            chosen_room = candidate_rooms[0]
+            bed_idx = room_occ.get(chosen_room.id, 0) + 1
+            room_occ[chosen_room.id] = bed_idx
+            bed_key = f"{chosen_room.id}-bed{bed_idx}"
+            while bed_key in occupied_bed_keys:
+                bed_idx += 1
+                bed_key = f"{chosen_room.id}-bed{bed_idx}"
+            occupied_bed_keys.add(bed_key)
+
+            stay = StayAssignment(
+                plan_id=target_plan_id,
+                bed_key=bed_key,
+                participant_id=p.id,
+                room_id=chosen_room.id,
+                property_id=None,
+                is_external=False,
+                start_at=p.arrival_at if p.arrival_at else now(),
+                end_at=p.departure_at if p.departure_at else now(),
+                cost_inr=0.0,
+                status="ACTIVE",
+                explanation=json.dumps({"incremental_allocation": True, "contingent_id": p.contingent_id}),
+                version=1,
+                created_at=now(),
+                updated_at=now(),
+            )
+            new_stays.append(stay)
+            placed = True
+
+        # Overflow to external property if needed
+        if not placed:
+            candidate_props = [
+                prop for prop in all_props
+                if prop.status == "ACTIVE" and prop_occ.get(prop.id, 0) < prop.beds
+            ]
+            if candidate_props:
+                chosen_prop = candidate_props[0]
+                bed_idx = prop_occ.get(chosen_prop.id, 0) + 1
+                prop_occ[chosen_prop.id] = bed_idx
+                bed_key = f"{chosen_prop.id}-bed{bed_idx}"
+                while bed_key in occupied_bed_keys:
+                    bed_idx += 1
+                    bed_key = f"{chosen_prop.id}-bed{bed_idx}"
+                occupied_bed_keys.add(bed_key)
+
+                stay = StayAssignment(
+                    plan_id=target_plan_id,
+                    bed_key=bed_key,
+                    participant_id=p.id,
+                    room_id=None,
+                    property_id=chosen_prop.id,
+                    is_external=True,
+                    start_at=p.arrival_at if p.arrival_at else now(),
+                    end_at=p.departure_at if p.departure_at else now(),
+                    cost_inr=chosen_prop.cost_per_bed_night * 3,
+                    status="ACTIVE",
+                    explanation=json.dumps({"incremental_allocation": True, "external": True}),
+                    version=1,
+                    created_at=now(),
+                    updated_at=now(),
+                )
+                new_stays.append(stay)
+                placed = True
+
+        if not placed:
+            unplaced_list.append(p.id)
+
+    if new_stays:
+        session.add_all(new_stays)
+        session.commit()
+
+    return {
+        "allocated_count": len(new_stays),
+        "unplaced_count": len(unplaced_list),
+        "unplaced_participant_ids": unplaced_list,
+        "new_assignments": [
+            {
+                "participant_id": s.participant_id,
+                "bed_key": s.bed_key,
+                "room_id": s.room_id,
+                "property_id": s.property_id,
+                "is_external": s.is_external,
+            }
+            for s in new_stays
+        ],
+    }
+
+
+_BED_ALLOCATION_LOCK = threading.Lock()
+
+
+
+def manual_assign(session: Session, req: ManualAssignRequest, actor: Actor) -> Dict[str, Any]:
+    """Execute manual assignment or relocation with mandatory reason and override checks."""
+    from sqlalchemy.exc import IntegrityError
+
+    from app.core.errors import VersionConflictError
+
+    with _BED_ALLOCATION_LOCK:
+        # Pre-check active conflict
+        active_conflict = session.exec(
+            select(StayAssignment).where(
+                StayAssignment.bed_key == req.target_bed_key,
+                StayAssignment.status == "ACTIVE",
+                StayAssignment.participant_id != req.participant_id,
+            )
+        ).first()
+        if active_conflict:
+            raise VersionConflictError(
+                f"Bed '{req.target_bed_key}' is already allocated to {active_conflict.participant_id}."
+            )
+
+        payload = req.model_dump()
+        cr = ChangeRequest(
+            action="accommodation.manual_assign",
+            entity_type="stay_assignment",
+            entity_id=req.participant_id,
+            payload=payload,
+            reason=req.reason,
+            actor=actor,
+            expected_version=req.expected_version,
+        )
+        try:
+            result = execute_change(cr, session)
+        except IntegrityError:
+            raise VersionConflictError(f"Bed '{req.target_bed_key}' is already allocated during this interval.")
+
+        if result.status == "REJECTED":
+            if any(v.code == "BED_OCCUPIED" for v in result.violations):
+                occupied_msg = next((v.message for v in result.violations if v.code == "BED_OCCUPIED"), f"Bed '{req.target_bed_key}' is already occupied.")
+                raise VersionConflictError(occupied_msg)
+
+            # Return 422 with violation details
+            viol_msgs = "; ".join(v.message for v in result.violations)
+            raise FestOSError(
+                message=viol_msgs or "Manual assignment constraint violation",
+                code="CONSTRAINT_VIOLATION",
+                status_code=422,
+            )
+        elif not result.success:
+            raise FestOSError(result.error or "Manual assign failed", code="VALIDATION_ERROR", status_code=422)
+
+        return result.data or {}
+
+
+
+
+def repair_accommodation(session: Session, req: RepairPlanRequest) -> Dict[str, Any]:
+    """Minimal-change replanning engine entrypoint."""
+    candidate_plan, diff = replan_accommodation(
+        session=session,
+        plan_id=req.plan_id,
+        closed_room_ids=req.closed_room_ids,
+        closed_block=req.closed_block,
+        closed_property_id=req.closed_property_id,
+        strategy=req.strategy,
+    )
+    return diff
+
