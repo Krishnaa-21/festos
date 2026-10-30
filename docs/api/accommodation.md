@@ -473,3 +473,262 @@ The engine operates with a hard-filter-first strategy, pure functional core (`en
   - `accommodation_summary.csv`: Plan comparison metrics table.
   - `bed_demand_timeline.csv`: Hourly confirmed demand, possible demand, and supply.
 - **Permissions**: `accommodation:export`
+
+---
+
+### 2.11 `PATCH /api/v1/accommodation/rooms/{id}`
+- **Description**: Update on-campus room attributes and operational status via `ChangeService`.
+- **Status values**: `READY`, `OCCUPIED`, `CLEANING`, `MAINTENANCE`, `CLOSED`.
+- **Permissions**: `accommodation:write`
+- **Request Body**:
+```json
+{
+  "expected_version": 1,
+  "status": "MAINTENANCE",
+  "cleaning_status": "READY",
+  "accessible": true,
+  "gender_class": "boys",
+  "reason": "Plumbing repair on 2nd floor"
+}
+```
+- **Response `200 OK`**:
+```json
+{
+  "data": {
+    "room_id": "B1-0-01",
+    "status": "MAINTENANCE",
+    "cleaning_status": "READY",
+    "accessible": true,
+    "gender_class": "boys",
+    "version": 2
+  },
+  "meta": { "change_set_id": "cs_9a8b7c6d5e" },
+  "warnings": []
+}
+```
+
+---
+
+### 2.12 `POST /api/v1/accommodation/rooms/{id}/cleaning-complete`
+- **Description**: Mark room cleaning complete, transitioning status to `READY` via `ChangeService`.
+- **Permissions**: `accommodation:write`
+- **Request Body**:
+```json
+{
+  "expected_version": 2,
+  "inspected_by": "Housekeeping Supervisor",
+  "notes": "Sanitization complete, fresh linen stocked"
+}
+```
+- **Response `200 OK`**:
+```json
+{
+  "data": {
+    "room_id": "B1-0-01",
+    "status": "READY",
+    "cleaning_status": "READY",
+    "cleaning_ready_at": "2026-10-30T11:00:00Z"
+  },
+  "meta": { "change_set_id": "cs_12345678" },
+  "warnings": []
+}
+```
+
+---
+
+### 2.13 `PATCH /api/v1/accommodation/properties/{id}`
+- **Description**: Manage external properties (pricing, beds, transport windows, safety info, verified flags) via `ChangeService`.
+- **Permissions**: `accommodation:write`
+- **Request Body**:
+```json
+{
+  "expected_version": 1,
+  "beds": 80,
+  "cost_per_bed_night": 1200.0,
+  "transport_availability": "yes",
+  "transport_limited": false,
+  "accessibility_verified": true,
+  "gender_suitability_verified": true,
+  "status": "ACTIVE",
+  "reason": "Contract signed and safety inspection completed"
+}
+```
+- **Response `200 OK`**:
+```json
+{
+  "data": {
+    "property_id": "EXT01",
+    "status": "ACTIVE",
+    "accessibility_verified": true,
+    "gender_suitability_verified": true,
+    "version": 2
+  },
+  "meta": { "change_set_id": "cs_55667788" },
+  "warnings": []
+}
+```
+
+---
+
+### 2.14 `POST /api/v1/accommodation/plans/{id}/commit`
+- **Description**: Propose committing a candidate plan to `LIVE` through the approvals workflow. Accommodation Lead proposes; Festival Director approves when external cost exceeds the budget (`external_budget_inr` assumption) or any hard-constraint relaxation exists.
+- **Permissions**: `accommodation:write`
+- **Request Body**:
+```json
+{
+  "reason": "Finalized room allocation for contingent check-ins",
+  "override_budget_rationale": "Director pre-cleared external overflow expenses"
+}
+```
+- **Response `200 OK` (Auto-committed if within bounds)** or `202 ACCEPTED` (Pending Director Approval):
+```json
+{
+  "data": {
+    "plan_id": "plan_C_balanced",
+    "status": "LIVE",
+    "live_assignments_count": 1781,
+    "committed_at": "2026-10-30T11:00:00Z"
+  },
+  "meta": {
+    "requires_director_approval": false,
+    "approval_id": null
+  },
+  "warnings": []
+}
+```
+
+---
+
+### 2.15 `POST /api/v1/accommodation/plans/live/freeze`
+- **Description**: Freeze the live accommodation plan. All existing stay assignments are locked, requiring incremental allocation for late arrivals.
+- **Permissions**: `accommodation:write`
+- **Request Body**:
+```json
+{
+  "reason": "Locking allocations ahead of 30 Oct festival commencement"
+}
+```
+- **Response `200 OK`**:
+```json
+{
+  "data": {
+    "plan_id": "plan_C_balanced",
+    "is_frozen": true,
+    "frozen_at": "2026-10-30T12:00:00Z"
+  },
+  "meta": {},
+  "warnings": []
+}
+```
+
+---
+
+### 2.16 `POST /api/v1/accommodation/plans/live/allocate-incremental`
+- **Description**: Allocate post-freeze or late-arriving participants/contingents. Preserves every existing approved stay assignment, performing minimal-change placement for newly eligible participants.
+- **Permissions**: `accommodation:write`
+- **Request Body**:
+```json
+{
+  "participant_ids": ["P0489", "P0490"],
+  "contingent_id": "C08"
+}
+```
+- **Response `200 OK`**:
+```json
+{
+  "data": {
+    "allocated_count": 2,
+    "unplaced_count": 0,
+    "new_assignments": [
+      {
+        "participant_id": "P0489",
+        "bed_key": "B2-1-03-A",
+        "room_id": "B2-1-03",
+        "is_external": false
+      }
+    ]
+  },
+  "meta": {},
+  "warnings": []
+}
+```
+
+---
+
+### 2.17 `POST /api/v1/accommodation/assignments/manual`
+- **Description**: Manually assign or move a participant. Returns `Violation[]`. Requires a mandatory recorded reason. Overriding a hard accessibility, safety, or privacy constraint requires Festival Director role and writes to `core.overrides.record` + generates a Decision Card.
+- **Permissions**: `accommodation:write`
+- **Request Body**:
+```json
+{
+  "participant_id": "P0104",
+  "target_bed_key": "B1-0-01-A",
+  "reason": "Emergency relocation due to ground-floor wheelchair mobility requirement",
+  "override_hard_constraint": true
+}
+```
+- **Response `200 OK`**:
+```json
+{
+  "data": {
+    "assignment_id": "sty_abc123",
+    "participant_id": "P0104",
+    "bed_key": "B1-0-01-A",
+    "override_id": "ovr_998877",
+    "decision_card_id": "dec_card_123"
+  },
+  "meta": { "violations_bypassed": ["HARD_ACCESSIBILITY"] },
+  "warnings": ["Hard constraint override recorded in core register."]
+}
+```
+
+---
+
+### 2.18 `POST /api/v1/accommodation/repair`
+- **Description**: Minimal-change repair engine (`engines/repair`). Re-plans accommodation after disruption (room, block, or property closure) while preserving unaffected approved stays, maximizing contingent cohesion, and obeying hard constraints.
+- **Permissions**: `accommodation:write`
+- **Request Body**:
+```json
+{
+  "plan_id": "plan_C_balanced",
+  "closed_block": "B3",
+  "closed_room_ids": [],
+  "closed_property_id": null,
+  "strategy": "MINIMAL_CHANGE"
+}
+```
+- **Response `200 OK`**:
+```json
+{
+  "data": {
+    "candidate_plan_id": "plan_repair_B3_closure",
+    "affected_participants_count": 85,
+    "relocated_count": 85,
+    "unplaced_count": 0,
+    "diff": {
+      "people_moved": 85,
+      "splits_added": 2,
+      "cost_delta_inr": 45000.0,
+      "moves": [
+        {
+          "participant_id": "P0210",
+          "from_bed": "B3-1-01-A",
+          "to_bed": "EXT01-102-B",
+          "reason": "Relocated due to B3 block closure"
+        }
+      ]
+    }
+  },
+  "meta": {},
+  "warnings": []
+}
+```
+
+---
+
+### 2.19 Concurrency & Bed Allocation Guard
+- Two organisers attempting to allocate the same bed or room simultaneously are protected by:
+  1. Optimistic concurrency version checks (`expected_version`).
+  2. Database unique constraint on `(plan_id, bed_key, start_at)` on `stay_assignment`.
+- Any race condition yields exactly one HTTP `200 OK` and one clear HTTP `409 Conflict` (`VERSION_CONFLICT`).
+
