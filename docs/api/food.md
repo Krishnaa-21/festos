@@ -2,71 +2,93 @@
 
 > Owner: `P2`  
 > Base Path: `/api/v1/food`  
-> Status: `CONTRACT_DRAFT`
+> Status: `ACTIVE`
 
 ---
 
 ## 1. Overview
-The **Food & Dietary Operations** module guarantees dietary coverage and food safety compliance across all fest venues and meal slots.
+The **Food & Dietary Operations** module calculates meal demand from the on-site participant headcount timeline, models vendor capacity per meal slot and location, evaluates dietary coverage, and flags compliance risks.
+
 Key principles:
-- **Zero-Coverage Alerting**: Vendor capacity must cover every dietary category (Veg, Non-Veg, Jain, Vegan, Gluten-Free) at each venue during each meal slot (Breakfast, Lunch, Snacks, Dinner, Late-Night). Zero-coverage cells require immediate operational intervention.
-- **Menu vs Declaration Consistency**: Automatic detection of mismatches between vendor self-declared dietary labels and actual menu ingredients (e.g. garlic/onion items labeled as Jain).
-- **Proactive Compliance**: Hygiene certificate tracking with proactive expiration warnings before fest days.
+- **On-Site Headcount Demand**: Demand is derived from the arrival and departure timelines of participants on campus during each meal slot.
+- **`UNKNOWN` Dietary Stays Separate**: Blank or missing dietary preferences are never assumed vegetarian; they remain strictly in the `UNKNOWN` category and are represented as a demand range (`min_demand` = confirmed, `max_demand` = confirmed + unknown).
+- **8 Dietary Categories**: `vegetarian`, `non-vegetarian`, `vegan`, `jain`, `halal`, `gluten-free`, `nut-allergy`, `other` (plus `unknown`).
+- **Zero-Coverage Alerting**: Any dietary category with zero compliant vendors triggers a critical alert (e.g. Jain, gluten-free, nut allergy).
+- **Dynamic Mid-Festival Expiry**: Capacity drops out from the moment a vendor's hygiene certificate expires, directly affecting per-slot coverage after the expiry time.
 
 ---
 
 ## 2. Endpoints
 
 ### 2.1 `GET /api/v1/food/coverage`
-- **Description**: Returns the 3D dietary coverage matrix (`category` x `meal_slot` x `venue`) with capacity, expected demand, deficit, and zero-coverage indicators.
+- **Description**: Returns the comprehensive dietary coverage matrix per meal slot, venue, and dietary category, including capacity, demand, gaps, and zero-coverage alerts.
+- **Query Params**: `date` (`YYYY-MM-DD`), `meal_slot` (`BREAKFAST`, `LUNCH`, `SNACKS`, `DINNER`, `LATE_NIGHT`), `venue_id`.
 - **Response `200 OK`**:
 ```json
 {
   "data": {
-    "categories": ["VEG", "NON_VEG", "JAIN", "VEGAN", "GLUTEN_FREE"],
+    "date": "2026-10-31",
+    "categories": [
+      "vegetarian",
+      "non-vegetarian",
+      "vegan",
+      "jain",
+      "halal",
+      "gluten-free",
+      "nut-allergy",
+      "other",
+      "unknown"
+    ],
     "meal_slots": ["BREAKFAST", "LUNCH", "SNACKS", "DINNER", "LATE_NIGHT"],
-    "venues": ["V01", "V02", "V03", "V04", "V07"],
+    "summary": {
+      "on_site_headcount": 1930,
+      "valid_aggregate_capacity": 1590,
+      "aggregate_shortfall": 340,
+      "zero_coverage_categories": ["jain", "gluten-free", "nut-allergy"],
+      "unknown_dietary_headcount": 394
+    },
     "matrix": [
       {
-        "category": "JAIN",
         "meal_slot": "LUNCH",
-        "venue_id": "V04",
-        "venue_name": "Amphitheatre",
-        "capacity": 0,
-        "demand": 45,
-        "deficit": 45,
-        "is_zero_coverage": true,
-        "assigned_vendors": []
-      },
-      {
-        "category": "VEG",
-        "meal_slot": "LUNCH",
-        "venue_id": "V04",
-        "venue_name": "Amphitheatre",
-        "capacity": 350,
-        "demand": 280,
+        "date": "2026-10-31",
+        "category": "vegetarian",
+        "demand_confirmed": 439,
+        "demand_max_with_unknown": 833,
+        "valid_capacity": 1590,
         "deficit": 0,
         "is_zero_coverage": false,
-        "assigned_vendors": ["vnd_01", "vnd_03"]
+        "active_vendors": ["VND01", "VND02", "VND03"]
+      },
+      {
+        "meal_slot": "LUNCH",
+        "date": "2026-10-31",
+        "category": "jain",
+        "demand_confirmed": 380,
+        "demand_max_with_unknown": 774,
+        "valid_capacity": 0,
+        "deficit": 380,
+        "is_zero_coverage": true,
+        "active_vendors": []
       }
     ],
-    "summary": {
-      "total_slots": 125,
-      "covered_slots": 118,
-      "zero_coverage_count": 7,
-      "critical_gaps": [
-        {
-          "category": "JAIN",
-          "meal_slot": "LUNCH",
-          "venue_name": "Amphitheatre",
-          "affected_count": 45
-        }
-      ]
-    }
+    "critical_alerts": [
+      {
+        "code": "ZERO_COMPLIANT_VENDORS",
+        "category": "jain",
+        "severity": "CRITICAL",
+        "message": "Zero compliant vendors available for Jain dietary requirements. 380 participants unserved."
+      },
+      {
+        "code": "ZERO_COMPLIANT_VENDORS",
+        "category": "gluten-free",
+        "severity": "CRITICAL",
+        "message": "Zero compliant vendors available for Gluten-Free dietary requirements. 387 participants unserved."
+      }
+    ]
   },
   "meta": {},
   "warnings": [
-    "7 zero-coverage cells detected. Attendees in Amphitheatre have no Jain lunch vendor."
+    "Peak headcount on Oct 31 (1,930) exceeds valid vendor capacity (1,590) by 340 meals."
   ]
 }
 ```
@@ -74,23 +96,67 @@ Key principles:
 ---
 
 ### 2.2 `GET /api/v1/food/compliance`
-- **Description**: List food safety and dietary compliance issues, menu-label mismatch flags, and expiring certifications.
+- **Description**: Returns menu-label mismatch flags and unverified dietary claims detected across vendor menus.
 - **Response `200 OK`**:
 ```json
 {
   "data": {
     "flags": [
       {
-        "id": "flg_jain_mismatch_01",
-        "vendor_id": "vnd_02",
-        "vendor_name": "Spice Junction",
+        "id": "flg_mismatch_09",
+        "vendor_id": "VND09",
+        "vendor_name": "Vendor I",
         "flag_type": "MENU_LABEL_MISMATCH",
+        "menu_keyword": "Jain thali",
+        "declared_options": ["vegetarian"],
         "severity": "HIGH",
-        "message": "Declared 'Jain-Friendly' but item 'Paneer Butter Masala' lists onion gravy in ingredient spec.",
-        "item_name": "Paneer Butter Masala",
-        "detected_at": "2026-10-30T09:00:00Z",
-        "status": "OPEN",
-        "recommended_action": "Flag menu item or restrict vendor from Jain meal slot"
+        "status": "UNVERIFIED",
+        "message": "Vendor I menu item 'Jain thali' implies Jain preparation, but Jain is not in declared dietary options.",
+        "requires_human_confirmation": true
+      },
+      {
+        "id": "flg_mismatch_11",
+        "vendor_id": "VND11",
+        "vendor_name": "Vendor K",
+        "flag_type": "MENU_LABEL_MISMATCH",
+        "menu_keyword": "Vegan bowls",
+        "declared_options": ["non-vegetarian", "halal"],
+        "severity": "HIGH",
+        "status": "UNVERIFIED",
+        "message": "Vendor K advertises 'Vegan bowls' but declared options are non-vegetarian and halal. Certificate also expired.",
+        "requires_human_confirmation": true
+      }
+    ]
+  },
+  "meta": {},
+  "warnings": []
+}
+```
+
+---
+
+### 2.3 `GET /api/v1/food/slots`
+- **Description**: Lists all festival meal slots with timing, dates, and assigned capacities.
+- **Response `200 OK`**:
+```json
+{
+  "data": {
+    "slots": [
+      {
+        "id": "msl_breakfast_20261031",
+        "name": "BREAKFAST",
+        "date": "2026-10-31",
+        "start_time": "07:30",
+        "end_time": "10:00",
+        "assigned_vendors_count": 6
+      },
+      {
+        "id": "msl_lunch_20261031",
+        "name": "LUNCH",
+        "date": "2026-10-31",
+        "start_time": "12:00",
+        "end_time": "15:00",
+        "assigned_vendors_count": 10
       }
     ]
   },

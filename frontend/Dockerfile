@@ -1,12 +1,32 @@
-FROM node:20-alpine
+# Stage 1: Build static frontend assets
+FROM node:20-alpine AS builder
 
 WORKDIR /app/frontend
 
-COPY frontend/package*.json ./
-RUN npm install
+COPY package*.json ./
+RUN npm ci
 
-COPY frontend ./
+COPY . .
+RUN npm run build
 
-EXPOSE 5173
+# Stage 2: Serve via Nginx (non-root)
+FROM nginx:alpine
 
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+# Remove default nginx assets
+RUN rm -rf /usr/share/nginx/html/*
+
+# Copy built static assets from builder stage
+COPY --from=builder /app/frontend/dist /usr/share/nginx/html
+
+# Copy custom Nginx configuration
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Setup non-root execution permissions
+RUN touch /var/run/nginx.pid && \
+    chown -R nginx:nginx /var/run/nginx.pid /usr/share/nginx/html /var/cache/nginx /var/log/nginx /etc/nginx/conf.d
+
+USER nginx
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]

@@ -50,3 +50,8 @@ def add(
     session.flush()
     logger.info(f"Recorded decision card [{card.id}] for module '{module}': {title}")
     return card
+
+
+# Convenience alias for handlers
+add_decision_card = add
+
