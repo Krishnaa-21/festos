@@ -159,6 +159,22 @@ export interface paths {
      */
     post: operations["post_break_glass_api_v1_auth_break_glass_post"];
   };
+  "/api/v1/commands/parse": {
+    /**
+     * Parse Natural Command
+     * @description Parses natural-language text into a strict structured command schema with operator explanation.
+     */
+    post: operations["parse_natural_command_api_v1_commands_parse_post"];
+  };
+  "/api/v1/commands/execute": {
+    /**
+     * Execute Structured Command
+     * @description Executes a structured command deterministically.
+     * - Read-only commands execute and return results immediately (HTTP 200).
+     * - Mutating commands create a dry-run proposal requiring approval (HTTP 202).
+     */
+    post: operations["execute_structured_command_api_v1_commands_execute_post"];
+  };
   "/api/v1/contingents": {
     /**
      * Get Contingents List
@@ -585,6 +601,34 @@ export interface paths {
      * @description Returns operational edge-case flags (same name different people, leaders competing, staff as participants).
      */
     get: operations["get_operational_edge_case_flags_api_v1_reconciliation_flags_get"];
+  };
+  "/api/v1/reports": {
+    /**
+     * List Reports
+     * @description Returns the catalog of all 20 spec Section 14 reports with access permissions and metadata.
+     */
+    get: operations["list_reports_api_v1_reports_get"];
+  };
+  "/api/v1/reports/bundle.zip": {
+    /**
+     * Download Reports Bundle
+     * @description Generates and downloads a zip archive containing all reports authorized for the caller.
+     */
+    get: operations["download_reports_bundle_api_v1_reports_bundle_zip_get"];
+  };
+  "/api/v1/reports/post-festival": {
+    /**
+     * Get Post Festival Summary
+     * @description Generates the post-festival comprehensive operational report from live state and cryptographic audit history.
+     */
+    get: operations["get_post_festival_summary_api_v1_reports_post_festival_get"];
+  };
+  "/api/v1/reports/{name}": {
+    /**
+     * Download Report
+     * @description Generates and downloads a single spec report by name (e.g. reconciliation_report.csv).
+     */
+    get: operations["download_report_api_v1_reports__name__get"];
   };
   "/api/v1/scenarios": {
     /**
@@ -1092,6 +1136,11 @@ export interface components {
       /** Warnings */
       warnings?: string[];
     };
+    /**
+     * CommandIntent
+     * @enum {string}
+     */
+    CommandIntent: "show_impact" | "find_accommodation_for_unplaced" | "affected_events_by_equipment" | "alternative_vendors_for_diet" | "list_late_arrivals" | "query" | "navigate";
     /** CommitScenarioBody */
     CommitScenarioBody: {
       /** Reason */
@@ -1238,8 +1287,8 @@ export interface components {
        */
       risk_level?: string;
     };
-    /** CreateTransferBody */
-    CreateTransferBody: {
+    /** CreateRunBody */
+    CreateRunBody: {
       /** Expected Version */
       expected_version?: number | null;
       /** Reason */
@@ -1477,6 +1526,16 @@ export interface components {
       /** Warnings */
       warnings?: string[];
     };
+    /** Envelope[ExecuteResponseData] */
+    Envelope_ExecuteResponseData_: {
+      data: components["schemas"]["ExecuteResponseData"];
+      /** Meta */
+      meta?: {
+        [key: string]: unknown;
+      };
+      /** Warnings */
+      warnings?: string[];
+    };
     /** Envelope[ImportBatchItem] */
     Envelope_ImportBatchItem_: {
       data: components["schemas"]["ImportBatchItem"];
@@ -1551,6 +1610,16 @@ export interface components {
       /** Warnings */
       warnings?: string[];
     };
+    /** Envelope[ParseResponseData] */
+    Envelope_ParseResponseData_: {
+      data: components["schemas"]["ParseResponseData"];
+      /** Meta */
+      meta?: {
+        [key: string]: unknown;
+      };
+      /** Warnings */
+      warnings?: string[];
+    };
     /** EventMutationBody */
     EventMutationBody: {
       /** Expected Version */
@@ -1566,6 +1635,53 @@ export interface components {
       payload?: {
         [key: string]: unknown;
       };
+    };
+    /** ExecuteRequest */
+    ExecuteRequest: {
+      command: components["schemas"]["StructuredCommand"];
+      /** Reason */
+      reason?: string | null;
+      /**
+       * Confirmed
+       * @default false
+       */
+      confirmed?: boolean;
+    };
+    /** ExecuteResponseData */
+    ExecuteResponseData: {
+      intent: components["schemas"]["CommandIntent"];
+      /**
+       * Status
+       * @enum {string}
+       */
+      status: "EXECUTED" | "PROPOSAL_CREATED" | "REJECTED";
+      /** Is Mutating */
+      is_mutating: boolean;
+      /** Proposal Id */
+      proposal_id?: string | null;
+      /**
+       * Approval Required
+       * @default false
+       */
+      approval_required?: boolean;
+      /** Change Set Id */
+      change_set_id?: string | null;
+      /** Result */
+      result?: {
+        [key: string]: unknown;
+      } | null;
+      /** Impact */
+      impact?: {
+        [key: string]: unknown;
+      } | null;
+      /** Dry Run Result */
+      dry_run_result?: {
+        [key: string]: unknown;
+      } | null;
+      /** Message */
+      message: string;
+      /** Warnings */
+      warnings?: string[];
     };
     /** GenerateTokenBody */
     GenerateTokenBody: {
@@ -1773,6 +1889,28 @@ export interface components {
       page_size: number;
       /** Total Pages */
       total_pages: number;
+    };
+    /** ParseRequest */
+    ParseRequest: {
+      /** Text */
+      text: string;
+      /** Context */
+      context?: {
+        [key: string]: unknown;
+      } | null;
+    };
+    /** ParseResponseData */
+    ParseResponseData: {
+      command: components["schemas"]["StructuredCommand"];
+      /** Explanation */
+      explanation: string;
+      /** Confidence */
+      confidence: number;
+      /**
+       * Parser Mode
+       * @enum {string}
+       */
+      parser_mode: "LLM" | "OFFLINE_FALLBACK";
     };
     /** ParticipantCreateBody */
     ParticipantCreateBody: {
@@ -2003,6 +2141,24 @@ export interface components {
       payload: {
         [key: string]: unknown;
       };
+    };
+    /** StructuredCommand */
+    StructuredCommand: {
+      intent: components["schemas"]["CommandIntent"];
+      /** Parameters */
+      parameters?: {
+        [key: string]: unknown;
+      };
+      /**
+       * Is Mutating
+       * @default false
+       */
+      is_mutating?: boolean;
+      /**
+       * Raw Text
+       * @default
+       */
+      raw_text?: string;
     };
     /** SyncOfflineBody */
     SyncOfflineBody: {
@@ -2797,6 +2953,68 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Parse Natural Command
+   * @description Parses natural-language text into a strict structured command schema with operator explanation.
+   */
+  parse_natural_command_api_v1_commands_parse_post: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ParseRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_ParseResponseData_"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Execute Structured Command
+   * @description Executes a structured command deterministically.
+   * - Read-only commands execute and return results immediately (HTTP 200).
+   * - Mutating commands create a dry-run proposal requiring approval (HTTP 202).
+   */
+  execute_structured_command_api_v1_commands_execute_post: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ExecuteRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_ExecuteResponseData_"];
         };
       };
       /** @description Validation Error */
@@ -4716,6 +4934,121 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+    };
+  };
+  /**
+   * List Reports
+   * @description Returns the catalog of all 20 spec Section 14 reports with access permissions and metadata.
+   */
+  list_reports_api_v1_reports_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_List_Dict_str__Any___"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Download Reports Bundle
+   * @description Generates and downloads a zip archive containing all reports authorized for the caller.
+   */
+  download_reports_bundle_api_v1_reports_bundle_zip_get: {
+    parameters: {
+      query?: {
+        /** @description Enforce role-based masking on sensitive columns */
+        mask?: boolean;
+      };
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Post Festival Summary
+   * @description Generates the post-festival comprehensive operational report from live state and cryptographic audit history.
+   */
+  get_post_festival_summary_api_v1_reports_post_festival_get: {
+    parameters: {
+      query?: {
+        /** @description Output format: 'html' or 'csv' */
+        format?: string;
+      };
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Download Report
+   * @description Generates and downloads a single spec report by name (e.g. reconciliation_report.csv).
+   */
+  download_report_api_v1_reports__name__get: {
+    parameters: {
+      query?: {
+        /** @description Enforce role-based masking on sensitive columns */
+        mask?: boolean;
+      };
+      header?: {
+        authorization?: string | null;
+      };
+      path: {
+        name: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
         };
       };
     };

@@ -1,4 +1,4 @@
-.PHONY: setup dev dev-api dev-web test lint gen-types seed reset demo clean
+.PHONY: setup dev dev-api dev-web test lint gen-types seed reset demo samples clean
 
 PYTHON ?= python
 NPM ?= npm
@@ -40,6 +40,9 @@ demo:
 	cd backend && $(PYTHON) -m app.seed reset
 	@echo "Demo ready. Launching dev-api..."
 	cd backend && uvicorn app.main:app --reload --port 8000
+
+samples:
+	cd backend && $(PYTHON) -m app.services.reports.samples
 
 clean:
 	rm -rf backend/festos.db *.db test.db scenarios/*.db
