@@ -325,3 +325,33 @@ Format:
 - **Action Required**:
   - Run database seeders to populate initial staff profiles, shifts, external properties, and transport fleet.
 
+### 2026-10-30: P2/05-accom-engine (Explainable, Deterministic Accommodation Planning Engine & API)
+- **Author**: P2 Lead
+- **Branch**: `p2/05-accom-engine`
+- **Endpoints Added**:
+  - `POST /api/v1/accommodation/plans/generate`: Generates candidate accommodation plans (A: Cohesion-First, B: Cost-First, C: Balanced) using pure 5-stage allocation pipeline.
+  - `GET /api/v1/accommodation/plans`: Lists all candidate plans, plan hashes, metrics, and budget status (`is_budget_unset`).
+  - `GET /api/v1/accommodation/plans/{id}`: Detailed plan breakdown including metrics, plan hash, parameters applied, and plain-language sacrifices summary.
+  - `GET /api/v1/accommodation/plans/compare?ids=`: Side-by-side multi-plan comparison and trade-off analysis.
+  - `GET /api/v1/accommodation/plans/{id}/shortages`: Shortage report of unplaced participants categorized by the 7-item fixed blocking reason taxonomy.
+  - `GET /api/v1/accommodation/why-not/{participant_id}`: Explainable diagnostic panel detailing primary blocking requirement, missing info, rejected rooms/properties, and counterfactual simulation.
+  - `GET /api/v1/accommodation/demand-timeline`: Rolling occupancy timeline distinguishing confirmed vs possible demand, cleaning buffers (180m), available supply, peak hour (1,601 at 30 Oct 18:00), and invalid intervals.
+  - `GET /api/v1/accommodation/rooms`: Inventory of on-campus rooms with block, floor, capacity, accessibility, and cleaning status.
+  - `GET /api/v1/accommodation/properties`: External properties with bed capacity, cost per bed-night, distance, transport availability, and verification flags.
+  - `GET /api/v1/accommodation/reports/{report_name}`: CSV downloads for `accommodation_plan_A.csv`, `accommodation_plan_B.csv`, `accommodation_plan_C.csv`, `shortage_report.csv`, `accommodation_summary.csv`, and `bed_demand_timeline.csv`.
+  - `GET /api/v1/accommodation/decision-cards/{plan_id}`: Structured `DecisionCard` object with plain-language recommendations and trade-offs.
+- **Pure Engine Modules (`app/engines/accommodation/`)**:
+  - `types.py`: Pure dataclass models (`ParticipantSnapshot`, `RoomSnapshot`, `PropertySnapshot`, `AssignmentSnapshot`, `PlanMetrics`, `PlanResult`, `TimelinePoint`, etc.).
+  - `demand.py`: Demand partitioning, stay interval validation (invalid intervals tracked and listed, never dropped silently), and rolling occupancy timeline with cleaning buffer.
+  - `rules.py`: Hard constraints (wheelchair -> accessible rooms only, ground-floor -> floor 0, manual verification needs never auto-satisfied, non-binary/unknown gender never placed in gendered blocks, minor safeguards and night transport windows per Rule 6) and 7-item blocking taxonomy.
+  - `why_not.py`: Explainable shortage diagnosis and counterfactual simulation for unplaced participants.
+  - `planner.py`: `AccommodationPlanner` executing Stages A–D, local repair pass to consolidate contingent splits, deterministic plan hashing, and CP-SAT fallback behind `ACCOM_SOLVER`.
+  - `reports.py`: CSV report generators and structured decision cards.
+- **Public Functions Added**:
+  - `services/accommodation/public.py`: `summary` (KPIs), `risks` (bed deficit, accessibility deficit, external minors), `dependents`, and `get_contingent_housing` (cross-service housing fragmentation and leader proximity query).
+- **Database Models & Seeders**:
+  - Upgraded `StayAssignment` with `explanation` JSON packet.
+  - Upgraded `AccommodationPlan` with deterministic `plan_hash`, `sacrifices_summary`, `parameters_applied`, and `shortages_data`.
+  - Added Order 30 seeder (`app.seed.accommodation`) seeding 200 on-campus rooms (710 beds) and 6 external properties (740 beds).
+
+
