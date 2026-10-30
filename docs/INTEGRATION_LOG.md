@@ -325,3 +325,36 @@ Format:
 - **Action Required**:
   - Run database seeders to populate initial staff profiles, shifts, external properties, and transport fleet.
 
+### 2026-10-31: P1/16-dashboard-sim (Central Control Dashboard, Risk Heatmap, Decision Log, & Scenario Simulator)
+- **Author**: P1 Lead
+- **Branch**: `p1/16-dashboard-sim`
+- **Endpoints Added**:
+  - `GET /api/v1/dashboard/metrics`: Aggregates every module's `public.summary()` into the canonical festival metrics list (participants, accommodation occupancy, available beds, unplaced, sessions, open conflicts, logistics equipment, merchandise, vendor status, food coverage gaps, staff availability, open incidents, approvals, overrides). Features 15-second TTL cache with event-bus-driven invalidation and role-aware filtering (Volunteer receives no sensitive governance/incident data).
+  - `GET /api/v1/dashboard/attention`: Priority attention queue gathering `public.risks()` across all modules, deduplicating, and ranking strictly by $\text{Severity} \times \text{Urgency} \times \text{People Affected}$ using `app.core.scoring`. Every alert carries a direct actionable route and API endpoint.
+  - `GET /api/v1/dashboard/heatmap`: 2D Severity ($1\text{--}4$) $\times$ Time-to-Impact Urgency ($1\text{--}5$) risk heatmap matrix with people affected, uncertainty, criticality, and top contributors per cell.
+  - `GET /api/v1/decisions`: List and filter decision cards by module, approver, and date range.
+  - `GET /api/v1/decisions/{id}`: Detailed DecisionCard with transparent reason logging and link to P3 Override register without data duplication.
+  - `GET /api/v1/decisions/{id}/why`: One-click explainability breakdown for decisions (hard satisfied, soft relaxed, alternatives rejected, cost & people impact).
+  - `POST /api/v1/decisions`: Creates and persists a standardized DecisionCard.
+  - `POST /api/v1/scenarios`: Forks live database into an isolated sandbox (`scenarios/<id>.db`) using SQLite backup API; enforces retention limits (max 10 active, 48h TTL).
+  - `GET /api/v1/scenarios`: Lists active scenarios and metadata.
+  - `GET /api/v1/scenarios/{id}`: Returns scenario details and recorded actions.
+  - `POST /api/v1/scenarios/{id}/actions`: Executes mutations strictly within the sandbox DB via `ChangeService` and logs recorded action.
+  - `GET /api/v1/scenarios/{id}/compare`: Returns metric diffs vs live (beds, unplaced, cost, conflicts, risks).
+  - `POST /api/v1/scenarios/{id}/commit`: Replays recorded actions onto live database through `ChangeService` after approval; performs rebase check warning if live mutated since fork.
+  - `POST /api/v1/scenarios/{id}/discard`: Closes engine and permanently purges sandbox DB file.
+  - `POST /api/v1/scenarios/{id}/simulate-incident`: Adapter allowing incident drills (Prompt 14) to simulate disruptions in a sandbox.
+- **Public Functions Added**:
+  - `services/dashboard/public.py`: `summary`, `risks` (stale metrics cache, uncommitted scenarios awaiting decision), `dependents`.
+  - `services/decisions/public.py`: `summary`, `risks` (pending reviews), `dependents`.
+  - `services/scenarios/public.py`: `summary`, `risks` (stale sandbox forks), `dependents`.
+  - `core/decision_log.py`: `add(...)` helper function for standardized DecisionCard creation across modules.
+  - `core/db.py`: `close_scenario_engine(scenario_id)` to release SQLite file locks.
+- **Breaking Changes / Schema Migrations**:
+  - Added `decision_card` table in `app.models.decisions`.
+  - Added `forked_at`, `live_changeset_count_at_fork`, and `recorded_actions` to `Scenario` model.
+  - Registered `CloseHostelHandler`, `UpdateRoomHandler`, and `IncidentSimulateHandler` as `ChangeHandler` subclasses in `app.core.change_service`.
+- **Action Required**:
+  - None; new tables are automatically created on startup.
+
+

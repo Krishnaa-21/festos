@@ -58,6 +58,14 @@ def get_engine(database_url: Optional[str] = None):
         SQLModel.metadata.create_all(_engines[url])
     return _engines[url]
 
+def close_scenario_engine(scenario_id: str) -> None:
+    """Closes and unregisters a scenario SQLite engine so file handles can be released."""
+    scenario_key = f"scenario_{scenario_id}"
+    if scenario_key in _engines:
+        engine = _engines.pop(scenario_key)
+        engine.dispose()
+
+
 @contextmanager
 def use_scenario(scenario_id: Optional[str]):
     """Context manager to redirect DB sessions to scenarios/<scenario_id>.db"""

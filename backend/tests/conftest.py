@@ -1,8 +1,10 @@
 # OWNER: P1
+import app.models  # noqa: F401
 import pytest
 from app.core.bus import clear_subscribers
 from app.core.clock import set_demo_time
 from app.schemas.common import Actor, Role
+from sqlalchemy.pool import StaticPool
 from sqlmodel import Session, SQLModel, create_engine
 
 
@@ -15,10 +17,16 @@ def clean_test_env():
     set_demo_time(None)
     clear_subscribers()
 
+
 @pytest.fixture
 def session():
     """Provide an isolated, in-memory SQLite database session for testing."""
-    engine = create_engine("sqlite:///:memory:", echo=False, connect_args={"check_same_thread": False})
+    engine = create_engine(
+        "sqlite:///:memory:",
+        echo=False,
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
     SQLModel.metadata.create_all(engine)
     with Session(engine) as s:
         yield s

@@ -14,6 +14,7 @@ from app.models.audit import (
     User,
 )
 from app.models.change import Assumption, ChangeSet, IdempotencyKey, Scenario
+from app.models.decisions import DecisionCard
 from app.models.events import (
     Conflict,
     Event,
@@ -99,4 +100,5 @@ __all__ = [
     "BreakGlassGrant",
     "Approval",
     "Override",
+    "DecisionCard",
 ]
