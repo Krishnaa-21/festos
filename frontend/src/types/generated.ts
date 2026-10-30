@@ -1238,8 +1238,8 @@ export interface components {
        */
       risk_level?: string;
     };
-    /** CreateRunBody */
-    CreateRunBody: {
+    /** CreateTransferBody */
+    CreateTransferBody: {
       /** Expected Version */
       expected_version?: number | null;
       /** Reason */

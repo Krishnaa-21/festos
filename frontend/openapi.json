@@ -3041,6 +3041,28 @@
               "title": "X-Actor-Role"
             }
           },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/imports": {
+      "post": {
+        "tags": [
+          "Imports"
+        ],
+        "summary": "Upload Import File",
+        "description": "Uploads and ingests a raw CSV file into raw_record, staging, and quarantine.",
+        "operationId": "upload_import_file_api_v1_imports_post",
+        "parameters": [
           {
             "name": "x-actor-id",
             "in": "header",
@@ -4131,6 +4153,31 @@
         "description": "Complete an in-transit transfer.",
         "operationId": "complete_transfer_api_v1_logistics_transfers__id__complete_post",
         "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          },
           {
             "name": "id",
             "in": "path",
