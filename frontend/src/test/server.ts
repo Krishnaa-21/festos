@@ -2661,7 +2661,8 @@ export const handlers = [
 ];
 
 import { incidentHandlers } from "./incidents_msw";
+import { insightHandlers } from "./insight_msw";
 
-export const server = setupServer(...handlers, ...incidentHandlers);
+export const server = setupServer(...handlers, ...incidentHandlers, ...insightHandlers);
 
 

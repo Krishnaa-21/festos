@@ -19,6 +19,8 @@ export const NAV_GROUPS = [
   "Scenario Simulator",
   "Fest Pre-Mortem",
   "Unknowns Burn-down",
+  "Forecasting",
+  "Decisions",
   "AI Command Center",
   "Data Reconciliation",
   "Reports",
