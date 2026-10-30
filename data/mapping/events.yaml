@@ -1,0 +1,33 @@
+file: events.csv
+entity: event
+target_table: event
+id_prefix: evt_
+primary_key: id
+columns:
+  event_id:
+    canonical: id
+    synonyms: [event_id, eid, code]
+  event_name:
+    canonical: name
+    synonyms: [event_name, title, name]
+  type:
+    canonical: solo_team
+    synonyms: [type, event_type, format]
+    normalizer: event_type
+  rounds:
+    canonical: rounds_text
+    synonyms: [rounds, round_structure, format_rounds]
+  duration_minutes:
+    canonical: duration_min
+    synonyms: [duration_minutes, duration_min, duration]
+    type: integer
+  venue_requirements:
+    canonical: venue_requirements
+    synonyms: [venue_requirements, requirements_venue, room_type]
+  equipment_needs:
+    canonical: equipment_needs
+    synonyms: [equipment_needs, equipment, gear_needed]
+  volunteers_needed:
+    canonical: volunteers_needed
+    synonyms: [volunteers_needed, volunteer_count, staff_needed]
+    type: integer

@@ -36,6 +36,17 @@ class ChangeResult(BaseModel):
     recommendations: List[str] = Field(default_factory=list)
     warnings: List[str] = Field(default_factory=list)
 
+    @property
+    def success(self) -> bool:
+        return self.status == "APPLIED"
+
+    @property
+    def error(self) -> Optional[str]:
+        if self.violations:
+            return "; ".join(v.message for v in self.violations)
+        return None
+
+
 class ChangeHandler:
     """Base class/interface for action handlers."""
     def validate(self, req: ChangeRequest, session: Session) -> List[Violation]:
