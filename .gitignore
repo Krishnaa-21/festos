@@ -72,3 +72,4 @@ data/golden/*
 !data/golden/.gitkeep
 data/snapshots/*
 !data/snapshots/.gitkeep
+!data/snapshots/demo.db

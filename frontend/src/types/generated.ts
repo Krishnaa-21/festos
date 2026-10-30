@@ -17,6 +17,97 @@ export interface paths {
     /** Post Create Example Item */
     post: operations["post_create_example_item_api_v1__example_items_post"];
   };
+  "/api/v1/accommodation/generate-plan": {
+    /**
+     * Generate Candidate Plans
+     * @description Generate candidate accommodation plans (A, B, C) using pure staged allocation engine.
+     */
+    post: operations["generate_candidate_plans_api_v1_accommodation_generate_plan_post"];
+  };
+  "/api/v1/accommodation/plans/generate": {
+    /**
+     * Generate Candidate Plans
+     * @description Generate candidate accommodation plans (A, B, C) using pure staged allocation engine.
+     */
+    post: operations["generate_candidate_plans_api_v1_accommodation_plans_generate_post"];
+  };
+  "/api/v1/accommodation/plans": {
+    /**
+     * List Candidate Plans
+     * @description Retrieve all candidate accommodation plans and budget status.
+     */
+    get: operations["list_candidate_plans_api_v1_accommodation_plans_get"];
+  };
+  "/api/v1/accommodation/plans/compare": {
+    /**
+     * Compare Candidate Plans
+     * @description Side-by-side comparison of plan metrics, trade-offs, and plain-language sacrifices.
+     */
+    get: operations["compare_candidate_plans_api_v1_accommodation_plans_compare_get"];
+  };
+  "/api/v1/accommodation/plans/{id}": {
+    /**
+     * Get Plan Detail
+     * @description Retrieve details, metrics, and parameters of a specific plan.
+     */
+    get: operations["get_plan_detail_api_v1_accommodation_plans__id__get"];
+  };
+  "/api/v1/accommodation/shortages": {
+    /**
+     * Get Shortages
+     * @description Retrieve unplaced participants grouped by the 7-item fixed blocking reason taxonomy.
+     */
+    get: operations["get_shortages_api_v1_accommodation_shortages_get"];
+  };
+  "/api/v1/accommodation/plans/{id}/shortages": {
+    /**
+     * Get Shortages
+     * @description Retrieve unplaced participants grouped by the 7-item fixed blocking reason taxonomy.
+     */
+    get: operations["get_shortages_api_v1_accommodation_plans__id__shortages_get"];
+  };
+  "/api/v1/accommodation/why-not/{participant_id}": {
+    /**
+     * Get Why Not Diagnosis
+     * @description Explainable diagnostic panel detailing why a participant cannot be accommodated and counterfactuals.
+     */
+    get: operations["get_why_not_diagnosis_api_v1_accommodation_why_not__participant_id__get"];
+  };
+  "/api/v1/accommodation/demand-timeline": {
+    /**
+     * Get Bed Demand Timeline View
+     * @description Bed-demand timeline evaluating rolling occupancy, confirmed demand, possible demand, and peak hour.
+     */
+    get: operations["get_bed_demand_timeline_view_api_v1_accommodation_demand_timeline_get"];
+  };
+  "/api/v1/accommodation/rooms": {
+    /**
+     * List On Campus Rooms
+     * @description List on-campus rooms and beds with block, floor, accessibility, capacity, and cleaning status.
+     */
+    get: operations["list_on_campus_rooms_api_v1_accommodation_rooms_get"];
+  };
+  "/api/v1/accommodation/properties": {
+    /**
+     * List External Properties
+     * @description List external properties with beds, cost per bed-night, distance, transport availability, and verification flags.
+     */
+    get: operations["list_external_properties_api_v1_accommodation_properties_get"];
+  };
+  "/api/v1/accommodation/reports/{report_name}": {
+    /**
+     * Download Accommodation Report
+     * @description Download accommodation CSV reports (accommodation_plan_A/B/C.csv, shortage_report.csv, accommodation_summary.csv, bed_demand_timeline.csv).
+     */
+    get: operations["download_accommodation_report_api_v1_accommodation_reports__report_name__get"];
+  };
+  "/api/v1/accommodation/decision-cards/{plan_id}": {
+    /**
+     * Get Plan Decision Card
+     * @description Get structured DecisionCard for a plan.
+     */
+    get: operations["get_plan_decision_card_api_v1_accommodation_decision_cards__plan_id__get"];
+  };
   "/api/v1/approvals": {
     /**
      * List Approvals
@@ -159,6 +250,20 @@ export interface paths {
      */
     post: operations["post_break_glass_api_v1_auth_break_glass_post"];
   };
+  "/api/v1/checkin/board": {
+    /**
+     * Get Checkin Board
+     * @description Arrival desk board summarizing arrivals, checkin statuses, and pending counts.
+     */
+    get: operations["get_checkin_board_api_v1_checkin_board_get"];
+  };
+  "/api/v1/checkin": {
+    /**
+     * Get Checkin Board
+     * @description Arrival desk board summarizing arrivals, checkin statuses, and pending counts.
+     */
+    get: operations["get_checkin_board_api_v1_checkin_get"];
+  };
   "/api/v1/commands/parse": {
     /**
      * Parse Natural Command
@@ -174,6 +279,13 @@ export interface paths {
      * - Mutating commands create a dry-run proposal requiring approval (HTTP 202).
      */
     post: operations["execute_structured_command_api_v1_commands_execute_post"];
+  };
+  "/api/v1/commands": {
+    /**
+     * List Command Intents
+     * @description Lists supported natural-language command intents and their schema definitions.
+     */
+    get: operations["list_command_intents_api_v1_commands_get"];
   };
   "/api/v1/contingents": {
     /**
@@ -296,6 +408,69 @@ export interface paths {
     /** Extend Event Duration */
     post: operations["extend_event_duration_api_v1_events__event_id__extend_duration_post"];
   };
+  "/api/v1/finance/summary": {
+    /**
+     * Get Finance Summary
+     * @description Returns festival financial overview: budget ceilings, external accommodation commitments, and cost breakdown.
+     */
+    get: operations["get_finance_summary_api_v1_finance_summary_get"];
+  };
+  "/api/v1/finance": {
+    /**
+     * Get Finance Summary
+     * @description Returns festival financial overview: budget ceilings, external accommodation commitments, and cost breakdown.
+     */
+    get: operations["get_finance_summary_api_v1_finance_get"];
+  };
+  "/api/v1/food/coverage": {
+    /**
+     * Get Food Coverage
+     * @description Returns dietary coverage matrix across categories, meal slots, and venues.
+     */
+    get: operations["get_food_coverage_api_v1_food_coverage_get"];
+  };
+  "/api/v1/food": {
+    /**
+     * Get Food Coverage
+     * @description Returns dietary coverage matrix across categories, meal slots, and venues.
+     */
+    get: operations["get_food_coverage_api_v1_food_get"];
+  };
+  "/api/v1/food/compliance": {
+    /**
+     * Get Food Compliance
+     * @description List food safety and dietary compliance issues and expiring certifications.
+     */
+    get: operations["get_food_compliance_api_v1_food_compliance_get"];
+  };
+  "/api/v1/forecasting/crowd": {
+    /**
+     * Get Crowd Forecasting
+     * @description Predictive analytics and crowd flow forecasting across festival venues.
+     */
+    get: operations["get_crowd_forecasting_api_v1_forecasting_crowd_get"];
+  };
+  "/api/v1/forecasting": {
+    /**
+     * Get Crowd Forecasting
+     * @description Predictive analytics and crowd flow forecasting across festival venues.
+     */
+    get: operations["get_crowd_forecasting_api_v1_forecasting_get"];
+  };
+  "/api/v1/impact/blast-radius": {
+    /**
+     * Get Blast Radius
+     * @description Calculates cross-module downstream blast radius of a change on entity_type:entity_id.
+     */
+    get: operations["get_blast_radius_api_v1_impact_blast_radius_get"];
+  };
+  "/api/v1/impact": {
+    /**
+     * Get Blast Radius
+     * @description Calculates cross-module downstream blast radius of a change on entity_type:entity_id.
+     */
+    get: operations["get_blast_radius_api_v1_impact_get"];
+  };
   "/api/v1/imports": {
     /**
      * Get Import History
@@ -328,6 +503,18 @@ export interface paths {
      * @description Promotes staged records to canonical tables through ChangeService handler imports.promote.
      */
     post: operations["post_promote_import_batch_api_v1_imports__id__promote_post"];
+  };
+  "/api/v1/incidents": {
+    /**
+     * List Incidents
+     * @description List operational incidents.
+     */
+    get: operations["list_incidents_api_v1_incidents_get"];
+    /**
+     * Create Incident
+     * @description Log an incident via ChangeService.
+     */
+    post: operations["create_incident_api_v1_incidents_post"];
   };
   "/api/v1/logistics/items": {
     /**
@@ -481,6 +668,25 @@ export interface paths {
      */
     post: operations["sync_offline_api_v1_merchandise_sync_post"];
   };
+  "/api/v1/notifications/drafts": {
+    /**
+     * List Notifications
+     * @description List operational notification drafts.
+     */
+    get: operations["list_notifications_api_v1_notifications_drafts_get"];
+    /**
+     * Draft Notification
+     * @description Draft an operational notification via ChangeService.
+     */
+    post: operations["draft_notification_api_v1_notifications_drafts_post"];
+  };
+  "/api/v1/notifications": {
+    /**
+     * List Notifications
+     * @description List operational notification drafts.
+     */
+    get: operations["list_notifications_api_v1_notifications_get"];
+  };
   "/api/v1/overrides": {
     /**
      * List Overrides
@@ -544,6 +750,20 @@ export interface paths {
      * @description Retrieve chronological audit events and mutation history for participant.
      */
     get: operations["get_participant_timeline_api_v1_participants__id__timeline_get"];
+  };
+  "/api/v1/premortem/resilience": {
+    /**
+     * Get Premortem Analysis
+     * @description Predictive festival resilience simulator and pre-mortem vulnerability rankings.
+     */
+    get: operations["get_premortem_analysis_api_v1_premortem_resilience_get"];
+  };
+  "/api/v1/premortem": {
+    /**
+     * Get Premortem Analysis
+     * @description Predictive festival resilience simulator and pre-mortem vulnerability rankings.
+     */
+    get: operations["get_premortem_analysis_api_v1_premortem_get"];
   };
   "/api/v1/reconciliation/waterfall": {
     /**
@@ -926,6 +1146,13 @@ export interface paths {
      */
     get: operations["get_verification_history_for_field_api_v1_unknowns_history__entity_type___entity_id___field__get"];
   };
+  "/api/v1/vendors": {
+    /**
+     * List Vendors
+     * @description List festival food vendors with hygiene certificate status and capacity.
+     */
+    get: operations["list_vendors_api_v1_vendors_get"];
+  };
   "/api/v1/venues": {
     /** Get All Venues */
     get: operations["get_all_venues_api_v1_venues_get"];
@@ -956,6 +1183,52 @@ export type webhooks = Record<string, never>;
 
 export interface components {
   schemas: {
+    /** AccommodationPlanSchema */
+    AccommodationPlanSchema: {
+      /** Plan Id */
+      plan_id: string;
+      /** Kind */
+      kind: string;
+      /** Name */
+      name: string;
+      /** Status */
+      status: string;
+      /** On Campus Placed */
+      on_campus_placed: number;
+      /** External Placed */
+      external_placed: number;
+      /** Unplaced Count */
+      unplaced_count: number;
+      /** Contingent Splits */
+      contingent_splits: number;
+      /** Total Cost Inr */
+      total_cost_inr: number;
+      /** Safety Flags Count */
+      safety_flags_count: number;
+      /** Accessibility Issues Count */
+      accessibility_issues_count: number;
+      /** Relaxed Constraints Count */
+      relaxed_constraints_count: number;
+      /** Minors External Count */
+      minors_external_count: number;
+      /** Plan Hash */
+      plan_hash?: string | null;
+      /** Sacrifices Summary */
+      sacrifices_summary?: string | null;
+      /** Parameters Applied */
+      parameters_applied?: {
+        [key: string]: unknown;
+      } | null;
+      /** Created At */
+      created_at: string;
+    };
+    /** AlternativeRejected */
+    AlternativeRejected: {
+      /** Option */
+      option: string;
+      /** Why */
+      why: string;
+    };
     /** ApproveGuardianBody */
     ApproveGuardianBody: {
       /** Expected Version */
@@ -1258,6 +1531,25 @@ export interface components {
       /** Expected Version */
       expected_version?: number | null;
     };
+    /** CreateIncidentBody */
+    CreateIncidentBody: {
+      /** Title */
+      title: string;
+      /**
+       * Severity
+       * @default 2
+       */
+      severity?: number;
+      /**
+       * Category
+       * @default GENERAL
+       */
+      category?: string;
+      /** Description */
+      description: string;
+      /** Reason */
+      reason?: string | null;
+    };
     /** CreateOverrideRequest */
     CreateOverrideRequest: {
       /**
@@ -1435,6 +1727,38 @@ export interface components {
       /** Operational Impact */
       operational_impact: string;
     };
+    /** DecisionCard */
+    DecisionCard: {
+      /** Id */
+      id: string;
+      /** Subject */
+      subject: string;
+      /** Recommendation */
+      recommendation: string;
+      /**
+       * Hard Satisfied
+       * @default true
+       */
+      hard_satisfied?: boolean;
+      /** Soft Relaxed */
+      soft_relaxed?: components["schemas"]["SoftRelaxed"][];
+      /** Alternatives Rejected */
+      alternatives_rejected?: components["schemas"]["AlternativeRejected"][];
+      /** Cost Impact */
+      cost_impact?: number | null;
+      /**
+       * People Affected
+       * @default 0
+       */
+      people_affected?: number;
+      /** Approved By */
+      approved_by?: string | null;
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string;
+    };
     /** DecisionRequest */
     DecisionRequest: {
       /**
@@ -1442,6 +1766,45 @@ export interface components {
        * @description Mandatory operational justification
        */
       reason: string;
+    };
+    /** DemandTimelineResponseData */
+    DemandTimelineResponseData: {
+      /** Total Participants Requesting */
+      total_participants_requesting: number;
+      /** Valid Intervals Included */
+      valid_intervals_included: number;
+      /** Invalid Intervals Count */
+      invalid_intervals_count: number;
+      /** Invalid Intervals */
+      invalid_intervals: {
+          [key: string]: unknown;
+        }[];
+      /** Confirmed Demand Count */
+      confirmed_demand_count: number;
+      /** Possible Demand Count */
+      possible_demand_count: number;
+      /** Peak Simultaneous Demand */
+      peak_simultaneous_demand: number;
+      /** Peak Time */
+      peak_time: string;
+      /** Timeline */
+      timeline: components["schemas"]["TimelinePointSchema"][];
+    };
+    /** DraftNotificationBody */
+    DraftNotificationBody: {
+      /**
+       * Channel
+       * @default SMS
+       */
+      channel?: string;
+      /** Recipient */
+      recipient: string;
+      /** Subject */
+      subject?: string | null;
+      /** Body */
+      body: string;
+      /** Reason */
+      reason?: string | null;
     };
     /** EntityRef */
     EntityRef: {
@@ -1506,6 +1869,26 @@ export interface components {
     /** Envelope[DataQualityReport] */
     Envelope_DataQualityReport_: {
       data: components["schemas"]["DataQualityReport"];
+      /** Meta */
+      meta?: {
+        [key: string]: unknown;
+      };
+      /** Warnings */
+      warnings?: string[];
+    };
+    /** Envelope[DecisionCard] */
+    Envelope_DecisionCard_: {
+      data: components["schemas"]["DecisionCard"];
+      /** Meta */
+      meta?: {
+        [key: string]: unknown;
+      };
+      /** Warnings */
+      warnings?: string[];
+    };
+    /** Envelope[DemandTimelineResponseData] */
+    Envelope_DemandTimelineResponseData_: {
+      data: components["schemas"]["DemandTimelineResponseData"];
       /** Meta */
       meta?: {
         [key: string]: unknown;
@@ -1620,6 +2003,36 @@ export interface components {
       /** Warnings */
       warnings?: string[];
     };
+    /** Envelope[PlansResponseData] */
+    Envelope_PlansResponseData_: {
+      data: components["schemas"]["PlansResponseData"];
+      /** Meta */
+      meta?: {
+        [key: string]: unknown;
+      };
+      /** Warnings */
+      warnings?: string[];
+    };
+    /** Envelope[ShortagesResponseData] */
+    Envelope_ShortagesResponseData_: {
+      data: components["schemas"]["ShortagesResponseData"];
+      /** Meta */
+      meta?: {
+        [key: string]: unknown;
+      };
+      /** Warnings */
+      warnings?: string[];
+    };
+    /** Envelope[WhyNotResponseData] */
+    Envelope_WhyNotResponseData_: {
+      data: components["schemas"]["WhyNotResponseData"];
+      /** Meta */
+      meta?: {
+        [key: string]: unknown;
+      };
+      /** Warnings */
+      warnings?: string[];
+    };
     /** EventMutationBody */
     EventMutationBody: {
       /** Expected Version */
@@ -1682,6 +2095,49 @@ export interface components {
       message: string;
       /** Warnings */
       warnings?: string[];
+    };
+    /** GeneratePlanParams */
+    GeneratePlanParams: {
+      /**
+       * Cleaning Buffer Minutes
+       * @default 180
+       */
+      cleaning_buffer_minutes?: number;
+      /**
+       * Max Distance Km
+       * @default 15
+       */
+      max_distance_km?: number;
+      /**
+       * Solver Timeout Sec
+       * @default 10
+       */
+      solver_timeout_sec?: number;
+      /** Weights */
+      weights?: {
+        [key: string]: number;
+      } | null;
+      /**
+       * Allow Split Contingents
+       * @default true
+       */
+      allow_split_contingents?: boolean;
+    };
+    /** GeneratePlanRequest */
+    GeneratePlanRequest: {
+      /** Kinds */
+      kinds?: string[];
+      params?: components["schemas"]["GeneratePlanParams"] | null;
+      /** Kind */
+      kind?: string | null;
+      /** Cleaning Buffer Minutes */
+      cleaning_buffer_minutes?: number | null;
+      /** Max Distance Km */
+      max_distance_km?: number | null;
+      /** Weights */
+      weights?: {
+        [key: string]: number;
+      } | null;
     };
     /** GenerateTokenBody */
     GenerateTokenBody: {
@@ -1960,6 +2416,18 @@ export interface components {
         [key: string]: unknown;
       };
     };
+    /** PlansResponseData */
+    PlansResponseData: {
+      /** Plans */
+      plans: components["schemas"]["AccommodationPlanSchema"][];
+      /** Budget Ceiling Inr */
+      budget_ceiling_inr?: number | null;
+      /**
+       * Is Budget Unset
+       * @default true
+       */
+      is_budget_unset?: boolean;
+    };
     /** QuarantineIssueItem */
     QuarantineIssueItem: {
       /** Id */
@@ -2112,6 +2580,30 @@ export interface components {
      * @enum {integer}
      */
     Severity: 1 | 2 | 3 | 4;
+    /** ShortageGroupSchema */
+    ShortageGroupSchema: {
+      /** Reason Code */
+      reason_code: string;
+      /** Title */
+      title: string;
+      /** Count */
+      count: number;
+      /** Description */
+      description: string;
+      /** Affected Contingents */
+      affected_contingents: string[];
+      /** Criticality */
+      criticality: string;
+    };
+    /** ShortagesResponseData */
+    ShortagesResponseData: {
+      /** Total Unplaced */
+      total_unplaced: number;
+      /** Grouped By Reason */
+      grouped_by_reason: components["schemas"]["ShortageGroupSchema"][];
+      /** Unplaced Items */
+      unplaced_items: components["schemas"]["UnplacedItemSchema"][];
+    };
     /** SimulateIncidentBody */
     SimulateIncidentBody: {
       /** Incident Type */
@@ -2125,6 +2617,13 @@ export interface components {
       severity?: number;
       /** Details */
       details?: string | null;
+    };
+    /** SoftRelaxed */
+    SoftRelaxed: {
+      /** Constraint */
+      constraint: string;
+      /** Reason */
+      reason: string;
     };
     /** StocktakeAdjustBody */
     StocktakeAdjustBody: {
@@ -2167,6 +2666,19 @@ export interface components {
           [key: string]: unknown;
         }[];
     };
+    /** TimelinePointSchema */
+    TimelinePointSchema: {
+      /** Timestamp */
+      timestamp: string;
+      /** Confirmed Demand */
+      confirmed_demand: number;
+      /** Possible Demand */
+      possible_demand: number;
+      /** Cleaning Beds */
+      cleaning_beds: number;
+      /** Available Supply */
+      available_supply: number;
+    };
     /** TokenConfirmBody */
     TokenConfirmBody: {
       /** Value */
@@ -2197,6 +2709,29 @@ export interface components {
        * @default false
        */
       dry_run?: boolean;
+    };
+    /** UnplacedItemSchema */
+    UnplacedItemSchema: {
+      /** Participant Id */
+      participant_id: string;
+      /** Name */
+      name: string;
+      /** Contingent Id */
+      contingent_id: string;
+      /** College */
+      college: string;
+      /** Blocking Reason */
+      blocking_reason: string;
+      /** Accessibility Needed */
+      accessibility_needed: boolean;
+      /** Housing Preference */
+      housing_preference: string;
+      /** Gender */
+      gender: string;
+      /** Arrival At */
+      arrival_at?: string | null;
+      /** Departure At */
+      departure_at?: string | null;
     };
     /** UpdateAssumptionsBody */
     UpdateAssumptionsBody: {
@@ -2303,6 +2838,37 @@ export interface components {
        */
       return_to_awaiting_inspection?: boolean;
     };
+    /** WhyNotResponseData */
+    WhyNotResponseData: {
+      /** Participant Id */
+      participant_id: string;
+      /** Name */
+      name: string;
+      /** Contingent Id */
+      contingent_id: string;
+      /** Plan Id */
+      plan_id: string;
+      /** Blocking Requirement */
+      blocking_requirement: string;
+      /** Blocking Reason Code */
+      blocking_reason_code: string;
+      /** Missing Information */
+      missing_information: string;
+      /** Rejected Options */
+      rejected_options: {
+          [key: string]: string;
+        }[];
+      /** Counterfactual Impact */
+      counterfactual_impact: string;
+      /** Counterfactual Runs */
+      counterfactual_runs: {
+          [key: string]: unknown;
+        }[];
+      /** Verification Target */
+      verification_target: {
+        [key: string]: string;
+      };
+    };
   };
   responses: never;
   parameters: never;
@@ -2357,6 +2923,370 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["Envelope_ChangeResult_"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Generate Candidate Plans
+   * @description Generate candidate accommodation plans (A, B, C) using pure staged allocation engine.
+   */
+  generate_candidate_plans_api_v1_accommodation_generate_plan_post: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["GeneratePlanRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_PlansResponseData_"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Generate Candidate Plans
+   * @description Generate candidate accommodation plans (A, B, C) using pure staged allocation engine.
+   */
+  generate_candidate_plans_api_v1_accommodation_plans_generate_post: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["GeneratePlanRequest"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_PlansResponseData_"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * List Candidate Plans
+   * @description Retrieve all candidate accommodation plans and budget status.
+   */
+  list_candidate_plans_api_v1_accommodation_plans_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_PlansResponseData_"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Compare Candidate Plans
+   * @description Side-by-side comparison of plan metrics, trade-offs, and plain-language sacrifices.
+   */
+  compare_candidate_plans_api_v1_accommodation_plans_compare_get: {
+    parameters: {
+      query?: {
+        /** @description Comma-separated plan IDs or kinds to compare (e.g. A,B,C) */
+        ids?: string | null;
+      };
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Plan Detail
+   * @description Retrieve details, metrics, and parameters of a specific plan.
+   */
+  get_plan_detail_api_v1_accommodation_plans__id__get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Shortages
+   * @description Retrieve unplaced participants grouped by the 7-item fixed blocking reason taxonomy.
+   */
+  get_shortages_api_v1_accommodation_shortages_get: {
+    parameters: {
+      query?: {
+        id?: string | null;
+        plan_id?: string | null;
+      };
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_ShortagesResponseData_"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Shortages
+   * @description Retrieve unplaced participants grouped by the 7-item fixed blocking reason taxonomy.
+   */
+  get_shortages_api_v1_accommodation_plans__id__shortages_get: {
+    parameters: {
+      query?: {
+        plan_id?: string | null;
+      };
+      header?: {
+        authorization?: string | null;
+      };
+      path: {
+        id: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_ShortagesResponseData_"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Why Not Diagnosis
+   * @description Explainable diagnostic panel detailing why a participant cannot be accommodated and counterfactuals.
+   */
+  get_why_not_diagnosis_api_v1_accommodation_why_not__participant_id__get: {
+    parameters: {
+      query?: {
+        plan_id?: string | null;
+      };
+      header?: {
+        authorization?: string | null;
+      };
+      path: {
+        participant_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_WhyNotResponseData_"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Bed Demand Timeline View
+   * @description Bed-demand timeline evaluating rolling occupancy, confirmed demand, possible demand, and peak hour.
+   */
+  get_bed_demand_timeline_view_api_v1_accommodation_demand_timeline_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_DemandTimelineResponseData_"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * List On Campus Rooms
+   * @description List on-campus rooms and beds with block, floor, accessibility, capacity, and cleaning status.
+   */
+  list_on_campus_rooms_api_v1_accommodation_rooms_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * List External Properties
+   * @description List external properties with beds, cost per bed-night, distance, transport availability, and verification flags.
+   */
+  list_external_properties_api_v1_accommodation_properties_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Download Accommodation Report
+   * @description Download accommodation CSV reports (accommodation_plan_A/B/C.csv, shortage_report.csv, accommodation_summary.csv, bed_demand_timeline.csv).
+   */
+  download_accommodation_report_api_v1_accommodation_reports__report_name__get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+      path: {
+        report_name: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Plan Decision Card
+   * @description Get structured DecisionCard for a plan.
+   */
+  get_plan_decision_card_api_v1_accommodation_decision_cards__plan_id__get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+      path: {
+        plan_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_DecisionCard_"];
         };
       };
       /** @description Validation Error */
@@ -2964,6 +3894,56 @@ export interface operations {
     };
   };
   /**
+   * Get Checkin Board
+   * @description Arrival desk board summarizing arrivals, checkin statuses, and pending counts.
+   */
+  get_checkin_board_api_v1_checkin_board_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Checkin Board
+   * @description Arrival desk board summarizing arrivals, checkin statuses, and pending counts.
+   */
+  get_checkin_board_api_v1_checkin_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
    * Parse Natural Command
    * @description Parses natural-language text into a strict structured command schema with operator explanation.
    */
@@ -3015,6 +3995,31 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["Envelope_ExecuteResponseData_"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * List Command Intents
+   * @description Lists supported natural-language command intents and their schema definitions.
+   */
+  list_command_intents_api_v1_commands_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
         };
       };
       /** @description Validation Error */
@@ -3647,6 +4652,243 @@ export interface operations {
     };
   };
   /**
+   * Get Finance Summary
+   * @description Returns festival financial overview: budget ceilings, external accommodation commitments, and cost breakdown.
+   */
+  get_finance_summary_api_v1_finance_summary_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Finance Summary
+   * @description Returns festival financial overview: budget ceilings, external accommodation commitments, and cost breakdown.
+   */
+  get_finance_summary_api_v1_finance_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Food Coverage
+   * @description Returns dietary coverage matrix across categories, meal slots, and venues.
+   */
+  get_food_coverage_api_v1_food_coverage_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Food Coverage
+   * @description Returns dietary coverage matrix across categories, meal slots, and venues.
+   */
+  get_food_coverage_api_v1_food_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Food Compliance
+   * @description List food safety and dietary compliance issues and expiring certifications.
+   */
+  get_food_compliance_api_v1_food_compliance_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Crowd Forecasting
+   * @description Predictive analytics and crowd flow forecasting across festival venues.
+   */
+  get_crowd_forecasting_api_v1_forecasting_crowd_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Crowd Forecasting
+   * @description Predictive analytics and crowd flow forecasting across festival venues.
+   */
+  get_crowd_forecasting_api_v1_forecasting_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Blast Radius
+   * @description Calculates cross-module downstream blast radius of a change on entity_type:entity_id.
+   */
+  get_blast_radius_api_v1_impact_blast_radius_get: {
+    parameters: {
+      query?: {
+        /** @description Entity type: venue, hostel, event, participant */
+        entity_type?: string;
+        /** @description Entity ID */
+        entity_id?: string;
+      };
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Blast Radius
+   * @description Calculates cross-module downstream blast radius of a change on entity_type:entity_id.
+   */
+  get_blast_radius_api_v1_impact_get: {
+    parameters: {
+      query?: {
+        /** @description Entity type: venue, hostel, event, participant */
+        entity_type?: string;
+        /** @description Entity ID */
+        entity_id?: string;
+      };
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
    * Get Import History
    * @description Lists import batch history with pagination and status filtering.
    */
@@ -3791,6 +5033,68 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["Envelope_ChangeResult_"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * List Incidents
+   * @description List operational incidents.
+   */
+  list_incidents_api_v1_incidents_get: {
+    parameters: {
+      query?: {
+        status?: string | null;
+        severity?: number | null;
+        page?: number;
+        page_size?: number;
+      };
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Create Incident
+   * @description Log an incident via ChangeService.
+   */
+  create_incident_api_v1_incidents_post: {
+    parameters: {
+      header?: {
+        "Idempotency-Key"?: string | null;
+        authorization?: string | null;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CreateIncidentBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
         };
       };
       /** @description Validation Error */
@@ -4427,6 +5731,99 @@ export interface operations {
     };
   };
   /**
+   * List Notifications
+   * @description List operational notification drafts.
+   */
+  list_notifications_api_v1_notifications_drafts_get: {
+    parameters: {
+      query?: {
+        channel?: string | null;
+        status?: string | null;
+        page?: number;
+        page_size?: number;
+      };
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Draft Notification
+   * @description Draft an operational notification via ChangeService.
+   */
+  draft_notification_api_v1_notifications_drafts_post: {
+    parameters: {
+      header?: {
+        "Idempotency-Key"?: string | null;
+        authorization?: string | null;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["DraftNotificationBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      201: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * List Notifications
+   * @description List operational notification drafts.
+   */
+  list_notifications_api_v1_notifications_get: {
+    parameters: {
+      query?: {
+        channel?: string | null;
+        status?: string | null;
+        page?: number;
+        page_size?: number;
+      };
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
    * List Overrides
    * @description Query the override register with filtering and pagination.
    */
@@ -4726,6 +6123,56 @@ export interface operations {
     parameters: {
       path: {
         id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Premortem Analysis
+   * @description Predictive festival resilience simulator and pre-mortem vulnerability rankings.
+   */
+  get_premortem_analysis_api_v1_premortem_resilience_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Premortem Analysis
+   * @description Predictive festival resilience simulator and pre-mortem vulnerability rankings.
+   */
+  get_premortem_analysis_api_v1_premortem_get: {
+    parameters: {
+      header?: {
+        authorization?: string | null;
       };
     };
     responses: {
@@ -6360,6 +7807,36 @@ export interface operations {
         entity_type: string;
         entity_id: string;
         field: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * List Vendors
+   * @description List festival food vendors with hygiene certificate status and capacity.
+   */
+  list_vendors_api_v1_vendors_get: {
+    parameters: {
+      query?: {
+        status?: string | null;
+        page?: number;
+        page_size?: number;
+      };
+      header?: {
+        authorization?: string | null;
       };
     };
     responses: {

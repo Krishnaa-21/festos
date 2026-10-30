@@ -44,10 +44,7 @@ _PLAN_CACHE: Dict[str, PlanResult] = {}
 
 
 def _get_raw_data_dir() -> Path:
-    raw_dir = Path(__file__).resolve().parent.parent.parent.parent / "data" / "raw"
-    if not raw_dir.exists():
-        raw_dir = Path("/home/avnish_sharma/festos/data/raw")
-    return raw_dir
+    return Path(__file__).resolve().parents[4] / "data" / "raw"
 
 
 def load_participant_snapshots(session: Optional[Session] = None) -> List[ParticipantSnapshot]:

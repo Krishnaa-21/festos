@@ -23,7 +23,7 @@ def actor():
 
 def test_import_and_promote_pipeline(session: Session, actor: Actor):
     """Test full import pipeline: upload -> raw_record -> staging -> quarantine -> promote."""
-    raw_dir = Path("/home/krishna/festos/data/raw")
+    raw_dir = Path(__file__).resolve().parents[3] / "data" / "raw"
     if not raw_dir.exists():
         pytest.skip("data/raw not accessible")
 
@@ -107,7 +107,7 @@ def test_dry_run_import(session: Session, actor: Actor):
 def test_data_quality_report_and_export(session: Session, actor: Actor):
     """Verify data-quality report accurately explains the 2,836 vs 2,400 vs 2,842 situation and unknown metrics."""
     seed_all_assumptions(session)
-    raw_dir = Path("/home/krishna/festos/data/raw")
+    raw_dir = Path(__file__).resolve().parents[3] / "data" / "raw"
     if not raw_dir.exists():
         pytest.skip("data/raw not accessible")
 
