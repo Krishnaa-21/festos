@@ -252,3 +252,4 @@ export class FestOSOfflineDB extends Dexie {
 }
 
 export const offlineDb = new FestOSOfflineDB();
+

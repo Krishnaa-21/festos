@@ -394,3 +394,4 @@ test.describe("FestOS PWA Offline Queue, Volunteer Mobile & AI Command Center (P
     await expect(page.locator('[data-testid="keyboard-shortcuts-modal"]')).not.toBeVisible();
   });
 });
+
