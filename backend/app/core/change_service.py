@@ -33,6 +33,7 @@ class ChangeResult(BaseModel):
     violations: List[Violation] = Field(default_factory=list)
     audit_event_ids: List[str] = Field(default_factory=list)
     impact: Optional[Dict[str, Any]] = None
+    data: Optional[Dict[str, Any]] = None
     recommendations: List[str] = Field(default_factory=list)
     warnings: List[str] = Field(default_factory=list)
 
@@ -213,7 +214,8 @@ def execute_change(req: ChangeRequest, session: Session) -> ChangeResult:
             status="APPLIED",
             violations=violations,
             audit_event_ids=audit_event_ids,
-            impact=impact_data or None
+            impact=impact_data or None,
+            data=apply_result,
         )
 
     except Exception as e:

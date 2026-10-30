@@ -120,6 +120,32 @@ export interface paths {
      */
     post: operations["post_break_glass_api_v1_auth_break_glass_post"];
   };
+  "/api/v1/contingents": {
+    /**
+     * Get Contingents List
+     * @description List all contingents with declared vs actual strength and leader/escort statuses.
+     */
+    get: operations["get_contingents_list_api_v1_contingents_get"];
+  };
+  "/api/v1/contingents/{id}": {
+    /**
+     * Get Contingent Profile
+     * @description Retrieve basic profile details for a contingent.
+     */
+    get: operations["get_contingent_profile_api_v1_contingents__id__get"];
+    /**
+     * Update Contingent Profile
+     * @description Update contingent attributes through ChangeService.
+     */
+    patch: operations["update_contingent_profile_api_v1_contingents__id__patch"];
+  };
+  "/api/v1/contingents/{id}/status": {
+    /**
+     * Get Contingent Operational Status
+     * @description Retrieve full operational view: attendance, travel windows, events, diet, merchandise, and housing.
+     */
+    get: operations["get_contingent_operational_status_api_v1_contingents__id__status_get"];
+  };
   "/api/v1/overrides": {
     /**
      * List Overrides
@@ -138,6 +164,150 @@ export interface paths {
      * @description Retrieve details for a single recorded override.
      */
     get: operations["get_override_detail_api_v1_overrides__id__get"];
+  };
+  "/api/v1/participants": {
+    /**
+     * Get Participants
+     * @description List, filter, and fuzzy search canonical participants.
+     */
+    get: operations["get_participants_api_v1_participants_get"];
+    /**
+     * Create Participant
+     * @description Register a new participant through ChangeService.
+     */
+    post: operations["create_participant_api_v1_participants_post"];
+  };
+  "/api/v1/participants/{id}": {
+    /**
+     * Get Participant By Id
+     * @description Retrieve single participant profile with role-based field masking.
+     */
+    get: operations["get_participant_by_id_api_v1_participants__id__get"];
+    /**
+     * Update Participant
+     * @description Update participant attributes through ChangeService.
+     */
+    patch: operations["update_participant_api_v1_participants__id__patch"];
+  };
+  "/api/v1/participants/{id}/360": {
+    /**
+     * Get Participant 360 View
+     * @description 360-degree operational view aggregating contingent, events, diet, accessibility, merch, and status.
+     */
+    get: operations["get_participant_360_view_api_v1_participants__id__360_get"];
+  };
+  "/api/v1/participants/{id}/status": {
+    /**
+     * Transition Status
+     * @description Transition participant status through ChangeService (publishes participant.status_changed on bus).
+     */
+    post: operations["transition_status_api_v1_participants__id__status_post"];
+  };
+  "/api/v1/participants/{id}/timeline": {
+    /**
+     * Get Participant Timeline
+     * @description Retrieve chronological audit events and mutation history for participant.
+     */
+    get: operations["get_participant_timeline_api_v1_participants__id__timeline_get"];
+  };
+  "/api/v1/reconciliation/waterfall": {
+    /**
+     * Get Reconciliation Waterfall
+     * @description Returns the comprehensive counts panel and reconciliation waterfall explaining numbers.
+     */
+    get: operations["get_reconciliation_waterfall_api_v1_reconciliation_waterfall_get"];
+  };
+  "/api/v1/reconciliation/duplicates": {
+    /**
+     * Get Duplicate Candidates
+     * @description List duplicate candidates filtered by confidence classification or status.
+     */
+    get: operations["get_duplicate_candidates_api_v1_reconciliation_duplicates_get"];
+  };
+  "/api/v1/reconciliation/compare": {
+    /**
+     * Get Duplicate Comparison
+     * @description Side-by-side comparison of two participant records including registrations and claims.
+     */
+    get: operations["get_duplicate_comparison_api_v1_reconciliation_compare_get"];
+  };
+  "/api/v1/reconciliation/merge": {
+    /**
+     * Merge Duplicate Participants
+     * @description Merge duplicate participant into canonical participant via ChangeService.
+     * Blocks if both records hold conflicting merchandise claims.
+     */
+    post: operations["merge_duplicate_participants_api_v1_reconciliation_merge_post"];
+  };
+  "/api/v1/reconciliation/undo-merge/{merge_id}": {
+    /**
+     * Undo Merge Operation
+     * @description Reverts a merge operation, restoring byte-identical pre-merge state to both records.
+     */
+    post: operations["undo_merge_operation_api_v1_reconciliation_undo_merge__merge_id__post"];
+  };
+  "/api/v1/reconciliation/keep-separate": {
+    /**
+     * Keep Separate Decision
+     * @description Dismiss a candidate pair with a recorded reason not to merge.
+     */
+    post: operations["keep_separate_decision_api_v1_reconciliation_keep_separate_post"];
+  };
+  "/api/v1/reconciliation/history": {
+    /**
+     * Get Merge Audit History
+     * @description Retrieve chronological merge and revert history.
+     */
+    get: operations["get_merge_audit_history_api_v1_reconciliation_history_get"];
+  };
+  "/api/v1/reconciliation/flags": {
+    /**
+     * Get Operational Edge Case Flags
+     * @description Returns operational edge-case flags (same name different people, leaders competing, staff as participants).
+     */
+    get: operations["get_operational_edge_case_flags_api_v1_reconciliation_flags_get"];
+  };
+  "/api/v1/unknowns/queue": {
+    /**
+     * Get Verification Queue
+     * @description Retrieve the operational unknown fields queue ranked by Count x Criticality.
+     */
+    get: operations["get_verification_queue_api_v1_unknowns_queue_get"];
+  };
+  "/api/v1/unknowns/items": {
+    /**
+     * Get Unknown Field Items
+     * @description Query individual participant records that have an UNKNOWN value for a specific field.
+     */
+    get: operations["get_unknown_field_items_api_v1_unknowns_items_get"];
+  };
+  "/api/v1/unknowns/verify": {
+    /**
+     * Verify Field Value
+     * @description Record a verified field value through ChangeService.
+     */
+    post: operations["verify_field_value_api_v1_unknowns_verify_post"];
+  };
+  "/api/v1/unknowns/token": {
+    /**
+     * Create Field Confirmation Token
+     * @description Issue a cryptographically signed, field-scoped expiring confirmation token.
+     */
+    post: operations["create_field_confirmation_token_api_v1_unknowns_token_post"];
+  };
+  "/api/v1/unknowns/confirm/{token}": {
+    /**
+     * Submit Token Confirmation
+     * @description Public / semi-public endpoint to submit verified field value using signed token.
+     */
+    post: operations["submit_token_confirmation_api_v1_unknowns_confirm__token__post"];
+  };
+  "/api/v1/unknowns/history/{entity_type}/{entity_id}/{field}": {
+    /**
+     * Get Verification History For Field
+     * @description Retrieve chronological field verification history for an entity.
+     */
+    get: operations["get_verification_history_for_field_api_v1_unknowns_history__entity_type___entity_id___field__get"];
   };
 }
 
@@ -186,10 +356,30 @@ export interface components {
       impact?: {
         [key: string]: unknown;
       } | null;
+      /** Data */
+      data?: {
+        [key: string]: unknown;
+      } | null;
       /** Recommendations */
       recommendations?: string[];
       /** Warnings */
       warnings?: string[];
+    };
+    /** ContingentUpdateBody */
+    ContingentUpdateBody: {
+      /** Expected Version */
+      expected_version?: number | null;
+      /** Reason */
+      reason?: string | null;
+      /**
+       * Dry Run
+       * @default false
+       */
+      dry_run?: boolean;
+      /** Payload */
+      payload: {
+        [key: string]: unknown;
+      };
     };
     /** CreateExampleRequest */
     CreateExampleRequest: {
@@ -271,6 +461,17 @@ export interface components {
       /** Label */
       label: string;
     };
+    /** Envelope[Any] */
+    Envelope_Any_: {
+      /** Data */
+      data: unknown;
+      /** Meta */
+      meta?: {
+        [key: string]: unknown;
+      };
+      /** Warnings */
+      warnings?: string[];
+    };
     /** Envelope[ChangeResult] */
     Envelope_ChangeResult_: {
       data: components["schemas"]["ChangeResult"];
@@ -304,10 +505,39 @@ export interface components {
       /** Warnings */
       warnings?: string[];
     };
+    /** GenerateTokenBody */
+    GenerateTokenBody: {
+      /**
+       * Entity Type
+       * @default participant
+       */
+      entity_type?: string;
+      /** Entity Id */
+      entity_id: string;
+      /** Field */
+      field: string;
+      /**
+       * Expires In Minutes
+       * @default 1440
+       */
+      expires_in_minutes?: number;
+      /**
+       * Recipient Role
+       * @default LEADER
+       */
+      recipient_role?: string;
+    };
     /** HTTPValidationError */
     HTTPValidationError: {
       /** Detail */
       detail?: components["schemas"]["ValidationError"][];
+    };
+    /** KeepSeparateBody */
+    KeepSeparateBody: {
+      /** Candidate Id */
+      candidate_id: string;
+      /** Reason */
+      reason: string;
     };
     /** LoginRequest */
     LoginRequest: {
@@ -315,6 +545,22 @@ export interface components {
       email: string;
       /** Password */
       password: string;
+    };
+    /** MergeRequestBody */
+    MergeRequestBody: {
+      /** Expected Version */
+      expected_version?: number | null;
+      /** Reason */
+      reason?: string | null;
+      /**
+       * Dry Run
+       * @default false
+       */
+      dry_run?: boolean;
+      /** Payload */
+      payload: {
+        [key: string]: unknown;
+      };
     };
     /** Page[Dict[str, Any]] */
     Page_Dict_str__Any__: {
@@ -331,6 +577,54 @@ export interface components {
       /** Total Pages */
       total_pages: number;
     };
+    /** ParticipantCreateBody */
+    ParticipantCreateBody: {
+      /** Expected Version */
+      expected_version?: number | null;
+      /** Reason */
+      reason?: string | null;
+      /**
+       * Dry Run
+       * @default false
+       */
+      dry_run?: boolean;
+      /** Payload */
+      payload: {
+        [key: string]: unknown;
+      };
+    };
+    /** ParticipantStatusBody */
+    ParticipantStatusBody: {
+      /** Expected Version */
+      expected_version?: number | null;
+      /** Reason */
+      reason?: string | null;
+      /**
+       * Dry Run
+       * @default false
+       */
+      dry_run?: boolean;
+      /** Payload */
+      payload: {
+        [key: string]: unknown;
+      };
+    };
+    /** ParticipantUpdateBody */
+    ParticipantUpdateBody: {
+      /** Expected Version */
+      expected_version?: number | null;
+      /** Reason */
+      reason?: string | null;
+      /**
+       * Dry Run
+       * @default false
+       */
+      dry_run?: boolean;
+      /** Payload */
+      payload: {
+        [key: string]: unknown;
+      };
+    };
     /** RefreshRequest */
     RefreshRequest: {
       /** Refresh Token */
@@ -341,6 +635,28 @@ export interface components {
      * @enum {integer}
      */
     Severity: 1 | 2 | 3 | 4;
+    /** TokenConfirmBody */
+    TokenConfirmBody: {
+      /** Value */
+      value: string;
+      /**
+       * Source
+       * @default LEADER_TOKEN_SUBMISSION
+       */
+      source?: string;
+      /** Comment */
+      comment?: string | null;
+    };
+    /** UndoMergeBody */
+    UndoMergeBody: {
+      /** Reason */
+      reason?: string | null;
+      /**
+       * Dry Run
+       * @default false
+       */
+      dry_run?: boolean;
+    };
     /** ValidationError */
     ValidationError: {
       /** Location */
@@ -353,6 +669,22 @@ export interface components {
       input?: unknown;
       /** Context */
       ctx?: Record<string, never>;
+    };
+    /** VerifyFieldBody */
+    VerifyFieldBody: {
+      /** Expected Version */
+      expected_version?: number | null;
+      /** Reason */
+      reason?: string | null;
+      /**
+       * Dry Run
+       * @default false
+       */
+      dry_run?: boolean;
+      /** Payload */
+      payload: {
+        [key: string]: unknown;
+      };
     };
     /** Violation */
     Violation: {
@@ -850,6 +1182,119 @@ export interface operations {
     };
   };
   /**
+   * Get Contingents List
+   * @description List all contingents with declared vs actual strength and leader/escort statuses.
+   */
+  get_contingents_list_api_v1_contingents_get: {
+    parameters: {
+      query?: {
+        page?: number;
+        page_size?: number;
+        q?: string | null;
+        has_mismatch?: boolean | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Contingent Profile
+   * @description Retrieve basic profile details for a contingent.
+   */
+  get_contingent_profile_api_v1_contingents__id__get: {
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Update Contingent Profile
+   * @description Update contingent attributes through ChangeService.
+   */
+  update_contingent_profile_api_v1_contingents__id__patch: {
+    parameters: {
+      header?: {
+        "Idempotency-Key"?: string | null;
+        "x-actor-role"?: string | null;
+        "x-actor-id"?: string | null;
+      };
+      path: {
+        id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ContingentUpdateBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Any_"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Contingent Operational Status
+   * @description Retrieve full operational view: attendance, travel windows, events, diet, merchandise, and housing.
+   */
+  get_contingent_operational_status_api_v1_contingents__id__status_get: {
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
    * List Overrides
    * @description Query the override register with filtering and pagination.
    */
@@ -923,6 +1368,583 @@ export interface operations {
       };
       path: {
         id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Participants
+   * @description List, filter, and fuzzy search canonical participants.
+   */
+  get_participants_api_v1_participants_get: {
+    parameters: {
+      query?: {
+        page?: number;
+        page_size?: number;
+        sort?: string;
+        q?: string | null;
+        contingent_id?: string | null;
+        status?: string | null;
+        event_id?: string | null;
+        diet?: string | null;
+        accessibility?: string | null;
+        unknown_field?: string | null;
+        role?: string | null;
+        arrival_window_start?: string | null;
+        arrival_window_end?: string | null;
+      };
+      header?: {
+        "x-actor-role"?: string | null;
+        "x-actor-id"?: string | null;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Create Participant
+   * @description Register a new participant through ChangeService.
+   */
+  create_participant_api_v1_participants_post: {
+    parameters: {
+      header?: {
+        "Idempotency-Key"?: string | null;
+        "x-actor-role"?: string | null;
+        "x-actor-id"?: string | null;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ParticipantCreateBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Any_"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Participant By Id
+   * @description Retrieve single participant profile with role-based field masking.
+   */
+  get_participant_by_id_api_v1_participants__id__get: {
+    parameters: {
+      header?: {
+        "x-actor-role"?: string | null;
+        "x-actor-id"?: string | null;
+      };
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Update Participant
+   * @description Update participant attributes through ChangeService.
+   */
+  update_participant_api_v1_participants__id__patch: {
+    parameters: {
+      header?: {
+        "Idempotency-Key"?: string | null;
+        "x-actor-role"?: string | null;
+        "x-actor-id"?: string | null;
+      };
+      path: {
+        id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ParticipantUpdateBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Any_"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Participant 360 View
+   * @description 360-degree operational view aggregating contingent, events, diet, accessibility, merch, and status.
+   */
+  get_participant_360_view_api_v1_participants__id__360_get: {
+    parameters: {
+      header?: {
+        "x-actor-role"?: string | null;
+        "x-actor-id"?: string | null;
+      };
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Transition Status
+   * @description Transition participant status through ChangeService (publishes participant.status_changed on bus).
+   */
+  transition_status_api_v1_participants__id__status_post: {
+    parameters: {
+      header?: {
+        "Idempotency-Key"?: string | null;
+        "x-actor-role"?: string | null;
+        "x-actor-id"?: string | null;
+      };
+      path: {
+        id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ParticipantStatusBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Any_"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Participant Timeline
+   * @description Retrieve chronological audit events and mutation history for participant.
+   */
+  get_participant_timeline_api_v1_participants__id__timeline_get: {
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Reconciliation Waterfall
+   * @description Returns the comprehensive counts panel and reconciliation waterfall explaining numbers.
+   */
+  get_reconciliation_waterfall_api_v1_reconciliation_waterfall_get: {
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Duplicate Candidates
+   * @description List duplicate candidates filtered by confidence classification or status.
+   */
+  get_duplicate_candidates_api_v1_reconciliation_duplicates_get: {
+    parameters: {
+      query?: {
+        classification?: string | null;
+        status?: string | null;
+        page?: number;
+        page_size?: number;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Duplicate Comparison
+   * @description Side-by-side comparison of two participant records including registrations and claims.
+   */
+  get_duplicate_comparison_api_v1_reconciliation_compare_get: {
+    parameters: {
+      query: {
+        id1: string;
+        id2: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Merge Duplicate Participants
+   * @description Merge duplicate participant into canonical participant via ChangeService.
+   * Blocks if both records hold conflicting merchandise claims.
+   */
+  merge_duplicate_participants_api_v1_reconciliation_merge_post: {
+    parameters: {
+      header?: {
+        "Idempotency-Key"?: string | null;
+        "x-actor-role"?: string | null;
+        "x-actor-id"?: string | null;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["MergeRequestBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Any_"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Undo Merge Operation
+   * @description Reverts a merge operation, restoring byte-identical pre-merge state to both records.
+   */
+  undo_merge_operation_api_v1_reconciliation_undo_merge__merge_id__post: {
+    parameters: {
+      header?: {
+        "Idempotency-Key"?: string | null;
+        "x-actor-role"?: string | null;
+        "x-actor-id"?: string | null;
+      };
+      path: {
+        merge_id: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UndoMergeBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Any_"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Keep Separate Decision
+   * @description Dismiss a candidate pair with a recorded reason not to merge.
+   */
+  keep_separate_decision_api_v1_reconciliation_keep_separate_post: {
+    parameters: {
+      header?: {
+        "x-actor-role"?: string | null;
+        "x-actor-id"?: string | null;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["KeepSeparateBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Merge Audit History
+   * @description Retrieve chronological merge and revert history.
+   */
+  get_merge_audit_history_api_v1_reconciliation_history_get: {
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Operational Edge Case Flags
+   * @description Returns operational edge-case flags (same name different people, leaders competing, staff as participants).
+   */
+  get_operational_edge_case_flags_api_v1_reconciliation_flags_get: {
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Verification Queue
+   * @description Retrieve the operational unknown fields queue ranked by Count x Criticality.
+   */
+  get_verification_queue_api_v1_unknowns_queue_get: {
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Unknown Field Items
+   * @description Query individual participant records that have an UNKNOWN value for a specific field.
+   */
+  get_unknown_field_items_api_v1_unknowns_items_get: {
+    parameters: {
+      query: {
+        field: string;
+        contingent_id?: string | null;
+        page?: number;
+        page_size?: number;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Verify Field Value
+   * @description Record a verified field value through ChangeService.
+   */
+  verify_field_value_api_v1_unknowns_verify_post: {
+    parameters: {
+      header?: {
+        "Idempotency-Key"?: string | null;
+        "x-actor-role"?: string | null;
+        "x-actor-id"?: string | null;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["VerifyFieldBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Any_"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Create Field Confirmation Token
+   * @description Issue a cryptographically signed, field-scoped expiring confirmation token.
+   */
+  create_field_confirmation_token_api_v1_unknowns_token_post: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["GenerateTokenBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Submit Token Confirmation
+   * @description Public / semi-public endpoint to submit verified field value using signed token.
+   */
+  submit_token_confirmation_api_v1_unknowns_confirm__token__post: {
+    parameters: {
+      path: {
+        token: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["TokenConfirmBody"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Envelope_Dict_str__Any__"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Verification History For Field
+   * @description Retrieve chronological field verification history for an entity.
+   */
+  get_verification_history_for_field_api_v1_unknowns_history__entity_type___entity_id___field__get: {
+    parameters: {
+      path: {
+        entity_type: string;
+        entity_id: string;
+        field: string;
       };
     };
     responses: {
