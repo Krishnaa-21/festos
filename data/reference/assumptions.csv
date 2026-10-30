@@ -1,0 +1,19 @@
+k,v
+cleaning_hours_between_occupants,3
+late_night_window,22:00-06:00 arrival or departure needs transport=yes
+minor_age_below,18
+setup_teardown_min_each_side,15
+travel_min_between_venues,15
+result_buffer_min_between_rounds,60
+semi_fraction_of_prelims,0.5
+finalists_fraction_min8,0.1
+checkin_buffer_min_before_first_event,60
+venue_capacity_means,max simultaneous competitors in one heat (conservative)
+accessibility_mapping,"Wheelchair->accessible=yes room (hard); Ground floor->floor 0 (hard); Near washroom / Visual assistance -> no room data exists: kept visible, flagged for manual confirmation"
+gender_classes,"Female->girls blocks, Male->boys blocks, Non-binary/Prefer not to say/blank -> never auto-placed in a gendered block"
+external_property_data,"no accessibility or gender-segregation info exists: unverified, so hard-need people are NOT placed there"
+budget,"not supplied in pack: cost is shown per plan, override control required once a ceiling is set"
+venue_features,"venues.csv has no feature tags: mapping in VENUE_OK is an assumption, editable"
+events_without_times,"events.csv has no start time/venue: schedule is generated, not imported"
+equipment_units_per_session,"1 per named item unless the text says 2 (e.g. 2 mics, 2 extension cords)"
+prelim_waves,"E=30 Oct, M=31 Oct (main), L=1 Nov morning for people not on site earlier; L entrants join finals as wildcards (director decision, fairness risk)"

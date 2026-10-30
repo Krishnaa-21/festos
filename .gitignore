@@ -66,8 +66,6 @@ Thumbs.db
 *.swo
 
 # Data caches (preserve directory structure)
-data/raw/*
-!data/raw/.gitkeep
 data/golden/*
 !data/golden/.gitkeep
 data/snapshots/*

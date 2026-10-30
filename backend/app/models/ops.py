@@ -13,9 +13,11 @@ class Venue(SQLModel, table=True):
 
     id: str = Field(default_factory=lambda: f"ven_{uuid.uuid4().hex[:8]}", primary_key=True)
     name: str = Field(index=True)
-    code: str = Field(index=True)
+    code: str = Field(default="", index=True)
     building: str = Field(default="CAMPUS")
     capacity: int = Field(default=100)
+    availability_windows: Optional[str] = Field(default=None)  # from venues.csv
+    indoor_outdoor: Optional[str] = Field(default="indoor")    # 'indoor'|'outdoor'
     accessible: bool = Field(default=True)
     status: str = Field(default="AVAILABLE")
 

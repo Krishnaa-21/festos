@@ -16,6 +16,7 @@ class Staff(SQLModel, table=True):
     user_id: Optional[str] = Field(default=None, index=True)
     name: str = Field(index=True)
     role: str = Field(default="VOLUNTEER")  # VOLUNTEER|LEAD|STAFF
+    shift: Optional[str] = Field(default=None)  # e.g. '22:00-06:00'
     skills: Dict[str, Any] = Field(default_factory=dict, sa_column=Column(JSON))
     phone: Optional[str] = Field(default=None)
     email: Optional[str] = Field(default=None)

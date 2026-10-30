@@ -18,13 +18,15 @@ class Participant(SQLModel, table=True):
     contingent_id: Optional[str] = Field(default=None, foreign_key="contingent.id", index=True)
 
     name: str = Field(default="UNKNOWN")
+    college: Optional[str] = Field(default=None, index=True)
     email: Optional[str] = Field(default=None, index=True)
     phone: Optional[str] = Field(default=None)
-    gender: str = Field(default="UNKNOWN")  # UNKNOWN is first-class
+    gender: str = Field(default="UNKNOWN")  # UNKNOWN is first-class (Male|Female|Non-binary|Prefer not to say|UNKNOWN)
     diet: str = Field(default="UNKNOWN")    # UNKNOWN is first-class
     housing_preference: str = Field(default="UNKNOWN")
     accessibility_needs: Dict[str, Any] = Field(default_factory=dict, sa_column=Column(JSON))
     accommodation_requested: str = Field(default="UNKNOWN") # Tri: YES|NO|UNKNOWN
+    tshirt_size: Optional[str] = Field(default=None)
 
     arrival_at: Optional[datetime] = Field(default=None)
     departure_at: Optional[datetime] = Field(default=None)
@@ -43,6 +45,11 @@ class Contingent(SQLModel, table=True):
     id: str = Field(default_factory=lambda: f"ctg_{uuid.uuid4().hex[:8]}", primary_key=True)
     name: str = Field(index=True)
     code: str = Field(index=True)
+    college: Optional[str] = Field(default=None, index=True)
+    leader: Optional[str] = Field(default=None)
+    escort: Optional[str] = Field(default=None)
+    strength_declared: Optional[int] = Field(default=0)
+    preferences: Optional[str] = Field(default=None)
     contact_name: Optional[str] = Field(default=None)
     contact_phone: Optional[str] = Field(default=None)
     contact_email: Optional[str] = Field(default=None)
@@ -58,6 +65,7 @@ class Registration(SQLModel, table=True):
     id: str = Field(default_factory=lambda: f"reg_{uuid.uuid4().hex[:10]}", primary_key=True)
     participant_id: str = Field(foreign_key="participant.id", index=True)
     event_id: str = Field(foreign_key="event.id", index=True)
+    team_id: Optional[str] = Field(default=None, index=True)
     team_name: Optional[str] = Field(default=None)
     status: str = Field(default="REGISTERED")
     registered_at: datetime = Field(default_factory=now)

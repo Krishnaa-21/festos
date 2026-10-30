@@ -16,8 +16,13 @@ class Event(SQLModel, table=True):
     name: str = Field(index=True)
     code: str = Field(index=True)
     solo_team: str = Field(default="SOLO")  # SOLO|TEAM
+    event_type: Optional[str] = Field(default="solo")  # solo|team
     rounds: int = Field(default=1)
+    rounds_text: Optional[str] = Field(default=None)  # e.g. 'prelims|semis|finals'
     duration_min: int = Field(default=60)
+    venue_requirements: Optional[str] = Field(default=None)
+    equipment_needs: Optional[str] = Field(default=None)
+    volunteers_needed: Optional[int] = Field(default=0)
     requirements: Dict[str, Any] = Field(default_factory=dict, sa_column=Column(JSON))
     venue_id: Optional[str] = Field(default=None, foreign_key="venue.id", index=True)
     min_team_size: Optional[int] = Field(default=1)

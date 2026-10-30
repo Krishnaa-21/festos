@@ -23,12 +23,14 @@ class InventoryItem(SQLModel, table=True):
 
     id: str = Field(default_factory=lambda: f"itm_{uuid.uuid4().hex[:8]}", primary_key=True)
     name: str = Field(index=True)
-    code: str = Field(index=True)
+    code: str = Field(default="", index=True)
     kind: str = Field(default="equipment")  # equipment|merch
     size: Optional[str] = Field(default=None)
     condition: str = Field(default="GOOD")  # NEW|GOOD|FAIR|DAMAGED
     quantity: int = Field(default=1)
+    reserved_quantity: Optional[int] = Field(default=0)
     available_quantity: int = Field(default=1)
+    location: Optional[str] = Field(default=None)  # e.g. 'Registration Desk'
     location_id: Optional[str] = Field(default=None, foreign_key="inventory_location.id", index=True)
     status: str = Field(default="AVAILABLE")
 

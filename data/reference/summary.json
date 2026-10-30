@@ -1,0 +1,41 @@
+{
+  "raw_records": 2836,
+  "declared_strength_total": 2842,
+  "narrative": 2400,
+  "invalid_interval": 3,
+  "likely_dup_pairs": 7,
+  "possible_dup_pairs": 305,
+  "leaders_in_file": 3,
+  "escorts_in_file": 3,
+  "accommodation_yes": 2144,
+  "plan_cohesion": {
+    "requested": 2141,
+    "on_campus": 861,
+    "external": 920,
+    "unplaced": 360,
+    "unplaced_hard_need": 109,
+    "unplaced_gender_unconfirmed": 241,
+    "minors_in_external": 71,
+    "cost_inr": 3315700,
+    "contingents_split": 36
+  },
+  "plan_cost": {
+    "requested": 2141,
+    "on_campus": 861,
+    "external": 920,
+    "unplaced": 360,
+    "unplaced_hard_need": 109,
+    "unplaced_gender_unconfirmed": 241,
+    "minors_in_external": 71,
+    "cost_inr": 3319250,
+    "contingents_split": 36
+  },
+  "sessions": 172,
+  "unscheduled_entrants": 987,
+  "unplaced_sessions": 28,
+  "venue_overlaps": 0,
+  "peak_volunteer_gap": 56,
+  "hours_with_volunteer_gap": 34,
+  "team_events_missing_team_id": 1810,
+  "heat_capacity_factor": 1.0
+}

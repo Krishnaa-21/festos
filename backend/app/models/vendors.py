@@ -15,9 +15,15 @@ class Vendor(SQLModel, table=True):
     id: str = Field(default_factory=lambda: f"vnd_{uuid.uuid4().hex[:8]}", primary_key=True)
     name: str = Field(index=True)
     dietary_declared: Dict[str, Any] = Field(default_factory=dict, sa_column=Column(JSON))
+    dietary_options: Optional[str] = Field(default=None)  # e.g. 'vegetarian'
     menu: Dict[str, Any] = Field(default_factory=dict, sa_column=Column(JSON))
+    menu_description: Optional[str] = Field(default=None) # e.g. 'North Indian'
     hygiene_valid_from: Optional[datetime] = Field(default=None)
     hygiene_valid_to: Optional[datetime] = Field(default=None)
+    hygiene_certificate_expiry: Optional[str] = Field(default=None) # e.g. '2026-10-31'
+    hours: Optional[str] = Field(default=None)            # e.g. '07:00-23:00'
+    capacity: Optional[int] = Field(default=None)         # e.g. 264
+    payment_terms: Optional[str] = Field(default=None)    # e.g. 'minimum guarantee'
     contact_phone: Optional[str] = Field(default=None)
     status: str = Field(default="ACTIVE")
 
