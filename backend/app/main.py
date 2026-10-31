@@ -121,6 +121,8 @@ def discover_routers():
                     # Otherwise, mount under prefix '/<module_name>'
                     if router.prefix:
                         v1_router.include_router(router)
+                        if router.prefix in ["/incidents", "/impact", "/disruptions"]:
+                            app.include_router(router)
                     else:
                         v1_router.include_router(router, prefix=f"/{module_name}")
             except Exception as e:

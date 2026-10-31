@@ -56,6 +56,7 @@ class EventSession(SQLModel, table=True):
     round: str = Field(default="prelims")  # prelims|semis|finals|single
     round_number: int = Field(default=1)
     heat: str = Field(default="1")  # M1, E1, L1, etc.
+    session_code: Optional[str] = Field(default=None)
     venue_id: Optional[str] = Field(default=None, foreign_key="venue.id", index=True)
     venue_name: Optional[str] = Field(default=None)
     start_at: Optional[datetime] = Field(default=None, index=True)

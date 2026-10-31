@@ -100,6 +100,14 @@ class MerchClaim(SQLModel, table=True):
     voided_by: Optional[str] = Field(default=None)
     voided_at: Optional[datetime] = Field(default=None)
 
+    @property
+    def participant_id(self) -> str:
+        return self.canonical_participant_id
+
+    @participant_id.setter
+    def participant_id(self, val: str) -> None:
+        self.canonical_participant_id = val
+
 
 class EntitlementPolicy(SQLModel, table=True):
     __tablename__ = "entitlement_policy"
