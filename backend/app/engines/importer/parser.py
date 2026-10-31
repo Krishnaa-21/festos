@@ -124,6 +124,7 @@ def parse_csv_content(
             # Determine source row ID
             source_row_id = (
                 raw_row.get("participant_id")
+                or raw_row.get("id")
                 or raw_row.get("contingent_id")
                 or raw_row.get("event_id")
                 or raw_row.get("venue_id")

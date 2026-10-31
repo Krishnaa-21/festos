@@ -19,8 +19,8 @@ class Room(SQLModel, table=True):
     capacity: int = Field(default=2)
     accessible: bool = Field(default=False)
     accessibility: str = Field(default="no")  # 'yes'|'no' from hostels.csv
-    gender_class: str = Field(default="UNKNOWN")  # boys|girls|UNKNOWN
-    status: str = Field(default="READY")  # READY|OCCUPIED|CLEANING|MAINTENANCE|CLOSED (or available)
+    gender_class: str = Field(default="UNKNOWN", index=True)  # boys|girls|UNKNOWN
+    status: str = Field(default="READY", index=True)  # READY|OCCUPIED|CLEANING|MAINTENANCE|CLOSED (or available)
     cleaning_status: str = Field(default="READY")  # READY|CLEANING|DIRTY
     cleaning_ready_at: Optional[datetime] = Field(default=None)
     safety_info: Optional[str] = Field(default=None)

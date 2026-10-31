@@ -5,6 +5,7 @@ from typing import Any, Dict, Optional
 import bcrypt
 from jose import JWTError, jwt
 
+from app.core import clock
 from app.core.config import settings
 
 ALGORITHM = "HS256"
@@ -38,12 +39,12 @@ def create_access_token(
 ) -> str:
     """Create a signed JWT access token containing user and role claims."""
     to_encode = data.copy()
-    expire = datetime.now(timezone.utc) + (
+    expire = clock.now() + (
         expires_delta or timedelta(minutes=settings.JWT_EXPIRE_MIN)
     )
     to_encode.update({
         "exp": expire,
-        "iat": datetime.now(timezone.utc),
+        "iat": clock.now(),
         "type": "access"
     })
     return jwt.encode(to_encode, settings.JWT_SECRET, algorithm=ALGORITHM)
@@ -54,13 +55,13 @@ def create_refresh_token(
     expires_delta: Optional[timedelta] = None
 ) -> str:
     """Create a signed JWT refresh token."""
-    expire = datetime.now(timezone.utc) + (
+    expire = clock.now() + (
         expires_delta or timedelta(days=7)
     )
     to_encode = {
         "sub": user_id,
         "exp": expire,
-        "iat": datetime.now(timezone.utc),
+        "iat": clock.now(),
         "type": "refresh"
     }
     return jwt.encode(to_encode, settings.JWT_SECRET, algorithm=ALGORITHM)

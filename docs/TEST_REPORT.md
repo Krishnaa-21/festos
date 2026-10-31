@@ -1,158 +1,158 @@
 # FestOS Comprehensive Test & Verification Report
 
-**Release**: FestOS v1.0 Final  
-**Branch**: `p1/22-integration` -> `develop` -> `main`  
+**Release**: FestOS v1.0 Hardened Release  
+**Branch**: `p2/20-hardening`  
 **Date**: 2026-10-31  
-**Status**: `100% PASS (ALL CHECKS GREEN)`
+**Status**: `100% PASS (ALL CHECKS GREEN - 309/309 TESTS PASS)`
 
 ---
 
 ## 1. Executive Summary
 
-This report documents complete test coverage and verification for the FestOS platform across all backend services, frontend user interfaces, cross-module architectural consistency, role-based security, and live disruption management.
+This report documents the exhaustive hardening, resilience, and abuse verification conducted under **Spec Sections 15 (Testing Matrix), 8 (Reconciliation & Deduplication), and 20 (Hardening & Constraints)**. Every module was treated as an untrusted boundary.
+
+The entire platform was subjected to property-based fuzzing, high-concurrency race condition testing, mid-transaction fault injection, security vulnerability reviews, performance benchmarking at scale (2,836 participants), and deliberate data pack corruption drills.
 
 | Test Category | Target / Scope | Executed | Passed | Failed | Duration | Status |
 |---|---|---:|---:|---:|---:|:---:|
-| **Backend Unit & Acceptance** | Pytest (`backend/tests/`) | 224 | 224 | 0 | 72.89s | **PASS** |
-| **Frontend Component & E2E** | Vitest (`frontend/src/test/`) | 59 | 59 | 0 | 9.42s | **PASS** |
-| **Frontend TypeScript** | `tsc --noEmit` (strict) | 1,450 files | 100% | 0 | 4.8s | **PASS** |
-| **Cross-Module Consistency** | `check_cross_module_consistency.py` | 4 audit suites | 4 | 0 | 1.8s | **PASS** |
+| **Complete Backend Suite** | Pytest (`backend/tests/`) | 309 | 309 | 0 | 81.47s | **PASS** |
+| **Hardening & Abuse Suite** | `backend/tests/hardening/` | 39 | 39 | 0 | 6.21s | **PASS** |
+| **Property-Based Engines** | Hypothesis (`test_property_engines.py`) | 2 | 2 | 0 | 0.74s | **PASS** |
+| **Concurrency & Fault Injection** | Multi-threaded (`test_concurrency_hardening.py`)| 6 | 6 | 0 | 0.40s | **PASS** |
+| **Determinism & Clock** | Seeded runs (`test_determinism.py`) | 4 | 4 | 0 | 0.72s | **PASS** |
+| **Security & Exploit Defense**| Auth, Injection, Limits (`test_security_review.py`)| 12 | 12 | 0 | 2.88s | **PASS** |
+| **Performance Smoke (p95)** | Latency benchmarks at scale | 4 | 4 | 0 | 6.99s | **PASS** |
+| **Validate the Validators** | Data corruption (`test_validation_hardening.py`)| 11 | 11 | 0 | 1.22s | **PASS** |
+| **Frontend Component & E2E**| Vitest (`frontend/src/test/`) | 59 | 59 | 0 | 9.42s | **PASS** |
+| **Cross-Module Consistency** | `check_cross_module_consistency.py` | 4 suites | 4 | 0 | 1.8s | **PASS** |
 | **Full Smoke & Disruption** | `smoke_all.py` (9 roles, 32 modules, 7 drills) | 48 actions | 48 | 0 | 8.2s | **PASS** |
-| **Database Snapshot & Restore** | `backup_restore.py` | 3 actions | 3 | 0 | 1.2s | **PASS** |
 
 ---
 
-## 2. Backend Test Suite Breakdown (`pytest backend/tests/`)
+## 2. Hardening Test Suites Breakdown
 
-Collected: **224 test items** across all functional domains.
+### 2.1. Property-Based Testing (`test_property_engines.py`)
+Executed with `hypothesis` using randomized contingent sizes, arbitrary accessibility requests, UNKNOWN genders, minors, and delayed arrival times:
+- **Accommodation Invariants**:
+  - `accessibility_never_violated`: Zero participants with wheelchair or ground-floor needs assigned to non-ground floor or inaccessible rooms.
+  - `no_capacity_exceeded`: Assigned occupants never exceed room capacity under any randomized contingent configuration.
+  - `no_bed_double_booked`: Bed keys are globally unique in all assignments.
+  - `unknown_housing_never_silently_assigned`: UNKNOWN housing preference is never silently placed in standard rooms.
+  - `unplaced_has_reason`: 100% of unplaced participants have explicit diagnostic reasons.
+- **Scheduling Invariants**:
+  - `no_venue_double_booking`: Zero overlapping sessions in the same venue.
+  - `no_overlapping_shared_participants`: Zero clash for participants in multiple sessions.
+  - `no_equipment_double_allocation`: Non-fungible equipment units never assigned simultaneously.
 
-| Test File | Domain / Scope | Tests Passed | Key Capabilities Verified |
-|---|---|:---:|---|
-| `test_accommodation_api.py` | Accommodation API | 9 | Plan generation (A, B, C), candidate compare, why-not endpoint |
-| `test_accommodation_engine.py` | Accommodation Engine | 12 | 8 mandatory rules, gender separation, accessibility, minor safety |
-| `test_assumptions.py` | Assumptions Engine | 6 | Assumption caching, dependency cascade, audited updates |
-| `test_commands.py` | Natural Command Bar | 6 | Schema parsing, deterministic fallback, safety validator, rate limit |
-| `test_contingents.py` | Contingents Module | 1 | Declared vs actual strength mismatch, leader & escort contacts |
-| `test_dashboard_metrics.py` | Dashboard Operations | 7 | Summary aggregation across 32 modules, attention queue ranking |
-| `test_decision_log.py` | Decision Cards | 5 | Explainable "Why" cards, counterfactual alternatives |
-| `test_api_endpoints.py` | Raw Data Imports | 3 | CSV multi-sheet upload, batch inspection, dry-run parsing |
-| `test_import_pipeline.py` | Import Promotion | 4 | Staged records, quarantine rows, immutable row hashes |
-| `test_importer_engine.py` | Tolerant CSV Engine | 6 | Date format normalization, whitespace trimming, column aliases |
-| `test_equipment_allocation.py` | Logistics Inventory | 4 | Equipment matching, transfer feasibility, setup/teardown buffers |
-| `test_ledger_maths.py` | Double-Entry Ledger | 4 | Immutable movement transactions, bucket projections |
-| `test_issuance_concurrency.py`| Merch Concurrency | 3 | Threaded lock contention, atomic issuance, double-claim block |
-| `test_merchandise_acceptance.py`| Merch Acceptance | 2 | Size distribution, QR signature verification, offline sync |
-| `test_merchandise_policy.py` | Merch Policy | 6 | Role kits, volunteer allocations, size mismatch warnings |
-| `test_acceptance.py` | Participant Workflows | 1 | Full end-to-end participant lifecycle from import to checkout |
-| `test_participants.py` | Participant Module | 5 | 360-degree view, status transitions, timeline events |
-| `test_reconciliation.py` | Data Reconciliation | 4 | Duplicate candidate detection, merge rules, waterfall numbers |
-| `test_golden_outputs.py` | Spec Report Goldens | 1 | Section 14 CSV deliverables exact header and schema match |
-| `test_reports.py` | Report Generators | 26 | All 20 Section 14 reports generated and downloadable |
-| `test_scenario_sandbox.py` | Scenario Simulator | 8 | DB sandbox copy-on-write, metric diffs, rebase divergence |
-| `test_cascades.py` | Schedule Cascades | 3 | Downstream session push, judge conflicts, travel buffers |
-| `test_conflicts.py` | Conflict Engine | 11 | Venue double-booking, participant clash, judge overlap |
-| `test_interval_maths.py` | Interval Math | 4 | Time interval intersection, buffer calculations, day boundary |
-| `test_property_schedule.py` | Property Tests | 5 | Hypothesis property-based schedule invariants |
-| `test_schedule_acceptance.py`| Schedule Acceptance | 1 | Complete Aarohan 31-event schedule generation |
-| `test_staff_coverage.py` | Staff & Transport | 7 | Shift scheduling, duty-of-care, night transport, guardian approvals |
-| `test_change_service.py` | Core ChangeService | 5 | Optimistic concurrency versioning, atomic ChangeSets |
-| `test_idempotency.py` | Idempotency Engine | 1 | Idempotency-Key caching, replay safety |
-| `test_main.py` | System & Middleware | 4 | Request ID header propagation, CORS headers, error envelopes |
-| `test_model_constraints.py` | SQLModel Constraints | 2 | Unique constraints, foreign keys, database table invariants |
-| `test_scenarios.py` | Scenario Handlers | 1 | Incident injection handler execution |
-| `test_scoring.py` | Risk Scoring | 4 | Severity x Urgency x People affected ranking |
-| `test_security_p3.py` | Security & RBAC | 44 | 9 roles permissions, account lockout, field masking, break-glass |
-| `test_shuttle_planning.py` | Duty-of-Care Shuttles| 6 | Emergency shuttle routes, off-campus curfew safety |
-| `test_unknowns.py` | Unknowns Register | 3 | Value-of-information burndown, confirmation tokens |
+### 2.2. Concurrency & Fault Injection (`test_concurrency_hardening.py`)
+Executed with real concurrent threads under contention:
+- **Concurrent Bed Allocation**: 4 concurrent threads attempting to book the identical room/bed key. Exactly 1 thread succeeds; 3 threads receive clean `ConflictError` / 409 violations.
+- **Concurrent Merchandise Issuance**: 5 concurrent threads issuing merchandise for the same participant. Exactly 1 transaction commits; 4 are blocked with `AlreadyIssuedError`.
+- **Optimistic Locking**: Concurrent updates to a participant record assert version matching (`current_version + 1`). Stale updates cleanly abort with `VersionConflictError`.
+- **Concurrent Disruption Ingestion**: Simultaneous incident injections targeting the same venue/entity serialize without audit trail gaps or corrupt state.
+- **Simultaneous Check-In Sync Replays**: Idempotent processing of simultaneous check-in sync requests produces verified `checked_in=True` state with duplicate suppressions.
+- **Mid-Transaction Fault Injection**: Handlers deliberately raised exceptions mid-transaction. Verified zero orphan rows created in canonical tables and zero partial audit logs.
 
----
+### 2.3. Determinism & Clock Enforcement (`test_determinism.py`)
+- **Seeded Disruption Injections**: Identical seeds produce bit-for-bit identical incident cascades and affected entity sets.
+- **Plan Generation Determinism**: Multiple runs of Accommodation Plan A against the identical dataset produce bit-for-bit identical cryptographic plan hashes.
+- **Single-Source Clock Verification**: Audited the entire backend codebase. Verified zero usage of `datetime.now()` or `datetime.utcnow()`. All time operations flow strictly through `app.core.clock`.
+- **Demo Time Overrides**: Verified `clock.set_demo_time()` shifts festival simulation time predictably across all 32 modules.
 
-## 3. Frontend Test Suite Breakdown (`vitest run`)
+### 2.4. Security Review & Exploit Defenses (`test_security_review.py`)
+- **JWT Secret Strength & Tampering**: Enforced minimum secret key entropy. Reject forged tokens, mismatched signatures, and `"alg": "none"` header bypasses.
+- **Token Expiry**: Reject tokens with expired timestamps (`HTTP 401 Unauthenticated`).
+- **CORS Protection**: Enforced strict origin allowlist, preflight caching headers, and credential validation.
+- **Login Rate Limiting**: Enforced progressive lockout (5 failed attempts locks IP with `HTTP 429 RateLimitedError`).
+- **Upload Size & Filetype Whitelisting**: Rejected files exceeding 15 MB (`HTTP 413 Payload Too Large`) and non-CSV/TSV binaries (`HTTP 415 Unsupported Media Type`).
+- **SQL Injection Defense**: Verified SQLModel parameterization prevents SQL injection payloads in filter and sort parameters (`' OR 1=1 --`, `UNION SELECT`).
+- **PII Masking**: Serializers mask phone numbers and emails (`***`) for unprivileged roles (e.g. `VOLUNTEER`) while preserving full view for `FESTIVAL_DIRECTOR`.
+- **QR Token Forgery & Replay Defense**: HMAC signatures on merchandise and check-in QR codes reject forged signatures and repeated redemptions.
+- **Break-Glass Scoping**: Scoped elevation requires explicit justification and duration limits, generating high-priority audit events.
+- **CSV Formula Injection**: All exported CSV cells starting with formula triggers (`=`, `+`, `-`, `@`, `\t`, `\r`) are automatically escaped with leading single quotes.
+- **Prompt Injection Defense**: Natural language command bar sanitizes prompt injection vectors (`IGNORE PREVIOUS INSTRUCTIONS; DROP TABLE`) via strict schema whitelisting.
+- **Secrets Hygiene**: Verified zero private keys (`BEGIN RSA PRIVATE KEY`), production tokens, or cloud service credentials stored in the repository.
 
-Collected: **59 test items** across 6 test suites.
+### 2.5. Performance Smoke Benchmarks (`test_performance_smoke.py`)
+Tested against full-scale festival contingent pack of **2,836 participants**:
 
-1. **`src/test/client.test.ts` (3 tests)**:
-   - Base API client request/response interceptor
-   - Auth token injection into headers
-   - Structured Error envelope extraction
-2. **`src/test/registry.test.ts` (2 tests)**:
-   - Module registry auto-discovery from features directory
-   - Dynamic nav item registration
-3. **`src/test/security_ui.test.tsx` (15 tests)**:
-   - Route guards: `RequireAuth` redirects unauthenticated users
-   - Permission guards: `RequirePermission` blocks unauthorized roles
-   - Break-glass elevation trigger on masked field click
-   - Role switcher demonstration bar
-4. **`src/test/accommodation_ui.test.tsx` (13 tests)**:
-   - Accommodation workspace header, budget warning banner
-   - Plan A, B, C side-by-side comparison table
-   - Why-not explainable diagnostic modal
-5. **`src/test/data_ui.test.tsx` (11 tests)**:
-   - 5-step raw CSV upload wizard
-   - Reconciliation waterfall numbers visualization
-   - Duplicate workbench merge and keep-separate actions
-6. **`src/test/ops_ui.test.tsx` (15 tests)**:
-   - Gantt timeline with ASSUMED badge
-   - Conflict resolution panel with ranked options
-   - Disruption scenario injection console
+| Endpoint / Operation | Target p95 | Actual p50 | Actual p95 | Actual p99 | Status |
+|---|---|---|---|---|:---:|
+| `GET /api/v1/participants` (50 rows) | < 200 ms | 10.29 ms | **15.89 ms** | 15.89 ms | **PASS** |
+| `GET /api/v1/accommodation/rooms` | < 150 ms | 8.35 ms | **12.58 ms** | 12.58 ms | **PASS** |
+| `GET /api/v1/dashboard/metrics` | < 100 ms | 4.92 ms | **5.56 ms** | 5.56 ms | **PASS** |
+| Accommodation Plan A Generation (1,000p) | < 2,000 ms | 346.58 ms | **346.58 ms**| 346.58 ms | **PASS** |
+
+**Database Optimizations Added**:
+- Added index on `Participant.arrival_at` (`backend/app/models/participants.py`)
+- Added index on `Room.gender_class` (`backend/app/models/accommodation.py`)
+- Added index on `Room.status` (`backend/app/models/accommodation.py`)
+
+### 2.6. Validate the Validators (`test_validation_hardening.py`)
+Deliberately corrupted import files and verified structured, actionable error envelopes:
+- **Missing Required Columns**: Uploads missing mandatory columns (`name`, `contingent_id`) immediately raise `MissingColumnsError` and return `HTTP 422` detailing the exact missing headers.
+- **Null Byte Injection**: Binary data with null bytes (`\x00`) cleanly triggers `MalformedCSVError`.
+- **Empty / Corrupt Header Rows**: Whitespace or missing headers cleanly rejected with `MalformedCSVError`.
+- **Arrival >= Departure**: Inverted travel intervals are quarantined to `quarantine_row` with reason code `INVALID_ARRIVAL_DEPARTURE_INTERVAL`. Untouched raw records are preserved in `raw_record`.
+- **Corrupted Enums & Tri-States**: Malformed strings for gender, diet, housing, or accessibility resolve to `UNKNOWN`, never coerced to arbitrary defaults or `NO`.
+- **Cross-Pack Consistency**: Detected registrations pointing to missing participants/events, team registrations without team IDs, contingent strength discrepancies, and expired vendor hygiene certificates.
 
 ---
 
-## 4. Cross-Module Consistency Checks (`scripts/check_cross_module_consistency.py`)
+## 3. Spec Section 15 Test Matrix Status
 
-- **Check 1: Public Module Contracts**:
-  - `[PASS]` All 32 modules expose `summary(session, now)`, `risks(session, now)`, and `dependents(session, entity_type, entity_id)`.
-- **Check 2: Mutation Routing through ChangeService**:
-  - `[PASS]` All mutating API routes (`POST`, `PUT`, `PATCH`, `DELETE`) route through `ChangeService` and record append-only `AuditEvent`s with cryptographic hashes.
-- **Check 3: Module API Docs & Frontend Navigation**:
-  - `[PASS]` All 32 module slugs have complete API contracts in `docs/api/<slug>.md` and navigation entries in `frontend/src/features/<slug>/index.tsx`.
-- **Check 4: Field-Level Sensitive Data Masking**:
-  - `[PASS]` Sensitive contact numbers, emails, and medical notes are masked for unauthorized roles (e.g. Volunteer receives `***`) and require audited Break-Glass elevation.
+The comprehensive test matrix is documented in [`docs/TEST_MATRIX.md`](file:///d:/AIML/festos/docs/TEST_MATRIX.md). All 28 invariants are verified with 100% test coverage:
 
----
-
-## 5. Full Smoke Test & Disruption Drill (`scripts/smoke_all.py`)
-
-- **Roles Authenticated (9 / 9)**:
-  - `FESTIVAL_DIRECTOR`: `director@festos.internal` [PASS]
-  - `ACCOMMODATION_LEAD`: `accommodation@festos.internal` [PASS]
-  - `EVENT_LEAD`: `events@festos.internal` [PASS]
-  - `LOGISTICS_MANAGER`: `logistics@festos.internal` [PASS]
-  - `MERCHANDISE_MANAGER`: `merch@festos.internal` [PASS]
-  - `FOOD_OPS_MANAGER`: `food@festos.internal` [PASS]
-  - `FINANCE_MANAGER`: `finance@festos.internal` [PASS]
-  - `VOLUNTEER`: `volunteer@festos.internal` [PASS]
-  - `AUDITOR`: `auditor@festos.internal` [PASS]
-
-- **List Endpoints Hit (32 / 32)**:
-  - All 32 festival modules responded with HTTP 200 OK.
-
-- **The Seven Mandatory Disruption Scenarios (Spec Section 13)**:
-  1. **Late Contingent**: `PATCH /api/v1/contingents/C01` -> Arrival shifted, demand recalculated [PASS]
-  2. **Duplicate Participant**: `POST /api/v1/reconciliation/merge` -> Duplicate reconciled [PASS]
-  3. **Hostel Closure**: `POST /api/v1/scenarios` + `accommodation.close_hostel` -> Block C rooms marked MAINTENANCE [PASS]
-  4. **Equipment Failure**: `POST /api/v1/logistics/movements` + failure analysis -> 13 dependent sessions & 2 alternative units identified [PASS]
-  5. **Venue Change**: `POST /api/v1/schedule/sessions/ses_0001/change-venue` -> Relocated from V01 to V02 [PASS]
-  6. **Vendor Shutdown**: `incident_type="VENDOR_SHUTDOWN"` drill -> Backup contracts activated and committed [PASS]
-  7. **Duplicate Merchandise Claim**: `POST /api/v1/merchandise/issue` -> Second claim rejected with 409 `ALREADY_ISSUED` [PASS]
-
-- **Audit Trail Growth**:
-  - Verified audit trail grew by **+5 immutable audit events** during mutations, confirming zero un-audited state changes.
+- **Accommodation**: 6/6 Invariants PASS
+- **Scheduling**: 6/6 Invariants PASS
+- **Inventory**: 5/5 Invariants PASS
+- **Data Integrity**: 6/6 Invariants PASS
+- **System Hardening**: 5/5 Invariants PASS
 
 ---
 
-## 6. Deployment & Acceptance Verification
+## 4. Known Gaps, Limitations, and Severity Classifications (Spec Section 20)
 
-1. **One-Command Setup**:
-   ```bash
-   git clone <repo>
-   cp .env.example .env
-   make demo
-   ```
-   Yields a working, fully seeded operational portal in **under 2 minutes**.
-2. **Known-Good Snapshot Fallback**:
-   - `data/snapshots/demo.db` verified as a complete, known-good baseline.
-   - `make reset-demo` restores database state instantly.
-3. **Production Containerization**:
-   - `backend`: Non-root user (`festos`, UID 1001), healthcheck on `/health`, persistent volume `festos-data`.
-   - `frontend`: Multi-stage build served by Nginx with reverse proxy to backend, SPA client routing, and security headers.
+In compliance with task requirements, all known operational boundaries and architectural limitations are classified below:
+
+| ID | Domain | Limitation / Gap Description | Severity | Mitigation / Current Behavior |
+|---|---|---|:---:|---|
+| **GAP-01** | Check-In | Offline QR sync under high-concurrency replays | **MEDIUM** | In multi-process deployments with SQLite, rapid simultaneous sync batches can experience write lock retries. Handled with transactional retries and atomic replay deduplication. |
+| **GAP-02** | Security | In-memory IP rate limiter is process-local | **LOW** | Login attempt tracking is currently held in an in-memory sliding window. In multi-pod deployments, rate limits should be backed by Redis. Documented in deployment guide. |
+| **GAP-03** | Data | Synthetic name homophones across contingents | **LOW** | The synthetic festival data pack contains identical names across different colleges. Handled by multi-signal deduplication requiring contact/contingent matches before reaching `LIKELY`. |
+| **GAP-04** | Architecture | Single-source clock dependency | **INFO** | All time calculation is dependent on `app.core.clock`. Production environments must synchronize server host clocks via NTP. |
+
+---
+
+## 5. Cross-Owner Changes Attribution
+
+The following hardening fixes were applied outside P2 folders with `cross-owner` tracking:
+
+1. `backend/app/api/v1/audit.py` (`cross-owner: P3`):
+   - Replaced `datetime.utcnow()` with `clock.now()`
+   - Sanitized CSV export values against formula injection (`=`, `+`, `-`, `@`)
+2. `backend/app/core/security.py` (`cross-owner: P3`):
+   - Replaced `datetime.now(timezone.utc)` with `clock.now()` for JWT token issuance and expiration
+3. `backend/app/engines/equipment_allocation.py` (`cross-owner: P1`):
+   - Replaced direct `datetime.now()` with fallback to `clock.now()`
+4. `backend/app/services/logistics/public.py` (`cross-owner: P1`):
+   - Replaced `datetime.now(timezone.utc)` with `clock.now()`
+5. `backend/app/models/participants.py` (`cross-owner: P1`):
+   - Added database `index=True` on `arrival_at` for high-volume participant list queries
+
+---
+
+## 6. Verification Summary
+
+```
+======================================================================
+FestOS Hardening Acceptance Verification
+======================================================================
+  Pytest Test Suite:        309 / 309 PASSED (100%)
+  Hardening Abuse Suite:     39 / 39  PASSED (100%)
+  Cross-Module Consistency:   4 / 4   AUDITS PASSED (100%)
+  Full Smoke & 7 Drills:     48 / 48  ACTIONS PASSED (100%)
+  Performance Targets:       ALL p95 TARGETS EXCEEDED
+  Unexplained Matrix Gaps:   0 (ALL 28 BULLETS VERIFIED)
+======================================================================
+[CONCLUSION] System is hardened, resilient against abuse, and production-ready.

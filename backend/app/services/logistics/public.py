@@ -4,6 +4,8 @@ import io
 from datetime import datetime, timezone
 from typing import Any, Dict, List
 
+from app.core import clock
+
 from sqlmodel import Session, select
 
 from app.engines.equipment_allocation import PureEquipmentAllocator
@@ -236,8 +238,8 @@ def equipment_gap_csv(session: Session) -> str:
             res = PureEquipmentAllocator.find_equipment(
                 item_name=req,
                 target_venue_id=s.venue_id or "V01",
-                start_at=s.start_at or datetime.now(timezone.utc),
-                end_at=s.end_at or datetime.now(timezone.utc),
+                start_at=s.start_at or clock.now(),
+                end_at=s.end_at or clock.now(),
                 items=items,
                 movements=movements,
                 travel_matrix=travel_matrix,
