@@ -584,32 +584,36 @@ export const handlers = [
   http.post("*/api/v1/accommodation/generate-plan", async ({ request }) => {
     const body = (await request.json()) as any;
     const kind = body.kind || "C";
+    const planObj = {
+      plan_id: `plan_${kind}_generated_${Date.now()}`,
+      kind,
+      status: "CANDIDATE",
+      name: kind === "A" ? "Plan A: Cohesion-First" : kind === "B" ? "Plan B: Cost-First" : "Plan C: Balanced (Custom)",
+      on_campus_placed: 710,
+      external_placed: 1310,
+      unplaced_count: 124,
+      contingent_splits: kind === "A" ? 4 : kind === "B" ? 18 : 7,
+      total_cost_inr: kind === "A" ? 3350000 : kind === "B" ? 2450000 : 2890000,
+      safety_flags_count: 14,
+      accessibility_issues_count: 1,
+      relaxed_constraints_count: 10,
+      parameters_applied: {
+        cleaning_buffer_minutes: body.cleaning_buffer_minutes ?? 180,
+        max_distance_km: body.max_distance_km ?? 15,
+        allow_split_contingents: body.allow_split_contingents ?? true,
+      },
+      sacrifices_summary:
+        kind === "A"
+          ? "Prioritizes contingent cohesion at maximum budget cost."
+          : kind === "B"
+          ? "Minimizes hotel costs by fragmenting large contingents across distant properties."
+          : "Optimized balance between hotel cost and contingent integrity.",
+      created_at: new Date().toISOString(),
+    };
     return HttpResponse.json({
       data: {
-        plan_id: `plan_${kind}_generated_${Date.now()}`,
-        kind,
-        status: "CANDIDATE",
-        name: kind === "A" ? "Plan A: Cohesion-First" : kind === "B" ? "Plan B: Cost-First" : "Plan C: Balanced (Custom)",
-        on_campus_placed: 710,
-        external_placed: 1310,
-        unplaced_count: 124,
-        contingent_splits: kind === "A" ? 4 : kind === "B" ? 18 : 7,
-        total_cost_inr: kind === "A" ? 3350000 : kind === "B" ? 2450000 : 2890000,
-        safety_flags_count: 14,
-        accessibility_issues_count: 1,
-        relaxed_constraints_count: 10,
-        parameters_applied: {
-          cleaning_buffer_minutes: body.cleaning_buffer_minutes ?? 180,
-          max_distance_km: body.max_distance_km ?? 15,
-          allow_split_contingents: body.allow_split_contingents ?? true,
-        },
-        sacrifices_summary:
-          kind === "A"
-            ? "Prioritizes contingent cohesion at maximum budget cost."
-            : kind === "B"
-            ? "Minimizes hotel costs by fragmenting large contingents across distant properties."
-            : "Optimized balance between hotel cost and contingent integrity.",
-        created_at: new Date().toISOString(),
+        ...planObj,
+        plans: [planObj],
       },
       meta: {},
       warnings: ["Generated using unverified external property constraints."],
@@ -1053,6 +1057,22 @@ export const handlers = [
           approved_by: body.payload?.override_hard_constraint ? "FESTIVAL_DIRECTOR" : "ACCOMMODATION_LEAD",
           created_at: new Date().toISOString(),
         },
+      },
+      meta: {},
+      warnings: [],
+    });
+  }),
+
+  http.post("*/api/v1/accommodation/plans/:id/commit", async ({ params, request }) => {
+    const body = (await request.json()) as any;
+    const planId = (params.id as string) || "plan_C_balanced";
+    return HttpResponse.json({
+      data: {
+        plan_id: planId,
+        status: "LIVE",
+        committed_at: new Date().toISOString(),
+        committed_by: "FESTIVAL_DIRECTOR",
+        reason: body.reason,
       },
       meta: {},
       warnings: [],

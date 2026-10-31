@@ -207,7 +207,17 @@ export const AccommodationWorkspace: React.FC = () => {
       // Update local plans
       setPlansData((prev) => {
         if (!prev) return prev;
-        const generated = res.plans.find((p) => p.kind === selectedPlanKind);
+        const resObj = res as unknown as Record<string, unknown>;
+        const planList: AccommodationPlan[] = Array.isArray(res)
+          ? (res as AccommodationPlan[])
+          : Array.isArray(resObj?.plans)
+          ? (resObj.plans as AccommodationPlan[])
+          : resObj && "plan_id" in resObj
+          ? [resObj as unknown as AccommodationPlan]
+          : [];
+        const generated =
+          planList.find((p) => p.kind === selectedPlanKind) ||
+          (resObj && "plan_id" in resObj ? (resObj as unknown as AccommodationPlan) : undefined);
         if (!generated) return prev;
         const exists = prev.plans.findIndex((p) => p.kind === generated.kind);
         const updated = [...prev.plans];
