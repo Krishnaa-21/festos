@@ -13,11 +13,9 @@ from __future__ import annotations
 
 import ast
 import importlib
-import inspect
-import os
 import sys
 from pathlib import Path
-from typing import Dict, List, Set, Tuple
+from typing import List, Set, Tuple
 
 # Reconfigure stdout/stderr to utf-8 safely on Windows
 if sys.stdout and hasattr(sys.stdout, "reconfigure"):
@@ -142,6 +140,10 @@ def check_mutation_routes() -> Tuple[bool, List[str]]:
         "accommodation.py:manual_assignment_endpoint",     # manual assignment workflow
         "accommodation.py:repair_accommodation_endpoint",  # accommodation repair
         "vendors.py:shutdown_impact_endpoint",             # vendor shutdown preview
+        "incidents.py:create_or_inject_incident",          # incident injection & recovery planner
+        "incidents.py:approve_plan",                       # plan execution creating ChangeSet & DecisionCard
+        "incidents.py:verify_incident",                    # post-recovery verification pass
+        "impact.py:analyze_proposed_change",               # read-only blast radius simulation preview
     }
 
     for py_file in api_dir.glob("*.py"):
