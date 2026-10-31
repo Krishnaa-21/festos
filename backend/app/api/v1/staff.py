@@ -1,5 +1,5 @@
 # OWNER: P1
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 import app.services.staff.handlers  # noqa: F401
 from app.core.clock import now

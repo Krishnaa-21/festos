@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from datetime import time
-from typing import Optional, Tuple
+from typing import Any, Optional, Tuple
 
 from app.engines.accommodation.types import (
     ParticipantSnapshot,
@@ -33,24 +33,37 @@ UNKNOWN_GENDER_VARIANTS = {
 }
 
 
-def is_wheelchair_needed(accessibility_needs: str) -> bool:
+def _accessibility_text(accessibility_needs: Any) -> str:
+    """Normalize legacy strings and the canonical accessibility JSON object."""
+    if isinstance(accessibility_needs, dict):
+        needs = accessibility_needs.get("needs", [])
+        if not isinstance(needs, list):
+            needs = [needs]
+        flags = [key.replace("is_", "").replace("_", " ")
+                 for key in ("is_wheelchair", "is_ground_floor")
+                 if accessibility_needs.get(key)]
+        return " ".join(str(item) for item in [*needs, *flags])
+    return str(accessibility_needs or "")
+
+
+def is_wheelchair_needed(accessibility_needs: Any) -> bool:
     """Check if participant explicitly requires a wheelchair-accessible room."""
-    norm = (accessibility_needs or "").lower().replace("-", " ").strip()
+    norm = _accessibility_text(accessibility_needs).lower().replace("-", " ").strip()
     return "wheelchair" in norm or norm in ("yes", "accessible")
 
 
-def is_ground_floor_needed(accessibility_needs: str) -> bool:
+def is_ground_floor_needed(accessibility_needs: Any) -> bool:
     """Check if participant explicitly requires ground-floor accommodation."""
-    norm = (accessibility_needs or "").lower().replace("-", " ").strip()
+    norm = _accessibility_text(accessibility_needs).lower().replace("-", " ").strip()
     return "ground" in norm or "stairs" in norm
 
 
-def is_manual_verification_accessibility_needed(accessibility_needs: str) -> bool:
+def is_manual_verification_accessibility_needed(accessibility_needs: Any) -> bool:
     """Check if participant has accessibility requirements that cannot be auto-satisfied.
 
     Near-washroom and visual-assistance needs -> NEEDS_MANUAL_VERIFICATION per Task 3.
     """
-    norm = (accessibility_needs or "").lower().replace("-", " ").strip()
+    norm = _accessibility_text(accessibility_needs).lower().replace("-", " ").strip()
     return "visual" in norm or "washroom" in norm or "toilet" in norm or "bathroom" in norm
 
 

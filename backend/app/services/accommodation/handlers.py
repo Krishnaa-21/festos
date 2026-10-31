@@ -13,6 +13,7 @@ from app.core.change_service import ChangeHandler, ChangeRequest
 from app.core.clock import now
 from app.core.errors import FestOSError, VersionConflictError
 from app.core.registry import register_change_handler
+from app.engines.accommodation.rules import is_ground_floor_needed, is_wheelchair_needed
 from app.models.accommodation import AccommodationPlan, ExternalProperty, Room, StayAssignment
 from app.models.participants import Participant
 from app.schemas.common import Role, Severity, Violation
@@ -379,8 +380,9 @@ class ManualAssignHandler(ChangeHandler):
                 )
 
             # Check Accessibility
-            needs_acc = bool(participant.accessibility_needs and participant.accessibility_needs not in ["none", ""])
-            if needs_acc and (not room.accessible or room.floor != 0):
+            needs_wheelchair = is_wheelchair_needed(participant.accessibility_needs)
+            needs_ground = is_ground_floor_needed(participant.accessibility_needs)
+            if (needs_wheelchair and not room.accessible) or (needs_ground and room.floor != 0):
                 violations.append(
                     Violation(
                         code="HARD_ACCESSIBILITY",
@@ -409,6 +411,11 @@ class ManualAssignHandler(ChangeHandler):
                         hard=True,
                         message=f"Female participant cannot be assigned to boys room '{room.id}'.",
                     )
+                )
+            elif pgender not in ["male", "boy", "m", "female", "girl", "f"] and room.gender_class.lower() in ["boys", "male", "girls", "female"]:
+                violations.append(
+                    Violation(code="GENDER_UNCONFIRMED", severity=Severity.CRITICAL, hard=True,
+                              message="Unknown or non-binary gender cannot be auto-assigned to a gendered room.")
                 )
 
         # Concurrency / Bed Allocation Guard: check active overlapping stay for same bed

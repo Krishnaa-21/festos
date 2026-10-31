@@ -36,7 +36,9 @@ export interface RequestOptions extends RequestInit {
   params?: Record<string, string | number | boolean | undefined>;
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+// Empty by default: browser requests stay same-origin (/api/v1/...) and work
+// through nginx in Docker. Vite proxies the same paths during development.
+const API_BASE_URL = import.meta.env.VITE_API_URL || "";
 
 export function generateIdempotencyKey(): string {
   return `idem_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;

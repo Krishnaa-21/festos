@@ -47,7 +47,9 @@ async def get_actor(
                 role=payload.get("role", Role.VOLUNTEER.value),
                 contingent_id=payload.get("contingent_id")
             )
-        elif not settings.AUTH_DISABLED:
+        else:
+            # Development mode permits an explicit test identity only when no
+            # bearer token is supplied; a bad token must never become a director.
             raise UnauthenticatedError("Invalid or expired authentication token")
 
     # If AUTH_DISABLED is explicitly enabled in environment (tests/dev only)

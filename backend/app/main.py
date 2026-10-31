@@ -111,6 +111,7 @@ def get_meta():
 # -------------------------------------------------------------
 def discover_routers():
     import app.api.v1 as api_v1_pkg
+    failures = []
     for _, module_name, is_pkg in pkgutil.iter_modules(api_v1_pkg.__path__):
         if not is_pkg and not module_name.startswith("__"):
             try:
@@ -121,12 +122,13 @@ def discover_routers():
                     # Otherwise, mount under prefix '/<module_name>'
                     if router.prefix:
                         v1_router.include_router(router)
-                        if router.prefix in ["/incidents", "/impact", "/disruptions"]:
-                            app.include_router(router)
                     else:
                         v1_router.include_router(router, prefix=f"/{module_name}")
             except Exception as e:
                 logger.error(f"Error loading router from app.api.v1.{module_name}: {e}")
+                failures.append(f"{module_name}: {e}")
+    if failures:
+        raise RuntimeError("Router discovery failed; refusing to start with missing APIs: " + "; ".join(failures))
 
 discover_routers()
 app.include_router(v1_router)

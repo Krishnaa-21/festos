@@ -23,8 +23,9 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
             )
     except Exception:
         pass
-    # Fallback for plain text comparison in mock dev setups
-    return plain_password == hashed_password
+    # Password records must be bcrypt hashes. A comparison fallback makes
+    # leaked fixture values usable as credentials.
+    return False
 
 
 def get_password_hash(password: str) -> str:

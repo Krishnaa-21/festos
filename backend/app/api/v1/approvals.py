@@ -10,6 +10,7 @@ from app.models.change import ChangeSet
 from app.schemas.common import Actor, Envelope, Page
 from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel, Field
+from sqlalchemy import func
 from sqlmodel import Session, select
 
 router = APIRouter(prefix="/approvals", tags=["Approvals"])
@@ -39,8 +40,7 @@ def list_approvals(
     if required_role:
         query = query.where(Approval.required_role == required_role)
 
-    all_rows = session.exec(query).all()
-    total = len(all_rows)
+    total = session.exec(select(func.count()).select_from(Approval).where(*query._where_criteria)).one()
 
     items = session.exec(
         query.order_by(Approval.created_at.desc()).offset((page - 1) * page_size).limit(page_size)
