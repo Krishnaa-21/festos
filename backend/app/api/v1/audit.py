@@ -4,12 +4,14 @@ import io
 from datetime import datetime
 from typing import Any, Dict, Optional
 
+from app.core import clock
 from app.core.audit import verify_chain
 from app.core.db import get_session
 from app.core.deps import require_permission
 from app.core.masking import mask_fields
 from app.models.audit import AuditEvent
 from app.schemas.common import Actor, Envelope, Page
+from app.services.reports.csv_sanitizer import sanitize_csv_value
 from fastapi import APIRouter, Depends, Query, Response
 from sqlmodel import Session, select
 
@@ -177,23 +179,23 @@ def export_audit_csv(
 
     for ev in events:
         writer.writerow([
-            ev.id,
-            ev.timestamp.isoformat(),
-            ev.action,
-            ev.entity_type,
-            ev.entity_id,
-            ev.actor_id,
-            ev.actor_name,
-            ev.actor_role,
-            ev.reason or "",
-            ev.status,
-            ev.prev_hash,
-            ev.current_hash
+            sanitize_csv_value(ev.id),
+            sanitize_csv_value(ev.timestamp.isoformat()),
+            sanitize_csv_value(ev.action),
+            sanitize_csv_value(ev.entity_type),
+            sanitize_csv_value(ev.entity_id),
+            sanitize_csv_value(ev.actor_id),
+            sanitize_csv_value(ev.actor_name),
+            sanitize_csv_value(ev.actor_role),
+            sanitize_csv_value(ev.reason or ""),
+            sanitize_csv_value(ev.status),
+            sanitize_csv_value(ev.prev_hash),
+            sanitize_csv_value(ev.current_hash),
         ])
 
     csv_data = output.getvalue()
     return Response(
         content=csv_data,
         media_type="text/csv",
-        headers={"Content-Disposition": f"attachment; filename=festos_audit_export_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.csv"}
+        headers={"Content-Disposition": f"attachment; filename=festos_audit_export_{clock.now().strftime('%Y%m%d_%H%M%S')}.csv"}
     )

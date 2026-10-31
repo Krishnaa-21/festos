@@ -18,6 +18,7 @@ from __future__ import annotations
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional, Tuple
 
+from app.core import clock
 from app.engines.conflicts import EquipmentAvailabilityPort
 from app.engines.inventory_ledger import PureInventoryLedger
 
@@ -42,6 +43,7 @@ class PureEquipmentAllocator:
         quantity_needed: int = 1,
         transfer_buffer_min: int = 15,
         default_travel_min: int = 15,
+        now_utc: Optional[datetime] = None,
     ) -> Dict[str, Any]:
         """Finds available equipment units for a venue and session window.
 
@@ -128,8 +130,8 @@ class PureEquipmentAllocator:
                     total_duration_min = travel_min + transfer_buffer_min
 
                     latest_dep = start_at - timedelta(minutes=total_duration_min)
-                    now_utc = datetime.now(timezone.utc)
-                    is_feasible = (latest_dep >= now_utc)
+                    current_now = now_utc if now_utc is not None else clock.now()
+                    is_feasible = (latest_dep >= current_now)
 
                     transfer_needed.append({
                         "item_id": itm_id,
