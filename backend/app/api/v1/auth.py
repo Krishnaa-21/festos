@@ -6,6 +6,7 @@ from typing import Any, Dict
 import app.core.audit as audit_module
 from app.core.clock import now
 from app.core.db import get_session
+from app.core.config import settings
 from app.core.deps import get_actor
 from app.core.errors import FestOSError, RateLimitedError, UnauthenticatedError
 from app.core.rbac import get_all_permissions_matrix, get_role_permissions
@@ -89,7 +90,7 @@ def post_login(
             "access_token": access_token,
             "refresh_token": refresh_token,
             "token_type": "bearer",
-            "expires_in": 1800,
+            "expires_in": settings.JWT_EXPIRE_MIN * 60,
             "user": {
                 "id": user.id,
                 "email": user.email,
@@ -128,7 +129,7 @@ def post_refresh(
         data={
             "access_token": new_access_token,
             "token_type": "bearer",
-            "expires_in": 1800
+            "expires_in": settings.JWT_EXPIRE_MIN * 60
         }
     )
 

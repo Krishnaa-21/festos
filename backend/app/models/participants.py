@@ -28,7 +28,7 @@ class Participant(SQLModel, table=True):
     accommodation_requested: str = Field(default="UNKNOWN") # Tri: YES|NO|UNKNOWN
     tshirt_size: Optional[str] = Field(default=None)
 
-    arrival_at: Optional[datetime] = Field(default=None)
+    arrival_at: Optional[datetime] = Field(default=None, index=True)
     departure_at: Optional[datetime] = Field(default=None)
     dob: Optional[str] = Field(default=None)
     age: Optional[int] = Field(default=None)

@@ -110,6 +110,7 @@ def generate_drafts_endpoint(
 
 @router.put("/drafts/{id}", response_model=Envelope[NotificationDraftSchema])
 @router.patch("/drafts/{id}", response_model=Envelope[NotificationDraftSchema])
+@router.post("/drafts/{id}/edit", response_model=Envelope[NotificationDraftSchema])
 def update_draft_endpoint(
     id: str,
     body: EditDraftRequest,

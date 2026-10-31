@@ -1,20 +1,18 @@
 import { FeatureDefinition } from "../../app/registry";
+import { TransportSafetyWorkspace } from "./TransportSafetyWorkspace";
+import { Truck } from "lucide-react";
 
 export const transportFeature: FeatureDefinition = {
   id: "transport",
   label: "Transportation & Shuttles",
   group: "Transportation",
   path: "/transport",
+  icon: Truck,
   permissions: ["transport:read"],
   routes: [
     {
       path: "",
-      element: (
-        <div className="p-8">
-          <h2 className="text-xl font-bold text-white">Duty-of-Care Transport Planner</h2>
-          <p className="text-sm text-slate-400 mt-2">Shuttle runs schedule, night transit escort roster, and minor guardian verification queue.</p>
-        </div>
-      ),
+      element: <TransportSafetyWorkspace />,
     },
   ],
 };

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { NAV_GROUPS, getFeaturesByGroup, FeatureDefinition, NavGroup } from "../../app/registry";
 import { useAuth } from "../../features/auth/AuthContext";
@@ -14,22 +14,31 @@ import {
   LogOut,
   Sun,
   Moon,
-  ShieldCheck,
+  HelpCircle,
+  Command,
+  AlertTriangle,
 } from "lucide-react";
 import { Badge } from "../ui/Badge";
+import { Button } from "../ui/Button";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "../../api/client";
+import { OfflineStatusPill } from "./OfflineStatusPill";
+import { CommandCenterModal } from "../../features/commands/CommandCenterModal";
+import { KeyboardShortcutsModal } from "./KeyboardShortcutsModal";
+import { VolunteerMobileView } from "../../features/checkin/VolunteerMobileView";
 
 export const AppShell: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [theme, setTheme] = useState<"dark" | "light">("dark");
-  const [searchQuery, setSearchQuery] = useState("");
-  const searchInputRef = useRef<HTMLInputElement>(null);
+  const [isCommandCenterOpen, setIsCommandCenterOpen] = useState(false);
+  const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
 
   const { user, logout, hasPermission } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+
+  const isVolunteer = user?.role === "VOLUNTEER";
 
   // Pending approvals count for bell icon
   const { data: pendingApprovals } = useQuery({
@@ -59,36 +68,62 @@ export const AppShell: React.FC = () => {
     }
   };
 
-  // Keyboard shortcuts: '/' for search, 'g' then 'o' for overview
+  // Keyboard shortcuts: Cmd+K / Ctrl+K, '/', '?', Chords 'g' then 'o'/'c'/'m'/'r'
   useEffect(() => {
     let lastKey = "";
-    let keyTimeout: NodeJS.Timeout;
+    let keyTimeout: any;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Don't intercept if typing inside an input or textarea
+      // 1. Global Command Center Shortcut (Cmd+K or Ctrl+K)
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setIsCommandCenterOpen(true);
+        return;
+      }
+
+      // Don't intercept single-key navigation chords if typing inside an input/textarea
       const target = e.target as HTMLElement;
       if (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable) {
         return;
       }
 
-      // Shortcut: '/' focuses global search / command bar
-      if (e.key === "/") {
+      // Shortcut: '?' (Shift + /) toggles keyboard help overlay
+      if (e.key === "?") {
         e.preventDefault();
-        setTimeout(() => searchInputRef.current?.focus(), 50);
+        setIsShortcutsOpen((prev) => !prev);
         return;
       }
 
-      // Shortcut: 'g' then 'o' navigates to overview (/dashboard)
+      // Shortcut: '/' opens global command bar
+      if (e.key === "/") {
+        e.preventDefault();
+        setIsCommandCenterOpen(true);
+        return;
+      }
+
+      // Navigation Chords: 'g' then <key>
       if (e.key.toLowerCase() === "g") {
         lastKey = "g";
         clearTimeout(keyTimeout);
         keyTimeout = setTimeout(() => {
           lastKey = "";
         }, 1000);
-      } else if (lastKey === "g" && e.key.toLowerCase() === "o") {
-        e.preventDefault();
+      } else if (lastKey === "g") {
+        const nextKey = e.key.toLowerCase();
         lastKey = "";
-        navigate("/dashboard");
+        if (nextKey === "o") {
+          e.preventDefault();
+          navigate("/dashboard");
+        } else if (nextKey === "c") {
+          e.preventDefault();
+          navigate("/checkin");
+        } else if (nextKey === "m") {
+          e.preventDefault();
+          navigate("/merchandise");
+        } else if (nextKey === "r") {
+          e.preventDefault();
+          navigate("/reports");
+        }
       }
     };
 
@@ -106,13 +141,31 @@ export const AppShell: React.FC = () => {
   for (const group of NAV_GROUPS) {
     const list = allGrouped[group] || [];
     filteredGrouped[group] = list.filter((feat) => {
+      if (isVolunteer) {
+        // Volunteer terminals are strictly role-gated to Check-In and Merchandise
+        return feat.id === "checkin" || feat.id === "merchandise";
+      }
       if (!feat.permissions || feat.permissions.length === 0) return true;
       return feat.permissions.some((p) => hasPermission(p));
     });
   }
 
+  // Check if current route is role-gated for volunteer
+  const isVolunteerAllowedRoute =
+    location.pathname === "/checkin" ||
+    location.pathname.startsWith("/checkin/") ||
+    location.pathname === "/merchandise" ||
+    location.pathname.startsWith("/merchandise/") ||
+    location.pathname === "/dashboard" ||
+    location.pathname === "/" ||
+    location.pathname === "/volunteer";
+
   return (
-    <div className={`flex h-screen w-screen overflow-hidden ${theme === "light" ? "bg-slate-50 text-slate-900" : "bg-[#070B14] text-slate-100"}`}>
+    <div
+      className={`flex h-screen w-screen overflow-hidden ${
+        theme === "light" ? "bg-slate-50 text-slate-900" : "bg-[#070B14] text-slate-100"
+      }`}
+    >
       {/* Sidebar */}
       <aside
         className={`flex flex-col border-r transition-all duration-300 ${
@@ -147,13 +200,12 @@ export const AppShell: React.FC = () => {
           </button>
         </div>
 
-        {/* Navigation Groups - Filtered by permissions per Section 18 */}
+        {/* Navigation Groups - Filtered by role permissions */}
         <div className="flex-1 overflow-y-auto px-2 py-4 space-y-4">
           {NAV_GROUPS.map((group) => {
             const features = filteredGrouped[group] || [];
             const hasFeatures = features.length > 0;
 
-            // If a group has no permitted features, hide it for that role
             if (!hasFeatures && sidebarOpen && user?.role !== "FESTIVAL_DIRECTOR") {
               return null;
             }
@@ -204,7 +256,7 @@ export const AppShell: React.FC = () => {
             <div className="flex items-center justify-between text-xs text-slate-400">
               <span className="flex items-center space-x-1.5">
                 <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-[11px] font-mono">Live Sync</span>
+                <span className="text-[11px] font-mono">PWA Enabled</span>
               </span>
               <span className="rounded bg-slate-800 px-1.5 py-0.5 text-[10px] font-mono text-slate-300">
                 {user?.role || "GUEST"}
@@ -237,50 +289,64 @@ export const AppShell: React.FC = () => {
             </span>
           </div>
 
-          {/* Search / Command Bar Slot */}
-          <div className="relative hidden md:flex items-center w-80">
-            <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-slate-500" />
-            <input
-              ref={searchInputRef}
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search or press '/' for command..."
-              data-testid="global-command-bar"
-              className="w-full rounded-lg border border-slate-700 bg-slate-950/60 py-1.5 pl-8 pr-12 text-xs text-slate-200 placeholder-slate-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-            />
-            <kbd className="absolute right-2.5 top-2 rounded bg-slate-800 px-1.5 py-0.5 text-[10px] font-mono text-slate-400 border border-slate-700">
-              /
+          {/* AI Command Center Global Button / Search Bar */}
+          <button
+            type="button"
+            data-testid="global-command-bar"
+            onClick={() => setIsCommandCenterOpen(true)}
+            className="hidden md:flex items-center justify-between w-80 rounded-xl border border-slate-700 bg-slate-950/70 py-1.5 px-3 text-xs text-slate-400 hover:border-indigo-500/60 transition-all shadow-inner"
+          >
+            <div className="flex items-center gap-2">
+              <Search className="h-3.5 w-3.5 text-slate-500" />
+              <span className="truncate">Type command or search...</span>
+            </div>
+            <kbd className="rounded bg-slate-800 px-1.5 py-0.5 text-[10px] font-mono text-slate-400 border border-slate-700 flex items-center gap-0.5">
+              <Command className="w-2.5 h-2.5" /> K
             </kbd>
-          </div>
+          </button>
 
           {/* Right Action Elements */}
-          <div className="flex items-center space-x-3.5">
+          <div className="flex items-center space-x-3">
+            {/* PWA Offline / Online Status Pill with Pending Queue Badge */}
+            <OfflineStatusPill />
+
             {/* Demo Clock */}
             <div
-              className="flex items-center space-x-2 rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-1.5 text-xs text-slate-300 font-mono shadow-sm"
+              className="hidden lg:flex items-center space-x-2 rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-1.5 text-xs text-slate-300 font-mono shadow-sm"
               title="Current Fest Operational Clock (UTC / IST)"
             >
               <Clock size={14} className="text-amber-400 shrink-0" />
               <span>{new Date().toLocaleTimeString([], { hour12: false })} IST</span>
             </div>
 
-            {/* Approvals Bell with Badge */}
-            <Link
-              to="/audit"
-              className="relative rounded-lg border border-slate-800 bg-slate-900/60 p-2 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
-              title="Approvals Inbox"
+            {/* Keyboard Shortcuts Help Overlay Button */}
+            <button
+              data-testid="help-shortcuts-btn"
+              onClick={() => setIsShortcutsOpen(true)}
+              className="rounded-lg border border-slate-800 bg-slate-900/60 p-2 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
+              title="Keyboard Shortcuts Help (?)"
             >
-              <Bell size={16} />
-              {(pendingApprovals ?? 0) > 0 && (
-                <span
-                  className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 text-[9px] font-bold text-white shadow-sm"
-                  data-testid="approvals-badge"
-                >
-                  {pendingApprovals}
-                </span>
-              )}
-            </Link>
+              <HelpCircle size={16} />
+            </button>
+
+            {/* Approvals Bell with Badge (Hidden for volunteers) */}
+            {!isVolunteer && (
+              <Link
+                to="/audit"
+                className="relative rounded-lg border border-slate-800 bg-slate-900/60 p-2 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
+                title="Approvals Inbox"
+              >
+                <Bell size={16} />
+                {(pendingApprovals ?? 0) > 0 && (
+                  <span
+                    className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 text-[9px] font-bold text-white shadow-sm"
+                    data-testid="approvals-badge"
+                  >
+                    {pendingApprovals}
+                  </span>
+                )}
+              </Link>
+            )}
 
             {/* Light/Dark Mode Toggle */}
             <button
@@ -319,14 +385,26 @@ export const AppShell: React.FC = () => {
                   </div>
 
                   <div className="py-1">
-                    <Link
-                      to="/audit"
-                      onClick={() => setUserMenuOpen(false)}
-                      className="flex items-center space-x-2 rounded-lg px-3 py-1.5 text-slate-300 hover:bg-slate-800 hover:text-white"
+                    <button
+                      onClick={() => {
+                        setUserMenuOpen(false);
+                        setIsCommandCenterOpen(true);
+                      }}
+                      className="w-full flex items-center space-x-2 px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-left"
                     >
-                      <ShieldCheck size={14} className="text-indigo-400" />
-                      <span>Security & Audit</span>
-                    </Link>
+                      <Command size={14} />
+                      <span>AI Command Center</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        setUserMenuOpen(false);
+                        setIsShortcutsOpen(true);
+                      }}
+                      className="w-full flex items-center space-x-2 px-3 py-2 text-slate-300 hover:bg-slate-800 rounded-lg text-left"
+                    >
+                      <HelpCircle size={14} />
+                      <span>Keyboard Shortcuts (?)</span>
+                    </button>
                   </div>
 
                   <div className="pt-1 border-t border-slate-800">
@@ -334,9 +412,8 @@ export const AppShell: React.FC = () => {
                       onClick={() => {
                         setUserMenuOpen(false);
                         logout();
-                        navigate("/login");
                       }}
-                      className="flex w-full items-center space-x-2 rounded-lg px-3 py-1.5 text-rose-400 hover:bg-rose-950/30"
+                      className="w-full flex items-center space-x-2 px-3 py-2 text-red-400 hover:bg-red-950/30 rounded-lg text-left"
                     >
                       <LogOut size={14} />
                       <span>Sign Out</span>
@@ -348,11 +425,53 @@ export const AppShell: React.FC = () => {
           </div>
         </header>
 
-        {/* Content Outlet */}
-        <main className="flex-1 overflow-y-auto p-6">
-          <Outlet />
+        {/* Content Body */}
+        <main className="flex-1 overflow-y-auto p-4 md:p-6">
+          {/* Volunteer Role Check & Landing */}
+          {isVolunteer ? (
+            location.pathname === "/dashboard" || location.pathname === "/" || location.pathname === "/volunteer" ? (
+              <VolunteerMobileView />
+            ) : isVolunteerAllowedRoute ? (
+              <Outlet />
+            ) : (
+              /* Role-gated barrier for volunteer trying to access restricted director screens */
+              <div
+                data-testid="volunteer-restricted-view"
+                className="max-w-md mx-auto p-6 rounded-2xl border border-rose-500/40 bg-rose-950/20 text-center space-y-4 my-8"
+              >
+                <AlertTriangle className="w-10 h-10 mx-auto text-rose-400" />
+                <div className="space-y-1">
+                  <h2 className="text-base font-bold text-white">
+                    Access Restricted: Volunteer Terminal
+                  </h2>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    Under FestOS security principles, Volunteer accounts only have operational access to Check-In Desks and Merchandise Counters with minimal personal data exposure.
+                  </p>
+                </div>
+                <Button
+                  variant="primary"
+                  onClick={() => navigate("/dashboard")}
+                  className="bg-indigo-600 hover:bg-indigo-500 font-bold"
+                >
+                  Return to Volunteer Counter
+                </Button>
+              </div>
+            )
+          ) : (
+            <Outlet />
+          )}
         </main>
       </div>
+
+      {/* Global Modals */}
+      <CommandCenterModal
+        isOpen={isCommandCenterOpen}
+        onClose={() => setIsCommandCenterOpen(false)}
+      />
+      <KeyboardShortcutsModal
+        isOpen={isShortcutsOpen}
+        onClose={() => setIsShortcutsOpen(false)}
+      />
     </div>
   );
 };

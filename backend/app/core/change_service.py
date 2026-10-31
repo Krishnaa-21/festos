@@ -67,29 +67,26 @@ class ChangeHandler:
 
 def _stubbed_approvals_require(session: Session, req: ChangeRequest, change_set_id: str) -> None:
     """Interface for P3 approvals requirement."""
-    try:
-        import app.core.approvals as approvals_core
-        from app.models.change import ChangeSet
+    import app.core.approvals as approvals_core
+    from app.models.change import ChangeSet
 
-        # Persist pending change set so approval can execute it
-        change_set = ChangeSet(
-            id=change_set_id,
-            action=req.action,
-            entity_type=req.entity_type,
-            entity_id=req.entity_id,
-            actor_id=req.actor.id,
-            actor_role=req.actor.role,
-            payload=req.payload,
-            previous_state={},
-            status="PENDING_APPROVAL",
-            reason=req.reason,
-            applied_at=now()
-        )
-        session.add(change_set)
-        approvals_core.require(session, req, change_set_id)
-        session.commit()
-    except Exception:
-        pass
+    # Persist pending change set so approval can execute it.
+    change_set = ChangeSet(
+        id=change_set_id,
+        action=req.action,
+        entity_type=req.entity_type,
+        entity_id=req.entity_id,
+        actor_id=req.actor.id,
+        actor_role=req.actor.role,
+        payload=req.payload,
+        previous_state={},
+        status="PENDING_APPROVAL",
+        reason=req.reason,
+        applied_at=now(),
+    )
+    session.add(change_set)
+    approvals_core.require(session, req, change_set_id)
+    session.commit()
 
 def execute_change(req: ChangeRequest, session: Session) -> ChangeResult:
     """Executes a mutation following the standard FestOS pipeline:
@@ -129,7 +126,16 @@ def execute_change(req: ChangeRequest, session: Session) -> ChangeResult:
     # 3. Snapshot previous state
     previous_state = handler_instance.snapshot(req, session)
 
-    # 4. Risk assessment & Approval gate
+    # 4. A dry run is a side-effect-free preview, even for high-risk changes.
+    if req.dry_run:
+        return ChangeResult(
+            status="DRY_RUN",
+            violations=violations,
+            impact={"preview": True, "affected_entity": f"{req.entity_type}:{req.entity_id}"},
+            recommendations=["Dry run verified successfully. Ready to apply."],
+        )
+
+    # 5. Risk assessment & Approval gate
     risk_level = handler_instance.risk(req)
     if risk_level == "HIGH":
         # Check if actor is allowed to approve directly and provided a reason
@@ -147,16 +153,6 @@ def execute_change(req: ChangeRequest, session: Session) -> ChangeResult:
                 recommendations=["Requires Festival Director review and recorded rationale"],
                 warnings=["High-risk change queued for approval gate"]
             )
-
-    # 5. Dry Run
-    if req.dry_run:
-        impact_summary = {"preview": True, "affected_entity": f"{req.entity_type}:{req.entity_id}"}
-        return ChangeResult(
-            status="DRY_RUN",
-            violations=violations,
-            impact=impact_summary,
-            recommendations=["Dry run verified successfully. Ready to apply."]
-        )
 
     # 6. Apply inside a Savepoint Transaction
     change_set_id = f"cs_{uuid.uuid4().hex[:12]}"

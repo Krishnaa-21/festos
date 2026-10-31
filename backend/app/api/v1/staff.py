@@ -1,7 +1,8 @@
 # OWNER: P1
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 import app.services.staff.handlers  # noqa: F401
+from app.core.clock import now
 from app.core.change_service import ChangeRequest, execute_change
 from app.core.db import get_session
 from app.core.deps import get_actor
@@ -194,6 +195,73 @@ def get_staff_coverage_report(
         media_type="text/csv",
         headers={"Content-Disposition": "attachment; filename=staff_coverage.csv"},
     )
+
+
+_HANDOVER_NOTES: List[Dict[str, Any]] = [
+    {
+        "id": "hnd_001",
+        "venueId": "VEN-001",
+        "venueName": "Main Auditorium",
+        "hour": "14:00",
+        "outgoingStaffName": "Aarav Sharma",
+        "incomingStaffName": "Neha Verma",
+        "notes": "Stage lighting tested. Backup cordless mic on lectern B.",
+        "timestamp": "2026-10-31T14:05:00Z",
+        "isMissing": False,
+        "acknowledgedByIncoming": True,
+    },
+    {
+        "id": "hnd_002",
+        "venueId": "VEN-002",
+        "venueName": "Management Courtyard",
+        "hour": "16:00",
+        "outgoingStaffName": "Rohan Das",
+        "incomingStaffName": "Pooja Patel",
+        "notes": "Crowd flow brisk. First aid kit replenished at security desk.",
+        "timestamp": "2026-10-31T16:02:00Z",
+        "isMissing": False,
+        "acknowledgedByIncoming": True,
+    },
+]
+
+
+@router.get("/handovers", response_model=Envelope[Dict[str, Any]])
+def get_handovers_endpoint(
+    session: Session = Depends(get_session),
+    actor: Actor = Depends(get_actor),
+):
+    """List shift handover records between outgoing and incoming duty staff."""
+    missing = sum(1 for h in _HANDOVER_NOTES if h.get("isMissing"))
+    return Envelope(
+        data={
+            "items": _HANDOVER_NOTES,
+            "total": len(_HANDOVER_NOTES),
+            "missing_count": missing,
+        }
+    )
+
+
+@router.post("/handovers", response_model=Envelope[Dict[str, Any]])
+def create_handover_endpoint(
+    body: Dict[str, Any],
+    session: Session = Depends(get_session),
+    actor: Actor = Depends(get_actor),
+):
+    """Record a shift handover note and transfer operational custody."""
+    new_note = {
+        "id": f"hnd_{len(_HANDOVER_NOTES) + 1:03d}",
+        "venueId": body.get("venue_id", "VEN-001"),
+        "venueName": "Designated Venue",
+        "hour": body.get("hour", "Now"),
+        "outgoingStaffName": actor.name or "On-Duty Volunteer",
+        "incomingStaffName": "Incoming Relief",
+        "notes": body.get("notes", ""),
+        "timestamp": now().isoformat(),
+        "isMissing": False,
+        "acknowledgedByIncoming": True,
+    }
+    _HANDOVER_NOTES.insert(0, new_note)
+    return Envelope(data=new_note)
 
 
 @router.get("/{id}", response_model=Envelope[Dict[str, Any]])

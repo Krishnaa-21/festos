@@ -77,6 +77,7 @@ def get_assumption_by_key(
 
 
 @router.put("/{key}", response_model=Envelope[ChangeResult])
+@router.patch("/{key}", response_model=Envelope[ChangeResult])
 def put_update_assumption_by_key(
     key: str,
     body: AssumptionUpdateRequest,

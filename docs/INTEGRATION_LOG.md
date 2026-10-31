@@ -479,6 +479,77 @@ Format:
   - `scripts/check_cross_module_consistency.py`: **100% PASS**.
   - `scripts/smoke_all.py`: **100% PASS** (9 roles, 32 modules, 7 live disruption drills, verified audit growth).
 
+### 2026-10-31: P2/14-impact (Central Intelligence Layer, Impact Graph, Disruption Catalog & Recovery Lifecycle)
+- **Author**: P2 Lead
+- **Branch**: `p2/14-impact`
+- **Contracts Added**:
+  - `docs/api/incidents.md`: Complete specification for operational incidents, disruption catalog, ranked recovery plans, approval, atomic execution, verification, and CSV export.
+  - `docs/api/impact.md`: Complete specification for multi-chain dependency graph traversal, cycle guard, blast radius calculation, and change simulation preview.
+- **Endpoints Added / Hardened**:
+  - `GET /api/v1/disruptions/catalog` & `GET /disruptions/catalog`: Catalog of all 14 disruption scenarios (7 mandatory live-test + 7 extras) with full parameter schemas.
+  - `POST /api/v1/impact/analyze` & `POST /impact/analyze`: Change impact preview endpoint computing blast radius tree and affected counts without applying changes.
+  - `GET /api/v1/impact/graph` & `GET /impact/graph`: Interactive dependency graph traversal by entity type and ID with cycle detection.
+  - `GET /api/v1/impact/blast-radius`: Blast radius summary by root entity.
+  - `GET /api/v1/incidents` & `GET /incidents`: Paged list of logged incidents with status filtering.
+  - `POST /api/v1/incidents` & `POST /incidents`: Incident injection with dry-run mode, automated blast radius calculation, and recovery plan generation.
+  - `GET /api/v1/incidents/{id}` & `GET /incidents/{id}`: Full incident detail, timeline, impact summary, and recovery plans.
+  - `GET /api/v1/incidents/{id}/impact` & `GET /incidents/{id}/impact`: Incident blast radius tree, counts, severities, and downstream update statuses.
+  - `GET /api/v1/incidents/{id}/plans` & `GET /incidents/{id}/plans`: Ranked recovery plans with 6-stage minimal-change objective metrics.
+  - `POST /api/v1/incidents/{id}/approve` & `POST /incidents/{id}/approve`: Recovery plan approval triggering real atomic state mutations via ChangeService.
+  - `POST /api/v1/incidents/{id}/verify` & `POST /incidents/{id}/verify`: Post-execution verification pass re-running risks and asserting live database changes.
+  - `GET /api/v1/incidents/report/csv` & `GET /incidents/report/csv`: Streaming CSV download of all incidents and resolution metrics (`incident_report.csv`).
+- **Engines & Core Infrastructure**:
+  - `backend/app/engines/impact/graph.py`: Multi-chain Breadth-First Search (BFS) engine covering:
+    1. Participant -> Contingent -> Registration -> Event -> Venue -> Equipment -> Vendor
+    2. Participant -> Arrival -> Check-in -> Accommodation -> Meal -> Vendor
+    3. Participant -> Merchandise eligibility -> Stock -> Distribution counter
+    Includes cycle guard, configurable depth cap (`max_depth=5`), per-node severities (`CRITICAL`, `HIGH`, `MEDIUM`, `LOW`), `people_affected` rollups, downstream node status tracking (`PENDING | UPDATED | VERIFIED`), and automatic registration with `app.core.registry.register_impact_hook`.
+  - `backend/app/engines/replan/engine.py`: Minimal-change recovery planner implementing the strict 6-stage objective order:
+    1. Fewest people relocated
+    2. Least schedule disruption
+    3. Least resource movement
+    4. Preserve contingent/room cohesion
+    5. Least cost increase
+    6. Preserve approved allocations
+  - `backend/app/services/incidents/service.py`: Disruption catalog (7 mandatory live scenarios: `LATE_CONTINGENT`, `DUPLICATE_PARTICIPANT`, `HOSTEL_CLOSURE`, `EQUIPMENT_FAILURE`, `VENUE_CHANGE`, `VENDOR_SHUTDOWN`, `DUPLICATE_MERCHANDISE_CLAIM` + 7 operational extras), concurrent disruption conflict detection, Prompt 16 sandbox simulation preview adapter, notification draft generation across all 5 audiences, real database state changes during plan execution, `ChangeSet` persistence, `DecisionCard` persistence, verification pass, and `incident_report.csv` generator.
+  - Change handlers in `backend/app/services/incidents/handlers.py`: Registered `@register_change_handler("incident.create")`, `@register_change_handler("incident.approve_plan")`, and `@register_change_handler("incident.verify")`.
+  - Public module contracts: `backend/app/services/incidents/public.py` and `backend/app/services/impact/public.py` with `summary`, `risks` (`INCIDENT_ACTIVE`, `STALLED_APPROVAL`), and `dependents`.
+- **Database & Model Enhancements**:
+  - Enhanced `Incident` model in `app.models.ops` with `scenario_type`, `entity_type`, `entity_id`, `parameters`, `timeline`, `impact_summary`, `impact_tree`, `plans`, `approved_plan_id`, `approved_by`, `approved_at`, `change_set_id`, `decision_card_id`, `verified_at`, `verification_data`, `people_affected`, `concurrent_conflicts`, and backward-compatible properties.
+  - Added `participant_id` getter/setter property on `MerchClaim` for canonical participant ID compatibility.
+  - Added optional `session_code` field to `EventSession`.
+- **RBAC Grants**:
+  - Updated `backend/app/core/rbac.py` with `incidents:read`, `incidents:write`, and `impact:read` permissions for operational leads (`ACCOMMODATION_LEAD`, `EVENT_LEAD`, `LOGISTICS_MANAGER`, `MERCHANDISE_MANAGER`, `FOOD_OPS_MANAGER`, `FINANCE_MANAGER`).
+- **Tests Added & Passing**:
+  - `backend/tests/incidents/test_incidents_ops.py`: 14 tests verifying all 7 mandatory scenarios end-to-end with real database mutations, concurrent disruption conflict detection, idempotent replay, rejected plan no-op, approval-gated mock notifications, and public contract.
+  - `backend/tests/impact/test_impact_engine.py`: 6 tests verifying multi-chain traversal, cycle termination, blast radius calculation, API endpoints, and public contract.
+  - Total: **20/20 PASSED (100%)**.
+
+### 2026-10-31: P2/23-submission (Competition Deliverables, Verification Harnesses & Ground-Truth Documentation)
+- **Author**: P2 Lead
+- **Branch**: `p2/23-submission`
+- **Deliverables & Core Documentation Added / Hardened**:
+  - `README.md`: Complete executive rewrite featuring system purpose, Mermaid architecture flowchart, 32-module directory across 7 domains, local/Docker setup guide, all 9 role test credentials table, instant demo reset instructions, verification commands, and repository folder tree.
+  - `docs/ASSUMPTIONS.md`: Authoritative 43-key assumptions register directly exported from the live SQLite database `assumption` table, detailing live values, sources, owners, rationales, and impact-if-changed.
+  - `docs/LIMITATIONS.md`: Engineering limitations disclosure covering heuristic greedy allocation, assumed travel/shuttle parameters, mocked broadcast/payment integrations, unverified accessibility data, synthetic benchmark fidelity, SQLite write-concurrency limits, missing schedule primitives (judges, times, venues, team IDs), and the 2,836 vs 2,842 vs 2,400 Golden Headcount Waterfall.
+  - `docs/AI_DISCLOSURE.md`: Ethical AI boundary specification featuring the dedicated 3-column matrix for the pitch slide (What AI Did, What Team Decided, How Outputs Were Checked) and human-in-the-loop verification protocol.
+  - `docs/PRIVACY_AND_SECURITY.md`: Comprehensive security architecture documenting the 9-role access matrix, Volunteer Mobile View isolation, serializer-level field masking, emergency break-glass elevation protocol with 15-minute TTL, append-only SQLite audit ledger with SHA-256 hash chaining, SQLite tamper triggers, and intentional non-protected operational data disclosures.
+  - `docs/API.md`: Complete REST API index generated directly from OpenAPI (215 paths, 240 operations across 32 modules) with conventions, standard envelopes, and operation IDs.
+  - `submission/sample_plans/`: Generated Deliverable 02 artifacts (`accommodation_plan_A.csv`, `accommodation_plan_B.csv`, `accommodation_plan_C.csv`, `schedule_plan.csv`, `inventory_plan.csv`, `reconciliation_report.csv`, `data_quality_report.csv`, and documentation `README.md` with commit hash `a10fb16fbca6f8ce887137107d6b7b301c9d626e`).
+- **Harnesses & Scripts**:
+  - `scripts/verify_claims.py`: Continuous verification script querying live database counts and asserting all 19 documented numbers and citations across `README.md`, `LIMITATIONS.md`, `PITCH.md`, and `FESTOS_CONTEXT.md` match live reality (100% PASS).
+  - `scripts/generate_sample_plans.py`: CLI tool generating all 7 submission plans and reports.
+  - `scripts/export_assumptions_doc.py`: CLI tool exporting live SQLite assumptions to markdown.
+  - `scripts/generate_api_md.py`: CLI tool generating API markdown index from OpenAPI spec.
+  - `Makefile`: Added `verify-claims` target.
+- **Verification Results**:
+  - `scripts/verify_claims.py`: **100% PASS (19/19 claims verified)**.
+  - `scripts/pre_demo_check.py`: **100% PASS (all 9 roles, 32 modules, 7 live disruption scenarios < 200ms)**.
+  - `scripts/check_cross_module_consistency.py`: **100% PASS**.
+  - `scripts/smoke_all.py`: **100% PASS**.
+
+
+
 
 
 

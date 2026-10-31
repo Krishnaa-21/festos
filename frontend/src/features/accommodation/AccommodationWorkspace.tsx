@@ -186,7 +186,7 @@ export const AccommodationWorkspace: React.FC = () => {
   const handleGeneratePlan = async () => {
     setIsGenerating(true);
     try {
-      const res = await api.post<AccommodationPlan>("/api/v1/accommodation/generate-plan", {
+      const res = await api.post<{ plans: AccommodationPlan[] }>("/api/v1/accommodation/generate-plan", {
         kind: selectedPlanKind,
         cleaning_buffer_minutes: cleaningBuffer,
         max_distance_km: maxDistance,
@@ -200,19 +200,31 @@ export const AccommodationWorkspace: React.FC = () => {
 
       addToast({
         title: "Accommodation Plan Generated",
-        message: `Generated candidate ${res.name}. Updated metrics are now visible in the compare matrix.`,
+        message: `Generated candidate ${selectedPlanKind}. Updated metrics are now visible in the compare matrix.`,
         type: "success",
       });
 
       // Update local plans
       setPlansData((prev) => {
         if (!prev) return prev;
-        const exists = prev.plans.findIndex((p) => p.kind === res.kind);
+        const resObj = res as unknown as Record<string, unknown>;
+        const planList: AccommodationPlan[] = Array.isArray(res)
+          ? (res as AccommodationPlan[])
+          : Array.isArray(resObj?.plans)
+          ? (resObj.plans as AccommodationPlan[])
+          : resObj && "plan_id" in resObj
+          ? [resObj as unknown as AccommodationPlan]
+          : [];
+        const generated =
+          planList.find((p) => p.kind === selectedPlanKind) ||
+          (resObj && "plan_id" in resObj ? (resObj as unknown as AccommodationPlan) : undefined);
+        if (!generated) return prev;
+        const exists = prev.plans.findIndex((p) => p.kind === generated.kind);
         const updated = [...prev.plans];
         if (exists >= 0) {
-          updated[exists] = res;
+          updated[exists] = generated;
         } else {
-          updated.push(res);
+          updated.push(generated);
         }
         return { ...prev, plans: updated };
       });
@@ -231,9 +243,7 @@ export const AccommodationWorkspace: React.FC = () => {
     setIsCommitting(true);
     try {
       const targetPlan = plansData?.plans.find((p) => p.kind === selectedPlanKind) || plansData?.plans[2];
-      await api.post("/api/v1/accommodation/commit-live", {
-        expected_version: 1,
-        plan_id: targetPlan?.plan_id || "plan_C_balanced",
+      await api.post(`/api/v1/accommodation/plans/${targetPlan?.plan_id || "plan_C_balanced"}/commit`, {
         reason,
       });
 
@@ -247,11 +257,10 @@ export const AccommodationWorkspace: React.FC = () => {
     } catch {
       setShowCommitModal(false);
       addToast({
-        title: "Commit Live (Simulated)",
-        message: "Plan marked as LIVE in operational session.",
-        type: "success",
+        title: "Commit Failed",
+        message: "The plan was not marked LIVE. Review the error and retry.",
+        type: "error",
       });
-      setLivePlanId("plan_C_balanced");
     } finally {
       setIsCommitting(false);
     }

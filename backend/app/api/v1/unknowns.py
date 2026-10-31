@@ -151,3 +151,55 @@ def get_verification_history_for_field(
     """Retrieve chronological field verification history for an entity."""
     history = get_field_history(session, entity_type, entity_id, field)
     return Envelope(data={"entity_type": entity_type, "entity_id": entity_id, "field": field, "verifications": history})
+
+
+class BatchConfirmationRequestBody(BaseModel):
+    target_type: str = "CONTINGENT_LEADER"
+    contingent_id: Optional[str] = None
+    group_id: Optional[str] = "housing_gender"
+    expires_in_minutes: int = 1440
+
+
+@router.get("/ranking", response_model=Envelope[Dict[str, Any]])
+def get_value_of_information_ranking(
+    session: Session = Depends(get_session),
+):
+    """Value-of-Information (VOI) ranking across unknown field groups.
+    Simulates sandbox outcomes and ranks groups by operational improvement per confirmation.
+    """
+    from app.services.unknowns.service import get_voi_ranking
+    res = get_voi_ranking(session)
+    return Envelope(data=res)
+
+
+@router.post("/confirmation-requests", response_model=Envelope[Dict[str, Any]])
+def create_batched_confirmation_request(
+    body: BatchConfirmationRequestBody,
+    session: Session = Depends(get_session),
+):
+    """Generate minimal confirmation requests batched by contingent leader or desk volunteer."""
+    from app.services.unknowns.service import generate_batch_confirmation_request
+    res = generate_batch_confirmation_request(
+        session=session,
+        target_type=body.target_type,
+        contingent_id=body.contingent_id,
+        group_id=body.group_id,
+        expires_in_minutes=body.expires_in_minutes,
+    )
+    return Envelope(data=res)
+
+
+@router.get("/why-not/{participant_id}", response_model=Envelope[Dict[str, Any]])
+def get_participant_why_not_explanation(
+    participant_id: str,
+    session: Session = Depends(get_session),
+):
+    """Diagnostic explanation extending Why-Not with simulated counterfactual predictions:
+    'What confirming field X would change for this participant'.
+    """
+    from app.services.unknowns.service import get_why_not_counterfactuals
+    try:
+        res = get_why_not_counterfactuals(session, participant_id)
+        return Envelope(data=res)
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))

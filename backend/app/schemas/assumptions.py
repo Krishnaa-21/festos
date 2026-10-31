@@ -22,7 +22,7 @@ class AssumptionItem(BaseModel):
 
 class AssumptionUpdateRequest(BaseModel):
     key: Optional[str] = None
-    value: str
+    value: Any
     reason: Optional[str] = "Operational baseline adjustment"
     expected_version: Optional[int] = None
     dry_run: bool = False

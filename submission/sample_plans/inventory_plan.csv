@@ -1,0 +1,166 @@
+item_id,item_name,category,on_hand,reserved,in_transit,damaged,available,shortage_qty
+L00-1,mic,general,32,20,0,0,32,0
+L00-2,mic,general,16,20,0,0,16,4
+L00-3,mic,general,33,20,0,0,33,0
+L00-4,mic,general,27,20,0,0,27,0
+L01-1,speaker,general,5,20,0,0,5,15
+L01-2,speaker,general,4,20,0,0,4,16
+L01-3,speaker,general,30,20,0,0,30,0
+L01-4,speaker,general,16,20,0,0,16,4
+L02-1,mixer,general,32,20,0,0,32,0
+L02-2,mixer,general,20,20,0,0,20,0
+L02-3,mixer,general,35,20,0,0,35,0
+L02-4,mixer,general,28,20,0,0,28,0
+L03-1,extension cord,general,24,20,0,0,24,0
+L03-2,extension cord,general,22,20,0,0,22,0
+L03-3,extension cord,general,32,20,0,0,32,0
+L03-4,extension cord,general,9,20,0,0,9,11
+L04-1,barricade,general,33,20,0,0,33,0
+L04-2,barricade,general,20,20,0,0,20,0
+L04-3,barricade,general,35,20,0,0,35,0
+L04-4,barricade,general,17,20,0,0,17,3
+L05-1,table,general,15,20,0,0,15,5
+L05-2,table,general,8,20,0,0,8,12
+L05-3,table,general,25,20,0,0,25,0
+L05-4,table,general,27,20,0,0,27,0
+L06-1,chair,general,29,20,0,0,29,0
+L06-2,chair,general,31,20,0,0,31,0
+L06-3,chair,general,16,20,0,0,16,4
+L06-4,chair,general,14,20,0,0,14,6
+L07-1,projector,general,15,20,0,0,15,5
+L07-2,projector,general,9,20,0,0,9,11
+L07-3,projector,general,20,20,0,0,20,0
+L07-4,projector,general,4,20,0,0,4,16
+L08-1,generator,general,31,20,0,0,31,0
+L08-2,generator,general,6,20,0,0,6,14
+L08-3,generator,general,29,20,0,0,29,0
+L08-4,generator,general,13,20,0,0,13,7
+L09-1,signage,general,35,20,0,0,35,0
+L09-2,signage,general,18,20,0,0,18,2
+L09-3,signage,general,8,20,0,0,8,12
+L09-4,signage,general,8,20,0,0,8,12
+L10-1,first-aid kit,general,14,20,0,0,14,6
+L10-2,first-aid kit,general,21,20,0,0,21,0
+L10-3,first-aid kit,general,17,20,0,0,17,3
+L10-4,first-aid kit,general,29,20,0,0,29,0
+L11-1,walkie-talkie,general,2,20,0,0,2,18
+L11-2,walkie-talkie,general,12,20,0,0,12,8
+L11-3,walkie-talkie,general,29,20,0,0,29,0
+L11-4,walkie-talkie,general,26,20,0,0,26,0
+L12-1,tripod,general,25,20,0,0,25,0
+L12-2,tripod,general,14,20,0,0,14,6
+L12-3,tripod,general,33,20,0,0,33,0
+L12-4,tripod,general,4,20,0,0,4,16
+L13-1,camera,general,7,20,0,0,7,13
+L13-2,camera,general,11,20,0,0,11,9
+L13-3,camera,general,8,20,0,0,8,12
+L13-4,camera,general,5,20,0,0,5,15
+L14-1,stage panel,general,12,20,0,0,12,8
+L14-2,stage panel,general,27,20,0,0,27,0
+L14-3,stage panel,general,11,20,0,0,11,9
+L14-4,stage panel,general,19,20,0,0,19,1
+L15-1,lighting rig,general,28,20,0,0,28,0
+L15-2,lighting rig,general,31,20,0,0,31,0
+L15-3,lighting rig,general,22,20,0,0,22,0
+L15-4,lighting rig,general,28,20,0,0,28,0
+L16-1,power strip,general,11,20,0,0,11,9
+L16-2,power strip,general,28,20,0,0,28,0
+L16-3,power strip,general,9,20,0,0,9,11
+L16-4,power strip,general,26,20,0,0,26,0
+L17-1,registration desk,general,29,20,0,0,29,0
+L17-2,registration desk,general,34,20,0,0,34,0
+L17-3,registration desk,general,7,20,0,0,7,13
+L17-4,registration desk,general,23,20,0,0,23,0
+itm_merch_0001,T-shirt,general,449,14,0,0,449,0
+itm_merch_0002,T-shirt,general,115,6,0,0,115,0
+itm_merch_0003,T-shirt,general,234,15,0,0,234,0
+itm_merch_0004,T-shirt,general,713,29,0,0,713,0
+itm_merch_0005,T-shirt,general,136,25,0,0,136,0
+itm_merch_0006,ID card,general,1367,22,0,0,1367,0
+itm_merch_0007,lanyard,general,2150,1,0,0,2150,0
+itm_merch_0008,tote,general,829,12,0,0,829,0
+itm_merch_0009,winner medal,general,2269,16,0,0,2269,0
+itm_merch_0010,special badge,general,905,23,0,0,905,0
+itm_l00_1,mic,audio,32,20,0,0,32,0
+itm_l00_2,mic,audio,16,20,0,0,16,4
+itm_l00_3,mic,audio,33,20,0,0,33,0
+itm_l00_4,mic,audio,27,20,0,0,80,0
+itm_l01_1,speaker,audio,5,20,0,0,5,15
+itm_l01_2,speaker,audio,4,20,0,0,4,16
+itm_l01_3,speaker,audio,30,20,0,0,80,0
+itm_l01_4,speaker,audio,16,20,0,0,16,4
+itm_l02_1,mixer,audio,32,20,0,0,32,0
+itm_l02_2,mixer,audio,20,20,0,0,20,0
+itm_l02_3,mixer,audio,35,20,0,0,35,0
+itm_l02_4,mixer,audio,28,20,0,0,28,0
+itm_l03_1,extension cord,power,24,20,0,0,80,0
+itm_l03_2,extension cord,power,22,20,0,0,22,0
+itm_l03_3,extension cord,power,32,20,0,0,32,0
+itm_l03_4,extension cord,power,9,20,0,0,9,11
+itm_l04_1,barricade,infrastructure,33,20,0,0,33,0
+itm_l04_2,barricade,infrastructure,20,20,0,0,20,0
+itm_l04_3,barricade,infrastructure,35,20,0,0,80,0
+itm_l04_4,barricade,infrastructure,17,20,0,0,17,3
+itm_l05_1,table,furniture,15,20,0,0,15,5
+itm_l05_2,table,furniture,8,20,0,0,8,12
+itm_l05_3,table,furniture,25,20,0,0,80,0
+itm_l05_4,table,furniture,27,20,0,0,27,0
+itm_l06_1,chair,furniture,29,20,0,0,29,0
+itm_l06_2,chair,furniture,31,20,0,0,31,0
+itm_l06_3,chair,furniture,16,20,0,0,16,4
+itm_l06_4,chair,furniture,14,20,0,0,14,6
+itm_l07_1,projector,video,15,20,0,0,15,5
+itm_l07_2,projector,video,9,20,0,0,9,11
+itm_l07_3,projector,video,20,20,0,0,20,0
+itm_l07_4,projector,video,4,20,0,0,80,0
+itm_l08_1,generator,power,31,20,0,0,80,0
+itm_l08_2,generator,power,6,20,0,0,6,14
+itm_l08_3,generator,power,29,20,0,0,29,0
+itm_l08_4,generator,power,13,20,0,0,13,7
+itm_l09_1,signage,branding,35,20,0,0,80,0
+itm_l09_2,signage,branding,18,20,0,0,80,0
+itm_l09_3,signage,branding,8,20,0,0,8,12
+itm_l09_4,signage,branding,8,20,0,0,80,0
+itm_l10_1,first-aid kit,safety,14,20,0,0,14,6
+itm_l10_2,first-aid kit,safety,21,20,0,0,80,0
+itm_l10_3,first-aid kit,safety,17,20,0,0,17,3
+itm_l10_4,first-aid kit,safety,29,20,0,0,29,0
+itm_l11_1,walkie-talkie,comms,2,20,0,0,2,18
+itm_l11_2,walkie-talkie,comms,12,20,0,0,80,0
+itm_l11_3,walkie-talkie,comms,29,20,0,0,29,0
+itm_l11_4,walkie-talkie,comms,26,20,0,0,26,0
+itm_l12_1,tripod,video,25,20,0,0,25,0
+itm_l12_2,tripod,video,14,20,0,0,14,6
+itm_l12_3,tripod,video,33,20,0,0,33,0
+itm_l12_4,tripod,video,4,20,0,0,4,16
+itm_l13_1,camera,video,7,20,0,0,80,0
+itm_l13_2,camera,video,11,20,0,0,80,0
+itm_l13_3,camera,video,8,20,0,0,80,0
+itm_l13_4,camera,video,5,20,0,0,80,0
+itm_l14_1,stage panel,stage,12,20,0,0,12,8
+itm_l14_2,stage panel,stage,27,20,0,0,27,0
+itm_l14_3,stage panel,stage,11,20,0,0,80,0
+itm_l14_4,stage panel,stage,19,20,0,0,19,1
+itm_l15_1,lighting rig,lighting,28,20,0,0,80,0
+itm_l15_2,lighting rig,lighting,31,20,0,0,80,0
+itm_l15_3,lighting rig,lighting,22,20,0,0,22,0
+itm_l15_4,lighting rig,lighting,28,20,0,0,80,0
+itm_l16_1,power strip,power,11,20,0,0,80,0
+itm_l16_2,power strip,power,28,20,0,0,28,0
+itm_l16_3,power strip,power,9,20,0,0,9,11
+itm_l16_4,power strip,power,26,20,0,0,26,0
+itm_l17_1,registration desk,furniture,29,20,0,0,29,0
+itm_l17_2,registration desk,furniture,34,20,0,0,80,0
+itm_l17_3,registration desk,furniture,7,20,0,0,7,13
+itm_l17_4,registration desk,furniture,23,20,0,0,23,0
+mch_t_shirt_s,T-shirt,apparel,449,14,0,0,435,0
+mch_t_shirt_m,T-shirt,apparel,114,5,0,0,109,0
+mch_t_shirt_l,T-shirt,apparel,233,14,0,0,219,0
+mch_t_shirt_xl,T-shirt,apparel,713,29,0,0,684,0
+mch_t_shirt_xxl,T-shirt,apparel,136,25,0,0,111,0
+mch_id_card_na,ID card,swag,1366,21,0,0,1345,0
+mch_lanyard_na,lanyard,swag,2149,20,0,0,2149,0
+mch_tote_na,tote,swag,829,12,0,0,817,0
+mch_winner_medal_na,winner medal,swag,2269,16,0,0,2253,0
+mch_special_badge_na,special badge,swag,905,23,0,0,882,0
+itm_cam_acc_a8611e,camera_pro_a8611e,video,2,20,0,0,2,18

@@ -6,7 +6,8 @@ services:
     container_name: festos-backend
     restart: unless-stopped
     env_file:
-      - .env
+      - path: .env
+        required: false
     environment:
       - DATABASE_URL=sqlite:////app/data/festos.db
       - SEED_ON_START=true

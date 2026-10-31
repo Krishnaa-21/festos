@@ -921,6 +921,600 @@
         }
       }
     },
+    "/api/v1/accommodation/plans/{id}/commit": {
+      "post": {
+        "tags": [
+          "Accommodation"
+        ],
+        "summary": "Commit Candidate Plan Endpoint",
+        "description": "Commit candidate plan to LIVE via approvals workflow.",
+        "operationId": "commit_candidate_plan_endpoint_api_v1_accommodation_plans__id__commit_post",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/CommitPlanRequest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/accommodation/plans/live": {
+      "get": {
+        "tags": [
+          "Accommodation"
+        ],
+        "summary": "Get Live Plan Endpoint",
+        "description": "Retrieve the currently operational LIVE accommodation plan.",
+        "operationId": "get_live_plan_endpoint_api_v1_accommodation_plans_live_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/accommodation/plans/live/freeze": {
+      "post": {
+        "tags": [
+          "Accommodation"
+        ],
+        "summary": "Freeze Live Plan Endpoint",
+        "description": "Freeze LIVE plan allocations ahead of festival commencement.",
+        "operationId": "freeze_live_plan_endpoint_api_v1_accommodation_plans_live_freeze_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/FreezePlanRequest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/accommodation/plans/live/allocate-incremental": {
+      "post": {
+        "tags": [
+          "Accommodation"
+        ],
+        "summary": "Allocate Incremental Endpoint",
+        "description": "Incrementally allocate late arrivals while preserving all approved assignments.",
+        "operationId": "allocate_incremental_endpoint_api_v1_accommodation_plans_live_allocate_incremental_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/IncrementalAllocateRequest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/accommodation/rooms/{id}": {
+      "patch": {
+        "tags": [
+          "Accommodation"
+        ],
+        "summary": "Update Room Endpoint",
+        "description": "Update room operational status, cleaning, or accessibility attributes via ChangeService.",
+        "operationId": "update_room_endpoint_api_v1_accommodation_rooms__id__patch",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RoomUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/accommodation/rooms/{id}/cleaning-complete": {
+      "post": {
+        "tags": [
+          "Accommodation"
+        ],
+        "summary": "Complete Cleaning Endpoint",
+        "description": "Mark housekeeping inspection complete, transitioning room status to READY.",
+        "operationId": "complete_cleaning_endpoint_api_v1_accommodation_rooms__id__cleaning_complete_post",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/CleaningCompleteRequest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/accommodation/properties/{id}": {
+      "patch": {
+        "tags": [
+          "Accommodation"
+        ],
+        "summary": "Update Property Endpoint",
+        "description": "Update external property pricing, transport windows, and verification flags via ChangeService.",
+        "operationId": "update_property_endpoint_api_v1_accommodation_properties__id__patch",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PropertyUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/accommodation/assignments/manual": {
+      "post": {
+        "tags": [
+          "Accommodation"
+        ],
+        "summary": "Manual Assignment Endpoint",
+        "description": "Manually assign or move participant with mandatory reason and Director override enforcement.",
+        "operationId": "manual_assignment_endpoint_api_v1_accommodation_assignments_manual_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ManualAssignRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/accommodation/repair": {
+      "post": {
+        "tags": [
+          "Accommodation"
+        ],
+        "summary": "Repair Accommodation Endpoint",
+        "description": "Minimal-change repair engine: re-plans displaced participants while preserving unaffected stays.",
+        "operationId": "repair_accommodation_endpoint_api_v1_accommodation_repair_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RepairPlanRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/approvals": {
       "get": {
         "tags": [
@@ -2379,10 +2973,10 @@
     "/api/v1/checkin/board": {
       "get": {
         "tags": [
-          "checkin"
+          "Checkin"
         ],
         "summary": "Get Checkin Board",
-        "description": "Arrival desk board summarizing arrivals, checkin statuses, and pending counts.",
+        "description": "Real-time arrival desk board tracking pending arrivals, checked-in, and late arrivals.",
         "operationId": "get_checkin_board_api_v1_checkin_board_get",
         "parameters": [
           {
@@ -2426,14 +3020,444 @@
         }
       }
     },
-    "/api/v1/checkin": {
+    "/api/v1/checkin/search": {
       "get": {
         "tags": [
-          "checkin"
+          "Checkin"
         ],
-        "summary": "Get Checkin Board",
-        "description": "Arrival desk board summarizing arrivals, checkin statuses, and pending counts.",
-        "operationId": "get_checkin_board_api_v1_checkin_get",
+        "summary": "Search Participants Endpoint",
+        "description": "Rapid desk search by participant ID, name, email, or contingent code.",
+        "operationId": "search_participants_endpoint_api_v1_checkin_search_get",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Search query string",
+              "title": "Q"
+            },
+            "description": "Search query string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_List_Dict_str__Any___"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/checkin/participant/{id}": {
+      "get": {
+        "tags": [
+          "Checkin"
+        ],
+        "summary": "Get Participant Detail Endpoint",
+        "description": "Retrieve participant check-in profile with room assignment, readiness, and alerts.",
+        "operationId": "get_participant_detail_endpoint_api_v1_checkin_participant__id__get",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/checkin/verify-arrival": {
+      "post": {
+        "tags": [
+          "Checkin"
+        ],
+        "summary": "Checkin Endpoint",
+        "description": "Idempotent participant check-in with room cleaning readiness verification.",
+        "operationId": "checkin_endpoint_api_v1_checkin_verify_arrival_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckinRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/checkin/checkin": {
+      "post": {
+        "tags": [
+          "Checkin"
+        ],
+        "summary": "Checkin Endpoint",
+        "description": "Idempotent participant check-in with room cleaning readiness verification.",
+        "operationId": "checkin_endpoint_api_v1_checkin_checkin_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckinRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/checkin/checkout": {
+      "post": {
+        "tags": [
+          "Checkin"
+        ],
+        "summary": "Checkout Endpoint",
+        "description": "Check out participant, free bed, and trigger room cleaning countdown buffer.",
+        "operationId": "checkout_endpoint_api_v1_checkin_checkout_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckoutRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/checkin/participant/{id}/arrival": {
+      "patch": {
+        "tags": [
+          "Checkin"
+        ],
+        "summary": "Update Arrival Endpoint",
+        "description": "Update participant arrival datetime, flagging curfew breaches.",
+        "operationId": "update_arrival_endpoint_api_v1_checkin_participant__id__arrival_patch",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ArrivalUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/checkin/sync": {
+      "post": {
+        "tags": [
+          "Checkin"
+        ],
+        "summary": "Sync Offline Batch Endpoint",
+        "description": "Batch synchronize buffered offline desk operations with conflict explanations.",
+        "operationId": "sync_offline_batch_endpoint_api_v1_checkin_sync_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SyncBatchRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_SyncBatchResponseData_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/checkin/reallocations/suggestions": {
+      "get": {
+        "tags": [
+          "Checkin"
+        ],
+        "summary": "Get Reallocation Suggestions Endpoint",
+        "description": "Retrieve advisory bed reallocation suggestions generated by cancellations/no-shows.",
+        "operationId": "get_reallocation_suggestions_endpoint_api_v1_checkin_reallocations_suggestions_get",
         "parameters": [
           {
             "name": "authorization",
@@ -4270,11 +5294,111 @@
     "/api/v1/finance/summary": {
       "get": {
         "tags": [
-          "finance"
+          "Finance & Commercials"
         ],
-        "summary": "Get Finance Summary",
-        "description": "Returns festival financial overview: budget ceilings, external accommodation commitments, and cost breakdown.",
-        "operationId": "get_finance_summary_api_v1_finance_summary_get",
+        "summary": "Get Finance Summary Endpoint",
+        "description": "Return budget gauge metrics, committed spend, projected spend, and budget-unset explanation.",
+        "operationId": "get_finance_summary_endpoint_api_v1_finance_summary_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_FinanceSummaryData_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/finance/accommodation-spend": {
+      "get": {
+        "tags": [
+          "Finance & Commercials"
+        ],
+        "summary": "Get Accommodation Spend Endpoint",
+        "description": "External accommodation spend broken down by external property from accommodation public contract.",
+        "operationId": "get_accommodation_spend_endpoint_api_v1_finance_accommodation_spend_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_AccommodationSpendResponseData_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/finance/vendor-settlements": {
+      "get": {
+        "tags": [
+          "Finance & Commercials"
+        ],
+        "summary": "Get Vendor Settlements Endpoint",
+        "description": "Vendor commercial settlements, balances due, payment milestones, and billing disputes.",
+        "operationId": "get_vendor_settlements_endpoint_api_v1_finance_vendor_settlements_get",
         "parameters": [
           {
             "name": "authorization",
@@ -4317,14 +5441,152 @@
         }
       }
     },
-    "/api/v1/finance": {
+    "/api/v1/finance/vendor-settlements/{id}/pay": {
+      "post": {
+        "tags": [
+          "Finance & Commercials"
+        ],
+        "summary": "Record Payment Endpoint",
+        "description": "Record an advance or balance payment against a vendor settlement via ChangeService.",
+        "operationId": "record_payment_endpoint_api_v1_finance_vendor_settlements__id__pay_post",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecordPaymentRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/finance/vendor-settlements/{id}/dispute": {
+      "post": {
+        "tags": [
+          "Finance & Commercials"
+        ],
+        "summary": "Open Dispute Endpoint",
+        "description": "Open a commercial billing dispute on a vendor settlement invoice.",
+        "operationId": "open_dispute_endpoint_api_v1_finance_vendor_settlements__id__dispute_post",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OpenDisputeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/finance/merchandise-costs": {
       "get": {
         "tags": [
-          "finance"
+          "Finance & Commercials"
         ],
-        "summary": "Get Finance Summary",
-        "description": "Returns festival financial overview: budget ceilings, external accommodation commitments, and cost breakdown.",
-        "operationId": "get_finance_summary_api_v1_finance_get",
+        "summary": "Get Merchandise Costs Endpoint",
+        "description": "Summary of merchandise procurement costs, unit prices, and delivered quantities.",
+        "operationId": "get_merchandise_costs_endpoint_api_v1_finance_merchandise_costs_get",
         "parameters": [
           {
             "name": "authorization",
@@ -4343,6 +5605,274 @@
             }
           }
         ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/finance/emergency-spend": {
+      "get": {
+        "tags": [
+          "Finance & Commercials"
+        ],
+        "summary": "Get Emergency Spend Endpoint",
+        "description": "Log of approved emergency expenditures with justifications and Director authorizations.",
+        "operationId": "get_emergency_spend_endpoint_api_v1_finance_emergency_spend_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Finance & Commercials"
+        ],
+        "summary": "Propose Emergency Spend Endpoint",
+        "description": "Propose an emergency expenditure via ChangeService, subject to Director approval.",
+        "operationId": "propose_emergency_spend_endpoint_api_v1_finance_emergency_spend_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmergencySpendRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/finance/budget-overrides-report": {
+      "get": {
+        "tags": [
+          "Finance & Commercials"
+        ],
+        "summary": "Get Overrides Report Endpoint",
+        "description": "Audit report of all financial and constraint overrides across all festival modules.",
+        "operationId": "get_overrides_report_endpoint_api_v1_finance_budget_overrides_report_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/finance/overrides-report": {
+      "get": {
+        "tags": [
+          "Finance & Commercials"
+        ],
+        "summary": "Get Overrides Report Endpoint",
+        "description": "Audit report of all financial and constraint overrides across all festival modules.",
+        "operationId": "get_overrides_report_endpoint_api_v1_finance_overrides_report_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/finance/budget/set": {
+      "post": {
+        "tags": [
+          "Finance & Commercials"
+        ],
+        "summary": "Set Budget Endpoint",
+        "description": "Set the external budget limit ceiling (Festival Director only).",
+        "operationId": "set_budget_endpoint_api_v1_finance_budget_set_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetBudgetRequest"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -4370,12 +5900,66 @@
     "/api/v1/food/coverage": {
       "get": {
         "tags": [
-          "food"
+          "Food Operations"
         ],
-        "summary": "Get Food Coverage",
-        "description": "Returns dietary coverage matrix across categories, meal slots, and venues.",
-        "operationId": "get_food_coverage_api_v1_food_coverage_get",
+        "summary": "Get Food Coverage Endpoint",
+        "description": "Return 3D dietary coverage matrix (category x meal_slot x venue) with demand range for UNKNOWN.",
+        "operationId": "get_food_coverage_endpoint_api_v1_food_coverage_get",
         "parameters": [
+          {
+            "name": "date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Target festival date (YYYY-MM-DD), defaults to 2026-10-31",
+              "title": "Date"
+            },
+            "description": "Target festival date (YYYY-MM-DD), defaults to 2026-10-31"
+          },
+          {
+            "name": "meal_slot",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by slot (BREAKFAST, LUNCH, SNACKS, DINNER, LATE_NIGHT)",
+              "title": "Meal Slot"
+            },
+            "description": "Filter by slot (BREAKFAST, LUNCH, SNACKS, DINNER, LATE_NIGHT)"
+          },
+          {
+            "name": "venue_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by venue",
+              "title": "Venue Id"
+            },
+            "description": "Filter by venue"
+          },
           {
             "name": "authorization",
             "in": "header",
@@ -4399,7 +5983,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                  "$ref": "#/components/schemas/Envelope_FoodCoverageResponseData_"
                 }
               }
             }
@@ -4417,14 +6001,14 @@
         }
       }
     },
-    "/api/v1/food": {
+    "/api/v1/food/compliance-flags": {
       "get": {
         "tags": [
-          "food"
+          "Food Operations"
         ],
-        "summary": "Get Food Coverage",
-        "description": "Returns dietary coverage matrix across categories, meal slots, and venues.",
-        "operationId": "get_food_coverage_api_v1_food_get",
+        "summary": "Get Food Compliance Endpoint",
+        "description": "Return all menu-label mismatches and unverified dietary claims detected across menus.",
+        "operationId": "get_food_compliance_endpoint_api_v1_food_compliance_flags_get",
         "parameters": [
           {
             "name": "authorization",
@@ -4470,11 +6054,11 @@
     "/api/v1/food/compliance": {
       "get": {
         "tags": [
-          "food"
+          "Food Operations"
         ],
-        "summary": "Get Food Compliance",
-        "description": "List food safety and dietary compliance issues and expiring certifications.",
-        "operationId": "get_food_compliance_api_v1_food_compliance_get",
+        "summary": "Get Food Compliance Endpoint",
+        "description": "Return all menu-label mismatches and unverified dietary claims detected across menus.",
+        "operationId": "get_food_compliance_endpoint_api_v1_food_compliance_get",
         "parameters": [
           {
             "name": "authorization",
@@ -4500,6 +6084,142 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/food/meal-slots": {
+      "get": {
+        "tags": [
+          "Food Operations"
+        ],
+        "summary": "List Meal Slots Endpoint",
+        "description": "List all configured festival meal slots and vendor capacity distribution.",
+        "operationId": "list_meal_slots_endpoint_api_v1_food_meal_slots_get",
+        "parameters": [
+          {
+            "name": "date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by date (YYYY-MM-DD)",
+              "title": "Date"
+            },
+            "description": "Filter by date (YYYY-MM-DD)"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_List_MealSlotSchema__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/food/slots": {
+      "get": {
+        "tags": [
+          "Food Operations"
+        ],
+        "summary": "List Meal Slots Endpoint",
+        "description": "List all configured festival meal slots and vendor capacity distribution.",
+        "operationId": "list_meal_slots_endpoint_api_v1_food_slots_get",
+        "parameters": [
+          {
+            "name": "date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by date (YYYY-MM-DD)",
+              "title": "Date"
+            },
+            "description": "Filter by date (YYYY-MM-DD)"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_List_MealSlotSchema__"
                 }
               }
             }
@@ -4575,6 +6295,372 @@
         "summary": "Get Crowd Forecasting",
         "description": "Predictive analytics and crowd flow forecasting across festival venues.",
         "operationId": "get_crowd_forecasting_api_v1_forecasting_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/forecasting/arrivals-queue": {
+      "get": {
+        "tags": [
+          "forecasting"
+        ],
+        "summary": "Get Arrivals And Checkin Queues",
+        "description": "Forecast arrival peaks and check-in queues using a discrete queue model.\nStrictly labels each series PROJECTION (data-derived) or ASSUMPTION (parameter-driven).",
+        "operationId": "get_arrivals_and_checkin_queues_api_v1_forecasting_arrivals_queue_get",
+        "parameters": [
+          {
+            "name": "desks_open",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 50,
+              "minimum": 1,
+              "default": 6,
+              "title": "Desks Open"
+            }
+          },
+          {
+            "name": "service_rate_per_min",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "maximum": 5.0,
+                  "minimum": 0.05
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Service Rate Per Min"
+            }
+          },
+          {
+            "name": "start_time",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Start Time"
+            }
+          },
+          {
+            "name": "end_time",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "End Time"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/forecasting/demand-timeline": {
+      "get": {
+        "tags": [
+          "forecasting"
+        ],
+        "summary": "Get Multi Domain Demand Timeline",
+        "description": "Consolidated hourly multi-domain demand forecast for meals, accommodation, merchandise, equipment, volunteers.",
+        "operationId": "get_multi_domain_demand_timeline_api_v1_forecasting_demand_timeline_get",
+        "parameters": [
+          {
+            "name": "start_time",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Start Time"
+            }
+          },
+          {
+            "name": "end_time",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "End Time"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/forecasting/reports/{name}": {
+      "get": {
+        "tags": [
+          "forecasting"
+        ],
+        "summary": "Get Forecasting Report Endpoint",
+        "description": "Generate exportable structured analytical report for festival forecasting outputs.",
+        "operationId": "get_forecasting_report_endpoint_api_v1_forecasting_reports__name__get",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Name"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^(json|csv)$",
+              "default": "json",
+              "title": "Format"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/forecasting/bed-demand": {
+      "get": {
+        "tags": [
+          "forecasting"
+        ],
+        "summary": "Get Bed Demand Projection",
+        "description": "Bed demand forecast partitioned into confirmed vs possible demand against campus/external capacity.",
+        "operationId": "get_bed_demand_projection_api_v1_forecasting_bed_demand_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/forecasting/resource-load": {
+      "get": {
+        "tags": [
+          "forecasting"
+        ],
+        "summary": "Get Resource Load Projection",
+        "description": "Equipment and volunteer load over timetable session schedules.",
+        "operationId": "get_resource_load_projection_api_v1_forecasting_resource_load_get",
         "parameters": [
           {
             "name": "authorization",
@@ -6808,14 +8894,14 @@
     "/api/v1/notifications/drafts": {
       "get": {
         "tags": [
-          "notifications"
+          "Notification Engine"
         ],
-        "summary": "List Notifications",
-        "description": "List operational notification drafts.",
-        "operationId": "list_notifications_api_v1_notifications_drafts_get",
+        "summary": "List Drafts Endpoint",
+        "description": "List notification drafts with audience and approval status.",
+        "operationId": "list_drafts_endpoint_api_v1_notifications_drafts_get",
         "parameters": [
           {
-            "name": "channel",
+            "name": "audience",
             "in": "query",
             "required": false,
             "schema": {
@@ -6827,8 +8913,10 @@
                   "type": "null"
                 }
               ],
-              "title": "Channel"
-            }
+              "description": "Filter by audience (contingent_leaders, volunteers, vendors, accommodation_coordinators, event_organisers)",
+              "title": "Audience"
+            },
+            "description": "Filter by audience (contingent_leaders, volunteers, vendors, accommodation_coordinators, event_organisers)"
           },
           {
             "name": "status",
@@ -6843,31 +8931,28 @@
                   "type": "null"
                 }
               ],
+              "description": "Filter by status (DRAFT, PENDING_APPROVAL, APPROVED, SENT, REJECTED)",
               "title": "Status"
-            }
+            },
+            "description": "Filter by status (DRAFT, PENDING_APPROVAL, APPROVED, SENT, REJECTED)"
           },
           {
-            "name": "page",
+            "name": "channel",
             "in": "query",
             "required": false,
             "schema": {
-              "type": "integer",
-              "minimum": 1,
-              "default": 1,
-              "title": "Page"
-            }
-          },
-          {
-            "name": "page_size",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "maximum": 100,
-              "minimum": 1,
-              "default": 20,
-              "title": "Page Size"
-            }
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by channel (SMS, APP, EMAIL, WHATSAPP)",
+              "title": "Channel"
+            },
+            "description": "Filter by channel (SMS, APP, EMAIL, WHATSAPP)"
           },
           {
             "name": "authorization",
@@ -6908,17 +8993,28 @@
             }
           }
         }
-      },
-      "post": {
+      }
+    },
+    "/api/v1/notifications/drafts/{id}": {
+      "get": {
         "tags": [
-          "notifications"
+          "Notification Engine"
         ],
-        "summary": "Draft Notification",
-        "description": "Draft an operational notification via ChangeService.",
-        "operationId": "draft_notification_api_v1_notifications_drafts_post",
+        "summary": "Get Draft Endpoint",
+        "description": "Get single notification draft details.",
+        "operationId": "get_draft_endpoint_api_v1_notifications_drafts__id__get",
         "parameters": [
           {
-            "name": "Idempotency-Key",
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            }
+          },
+          {
+            "name": "authorization",
             "in": "header",
             "required": false,
             "schema": {
@@ -6930,7 +9026,48 @@
                   "type": "null"
                 }
               ],
-              "title": "Idempotency-Key"
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_NotificationDraftSchema_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Notification Engine"
+        ],
+        "summary": "Update Draft Endpoint",
+        "description": "Edit notification draft subject, body, or recipient before dispatch.",
+        "operationId": "update_draft_endpoint_api_v1_notifications_drafts__id__patch",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Id"
             }
           },
           {
@@ -6955,13 +9092,140 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/DraftNotificationBody"
+                "$ref": "#/components/schemas/EditDraftRequest"
               }
             }
           }
         },
         "responses": {
-          "201": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_NotificationDraftSchema_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Notification Engine"
+        ],
+        "summary": "Update Draft Endpoint",
+        "description": "Edit notification draft subject, body, or recipient before dispatch.",
+        "operationId": "update_draft_endpoint_api_v1_notifications_drafts__id__put",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditDraftRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_NotificationDraftSchema_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/notifications/drafts/generate": {
+      "post": {
+        "tags": [
+          "Notification Engine"
+        ],
+        "summary": "Generate Drafts Endpoint",
+        "description": "Generate audience-targeted notification drafts from structured change data.",
+        "operationId": "generate_drafts_endpoint_api_v1_notifications_drafts_generate_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateDraftsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
@@ -6984,68 +9248,22 @@
         }
       }
     },
-    "/api/v1/notifications": {
-      "get": {
+    "/api/v1/notifications/drafts/{id}/approve": {
+      "post": {
         "tags": [
-          "notifications"
+          "Notification Engine"
         ],
-        "summary": "List Notifications",
-        "description": "List operational notification drafts.",
-        "operationId": "list_notifications_api_v1_notifications_get",
+        "summary": "Approve Draft Endpoint",
+        "description": "Approve a notification draft for sending.",
+        "operationId": "approve_draft_endpoint_api_v1_notifications_drafts__id__approve_post",
         "parameters": [
           {
-            "name": "channel",
-            "in": "query",
-            "required": false,
+            "name": "id",
+            "in": "path",
+            "required": true,
             "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Channel"
-            }
-          },
-          {
-            "name": "status",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Status"
-            }
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "minimum": 1,
-              "default": 1,
-              "title": "Page"
-            }
-          },
-          {
-            "name": "page_size",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "maximum": 100,
-              "minimum": 1,
-              "default": 20,
-              "title": "Page Size"
+              "type": "string",
+              "title": "Id"
             }
           },
           {
@@ -7072,6 +9290,165 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/notifications/drafts/{id}/send": {
+      "post": {
+        "tags": [
+          "Notification Engine"
+        ],
+        "summary": "Send Draft Endpoint",
+        "description": "Mock-send a notification draft. Strictly requires prior approval.",
+        "operationId": "send_draft_endpoint_api_v1_notifications_drafts__id__send_post",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_DeliveryLogSchema_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/notifications/log": {
+      "get": {
+        "tags": [
+          "Notification Engine"
+        ],
+        "summary": "Get Log Endpoint",
+        "description": "Return the complete delivery audit log of dispatched notifications.",
+        "operationId": "get_log_endpoint_api_v1_notifications_log_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/notifications/templates": {
+      "get": {
+        "tags": [
+          "Notification Engine"
+        ],
+        "summary": "List Templates Endpoint",
+        "description": "List available notification templates across the 5 audiences.",
+        "operationId": "list_templates_endpoint_api_v1_notifications_templates_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_List_TemplateSchema__"
                 }
               }
             }
@@ -8104,9 +10481,9 @@
         "tags": [
           "premortem"
         ],
-        "summary": "Get Premortem Analysis",
+        "summary": "Get Premortem Resilience",
         "description": "Predictive festival resilience simulator and pre-mortem vulnerability rankings.",
-        "operationId": "get_premortem_analysis_api_v1_premortem_resilience_get",
+        "operationId": "get_premortem_resilience_api_v1_premortem_resilience_get",
         "parameters": [
           {
             "name": "authorization",
@@ -8154,9 +10531,325 @@
         "tags": [
           "premortem"
         ],
-        "summary": "Get Premortem Analysis",
+        "summary": "Get Premortem Resilience",
         "description": "Predictive festival resilience simulator and pre-mortem vulnerability rankings.",
-        "operationId": "get_premortem_analysis_api_v1_premortem_get",
+        "operationId": "get_premortem_resilience_api_v1_premortem_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/premortem/timeline": {
+      "get": {
+        "tags": [
+          "premortem"
+        ],
+        "summary": "Get Hourly Timeline",
+        "description": "Hourly scrubber across festival window computing bed occupancy, food demand,\nvenue utilization, equipment, volunteers, transport and module risks.",
+        "operationId": "get_hourly_timeline_api_v1_premortem_timeline_get",
+        "parameters": [
+          {
+            "name": "start_time",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Start Time"
+            }
+          },
+          {
+            "name": "end_time",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "End Time"
+            }
+          },
+          {
+            "name": "step_hours",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 24,
+              "minimum": 1,
+              "default": 1,
+              "title": "Step Hours"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/premortem/disruptions/run": {
+      "post": {
+        "tags": [
+          "premortem"
+        ],
+        "summary": "Run Targeted Disruption Endpoint",
+        "description": "Run a single targeted disruption in an isolated scenario sandbox using the impact engine.",
+        "operationId": "run_targeted_disruption_endpoint_api_v1_premortem_disruptions_run_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RunDisruptionBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/premortem/disruptions/multi-run": {
+      "post": {
+        "tags": [
+          "premortem"
+        ],
+        "summary": "Run Multi Disruptions Endpoint",
+        "description": "Run seeded multi-disruption Monte Carlo / combinatorial stress test in scenario sandboxes.",
+        "operationId": "run_multi_disruptions_endpoint_api_v1_premortem_disruptions_multi_run_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RunMultiDisruptionsBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/premortem/spofs": {
+      "get": {
+        "tags": [
+          "premortem"
+        ],
+        "summary": "Get Single Points Of Failure",
+        "description": "Returns detected Single Points of Failure across all festival resources.",
+        "operationId": "get_single_points_of_failure_api_v1_premortem_spofs_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/premortem/scenarios": {
+      "get": {
+        "tags": [
+          "premortem"
+        ],
+        "summary": "Get Premortem Scenarios History",
+        "description": "Returns history of simulated pre-mortem scenarios.",
+        "operationId": "get_premortem_scenarios_history_api_v1_premortem_scenarios_get",
         "parameters": [
           {
             "name": "authorization",
@@ -12255,14 +14948,121 @@
         }
       }
     },
+    "/api/v1/unknowns/ranking": {
+      "get": {
+        "tags": [
+          "Unknowns"
+        ],
+        "summary": "Get Value Of Information Ranking",
+        "description": "Value-of-Information (VOI) ranking across unknown field groups.\nSimulates sandbox outcomes and ranks groups by operational improvement per confirmation.",
+        "operationId": "get_value_of_information_ranking_api_v1_unknowns_ranking_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/unknowns/confirmation-requests": {
+      "post": {
+        "tags": [
+          "Unknowns"
+        ],
+        "summary": "Create Batched Confirmation Request",
+        "description": "Generate minimal confirmation requests batched by contingent leader or desk volunteer.",
+        "operationId": "create_batched_confirmation_request_api_v1_unknowns_confirmation_requests_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BatchConfirmationRequestBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/unknowns/why-not/{participant_id}": {
+      "get": {
+        "tags": [
+          "Unknowns"
+        ],
+        "summary": "Get Participant Why Not Explanation",
+        "description": "Diagnostic explanation extending Why-Not with simulated counterfactual predictions:\n'What confirming field X would change for this participant'.",
+        "operationId": "get_participant_why_not_explanation_api_v1_unknowns_why_not__participant_id__get",
+        "parameters": [
+          {
+            "name": "participant_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Participant Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/vendors": {
       "get": {
         "tags": [
-          "vendors"
+          "Vendors"
         ],
-        "summary": "List Vendors",
-        "description": "List festival food vendors with hygiene certificate status and capacity.",
-        "operationId": "list_vendors_api_v1_vendors_get",
+        "summary": "List Vendors Endpoint",
+        "description": "List all 14 commercial catering vendors with operating details and compliance status.",
+        "operationId": "list_vendors_endpoint_api_v1_vendors_get",
         "parameters": [
           {
             "name": "status",
@@ -12277,30 +15077,154 @@
                   "type": "null"
                 }
               ],
+              "description": "Filter by status (ACTIVE, SUSPENDED, SHUT_DOWN)",
               "title": "Status"
-            }
+            },
+            "description": "Filter by status (ACTIVE, SUSPENDED, SHUT_DOWN)"
           },
           {
-            "name": "page",
+            "name": "dietary_option",
             "in": "query",
             "required": false,
             "schema": {
-              "type": "integer",
-              "minimum": 1,
-              "default": 1,
-              "title": "Page"
-            }
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by declared dietary option",
+              "title": "Dietary Option"
+            },
+            "description": "Filter by declared dietary option"
           },
           {
-            "name": "page_size",
+            "name": "compliance_status",
             "in": "query",
             "required": false,
             "schema": {
-              "type": "integer",
-              "maximum": 100,
-              "minimum": 1,
-              "default": 50,
-              "title": "Page Size"
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by validity (VALID_THROUGHOUT, EXPIRES_DURING_FESTIVAL, EXPIRED)",
+              "title": "Compliance Status"
+            },
+            "description": "Filter by validity (VALID_THROUGHOUT, EXPIRES_DURING_FESTIVAL, EXPIRED)"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/vendors/compliance": {
+      "get": {
+        "tags": [
+          "Vendors"
+        ],
+        "summary": "Get Compliance Endpoint",
+        "description": "Return vendor hygiene certificate compliance breakdown and menu-label mismatches.",
+        "operationId": "get_compliance_endpoint_api_v1_vendors_compliance_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/vendors/reports/{report_name}": {
+      "get": {
+        "tags": [
+          "Vendors"
+        ],
+        "summary": "Download Vendor Report Endpoint",
+        "description": "Download vendor coverage or compliance reports as CSV.",
+        "operationId": "download_vendor_report_endpoint_api_v1_vendors_reports__report_name__get",
+        "parameters": [
+          {
+            "name": "report_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Report Name"
             }
           },
           {
@@ -12320,6 +15244,385 @@
             }
           }
         ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/vendors/{id}": {
+      "get": {
+        "tags": [
+          "Vendors"
+        ],
+        "summary": "Get Vendor Detail Endpoint",
+        "description": "Get detailed profile for a specific vendor including menu items, assignments, and flags.",
+        "operationId": "get_vendor_detail_endpoint_api_v1_vendors__id__get",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_VendorDetailSchema_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/vendors/{id}/shutdown-analysis": {
+      "post": {
+        "tags": [
+          "Vendors"
+        ],
+        "summary": "Shutdown Impact Endpoint",
+        "description": "Evaluate the 10-step emergency vendor shutdown response (Feature 7).",
+        "operationId": "shutdown_impact_endpoint_api_v1_vendors__id__shutdown_analysis_post",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/VendorShutdownAnalysisRequest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_VendorShutdownAnalysisResult_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/vendors/{id}/shutdown-impact": {
+      "post": {
+        "tags": [
+          "Vendors"
+        ],
+        "summary": "Shutdown Impact Endpoint",
+        "description": "Evaluate the 10-step emergency vendor shutdown response (Feature 7).",
+        "operationId": "shutdown_impact_endpoint_api_v1_vendors__id__shutdown_impact_post",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/VendorShutdownAnalysisRequest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_VendorShutdownAnalysisResult_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/vendors/{id}/shutdown-execute": {
+      "post": {
+        "tags": [
+          "Vendors"
+        ],
+        "summary": "Execute Shutdown Endpoint",
+        "description": "Execute emergency vendor shutdown via ChangeService, reassigning slots and staging notification drafts.",
+        "operationId": "execute_shutdown_endpoint_api_v1_vendors__id__shutdown_execute_post",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VendorShutdownExecuteRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/vendors/{id}/shutdown": {
+      "post": {
+        "tags": [
+          "Vendors"
+        ],
+        "summary": "Execute Shutdown Endpoint",
+        "description": "Execute emergency vendor shutdown via ChangeService, reassigning slots and staging notification drafts.",
+        "operationId": "execute_shutdown_endpoint_api_v1_vendors__id__shutdown_post",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VendorShutdownExecuteRequest"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -12884,6 +16187,102 @@
         ],
         "title": "AccommodationPlanSchema"
       },
+      "AccommodationSpendProperty": {
+        "properties": {
+          "property_id": {
+            "type": "string",
+            "title": "Property Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "property_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Property Name"
+          },
+          "capacity_beds": {
+            "type": "integer",
+            "title": "Capacity Beds"
+          },
+          "booked_beds": {
+            "type": "integer",
+            "title": "Booked Beds"
+          },
+          "nights": {
+            "type": "integer",
+            "title": "Nights"
+          },
+          "rate_per_bed_night_inr": {
+            "type": "number",
+            "title": "Rate Per Bed Night Inr"
+          },
+          "total_spend_inr": {
+            "type": "number",
+            "title": "Total Spend Inr"
+          },
+          "total_cost_inr": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Cost Inr"
+          },
+          "contract_status": {
+            "type": "string",
+            "title": "Contract Status"
+          },
+          "payment_status": {
+            "type": "string",
+            "title": "Payment Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "property_id",
+          "name",
+          "capacity_beds",
+          "booked_beds",
+          "nights",
+          "rate_per_bed_night_inr",
+          "total_spend_inr",
+          "contract_status",
+          "payment_status"
+        ],
+        "title": "AccommodationSpendProperty"
+      },
+      "AccommodationSpendResponseData": {
+        "properties": {
+          "properties": {
+            "items": {
+              "$ref": "#/components/schemas/AccommodationSpendProperty"
+            },
+            "type": "array",
+            "title": "Properties"
+          },
+          "total_external_spend_inr": {
+            "type": "number",
+            "title": "Total External Spend Inr"
+          }
+        },
+        "type": "object",
+        "required": [
+          "properties",
+          "total_external_spend_inr"
+        ],
+        "title": "AccommodationSpendResponseData"
+      },
       "AlternativeRejected": {
         "properties": {
           "option": {
@@ -12942,6 +16341,41 @@
           "payload"
         ],
         "title": "ApproveGuardianBody"
+      },
+      "ArrivalUpdateRequest": {
+        "properties": {
+          "updated_arrival_at": {
+            "type": "string",
+            "title": "Updated Arrival At"
+          },
+          "delay_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Delay Reason"
+          },
+          "transport_mode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Transport Mode"
+          }
+        },
+        "type": "object",
+        "required": [
+          "updated_arrival_at"
+        ],
+        "title": "ArrivalUpdateRequest"
       },
       "AssignShiftBody": {
         "properties": {
@@ -13200,6 +16634,84 @@
         ],
         "title": "AssumptionUpdateRequest"
       },
+      "BackupCapacityCheck": {
+        "properties": {
+          "total_replacement_capacity": {
+            "type": "integer",
+            "title": "Total Replacement Capacity"
+          },
+          "required_capacity": {
+            "type": "integer",
+            "title": "Required Capacity"
+          },
+          "deficit": {
+            "type": "integer",
+            "title": "Deficit",
+            "default": 0
+          },
+          "can_absorb_load": {
+            "type": "boolean",
+            "title": "Can Absorb Load"
+          },
+          "warning": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Warning"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total_replacement_capacity",
+          "required_capacity",
+          "can_absorb_load"
+        ],
+        "title": "BackupCapacityCheck"
+      },
+      "BatchConfirmationRequestBody": {
+        "properties": {
+          "target_type": {
+            "type": "string",
+            "title": "Target Type",
+            "default": "CONTINGENT_LEADER"
+          },
+          "contingent_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contingent Id"
+          },
+          "group_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Group Id",
+            "default": "housing_gender"
+          },
+          "expires_in_minutes": {
+            "type": "integer",
+            "title": "Expires In Minutes",
+            "default": 1440
+          }
+        },
+        "type": "object",
+        "title": "BatchConfirmationRequestBody"
+      },
       "Body_upload_import_file_api_v1_imports_post": {
         "properties": {
           "file": {
@@ -13346,6 +16858,160 @@
         ],
         "title": "ChangeResult"
       },
+      "CheckinRequest": {
+        "properties": {
+          "client_op_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Client Op Id"
+          },
+          "participant_id": {
+            "type": "string",
+            "title": "Participant Id"
+          },
+          "wristband_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wristband Code"
+          },
+          "verified_fields": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verified Fields"
+          },
+          "desk_operator": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Desk Operator"
+          },
+          "override_room_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Override Room Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "participant_id"
+        ],
+        "title": "CheckinRequest"
+      },
+      "CheckoutRequest": {
+        "properties": {
+          "client_op_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Client Op Id"
+          },
+          "participant_id": {
+            "type": "string",
+            "title": "Participant Id"
+          },
+          "bed_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bed Id"
+          },
+          "checkout_notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Checkout Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "participant_id"
+        ],
+        "title": "CheckoutRequest"
+      },
+      "CleaningCompleteRequest": {
+        "properties": {
+          "expected_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Version"
+          },
+          "inspected_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Inspected By"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          }
+        },
+        "type": "object",
+        "title": "CleaningCompleteRequest"
+      },
       "CommandIntent": {
         "type": "string",
         "enum": [
@@ -13358,6 +17024,35 @@
           "navigate"
         ],
         "title": "CommandIntent"
+      },
+      "CommitPlanRequest": {
+        "properties": {
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason",
+            "default": "Commit candidate plan to live operations"
+          },
+          "override_budget_rationale": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Override Budget Rationale"
+          }
+        },
+        "type": "object",
+        "title": "CommitPlanRequest"
       },
       "CommitScenarioBody": {
         "properties": {
@@ -14101,6 +17796,70 @@
         ],
         "title": "DecisionRequest"
       },
+      "DeliveryLogSchema": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "draft_id": {
+            "type": "string",
+            "title": "Draft Id"
+          },
+          "audience": {
+            "type": "string",
+            "title": "Audience"
+          },
+          "recipient": {
+            "type": "string",
+            "title": "Recipient"
+          },
+          "channel": {
+            "type": "string",
+            "title": "Channel"
+          },
+          "subject": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subject"
+          },
+          "body": {
+            "type": "string",
+            "title": "Body"
+          },
+          "sent_at": {
+            "type": "string",
+            "title": "Sent At"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "provider": {
+            "type": "string",
+            "title": "Provider"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "draft_id",
+          "audience",
+          "recipient",
+          "channel",
+          "body",
+          "sent_at",
+          "status",
+          "provider"
+        ],
+        "title": "DeliveryLogSchema"
+      },
       "DemandTimelineResponseData": {
         "properties": {
           "total_participants_requesting": {
@@ -14161,17 +17920,98 @@
         ],
         "title": "DemandTimelineResponseData"
       },
-      "DraftNotificationBody": {
+      "DietaryCoverageSummary": {
         "properties": {
-          "channel": {
-            "type": "string",
-            "title": "Channel",
-            "default": "SMS"
+          "on_site_headcount": {
+            "type": "integer",
+            "title": "On Site Headcount"
           },
-          "recipient": {
-            "type": "string",
-            "title": "Recipient"
+          "valid_aggregate_capacity": {
+            "type": "integer",
+            "title": "Valid Aggregate Capacity"
           },
+          "aggregate_shortfall": {
+            "type": "integer",
+            "title": "Aggregate Shortfall"
+          },
+          "zero_coverage_categories": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Zero Coverage Categories"
+          },
+          "unknown_dietary_headcount": {
+            "type": "integer",
+            "title": "Unknown Dietary Headcount"
+          }
+        },
+        "type": "object",
+        "required": [
+          "on_site_headcount",
+          "valid_aggregate_capacity",
+          "aggregate_shortfall",
+          "unknown_dietary_headcount"
+        ],
+        "title": "DietaryCoverageSummary"
+      },
+      "DietaryMatrixCell": {
+        "properties": {
+          "meal_slot": {
+            "type": "string",
+            "title": "Meal Slot"
+          },
+          "date": {
+            "type": "string",
+            "title": "Date"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "demand_confirmed": {
+            "type": "integer",
+            "title": "Demand Confirmed"
+          },
+          "demand_max_with_unknown": {
+            "type": "integer",
+            "title": "Demand Max With Unknown"
+          },
+          "valid_capacity": {
+            "type": "integer",
+            "title": "Valid Capacity"
+          },
+          "deficit": {
+            "type": "integer",
+            "title": "Deficit"
+          },
+          "is_zero_coverage": {
+            "type": "boolean",
+            "title": "Is Zero Coverage"
+          },
+          "active_vendors": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Active Vendors"
+          }
+        },
+        "type": "object",
+        "required": [
+          "meal_slot",
+          "date",
+          "category",
+          "demand_confirmed",
+          "demand_max_with_unknown",
+          "valid_capacity",
+          "deficit",
+          "is_zero_coverage"
+        ],
+        "title": "DietaryMatrixCell"
+      },
+      "EditDraftRequest": {
+        "properties": {
           "subject": {
             "anyOf": [
               {
@@ -14184,8 +18024,74 @@
             "title": "Subject"
           },
           "body": {
-            "type": "string",
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Body"
+          },
+          "channel": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Channel"
+          },
+          "recipient": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recipient"
+          }
+        },
+        "type": "object",
+        "title": "EditDraftRequest"
+      },
+      "EmergencySpendRequest": {
+        "properties": {
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "amount_inr": {
+            "type": "number",
+            "title": "Amount Inr"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category",
+            "default": "VENDOR_BACKUP"
           },
           "reason": {
             "anyOf": [
@@ -14197,14 +18103,24 @@
               }
             ],
             "title": "Reason"
+          },
+          "justification": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Justification"
           }
         },
         "type": "object",
         "required": [
-          "recipient",
-          "body"
+          "amount_inr"
         ],
-        "title": "DraftNotificationBody"
+        "title": "EmergencySpendRequest"
       },
       "EntityRef": {
         "properties": {
@@ -14228,6 +18144,30 @@
           "label"
         ],
         "title": "EntityRef"
+      },
+      "Envelope_AccommodationSpendResponseData_": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/AccommodationSpendResponseData"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Meta"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "Envelope[AccommodationSpendResponseData]"
       },
       "Envelope_Any_": {
         "properties": {
@@ -14397,6 +18337,30 @@
         ],
         "title": "Envelope[DecisionCard]"
       },
+      "Envelope_DeliveryLogSchema_": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/DeliveryLogSchema"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Meta"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "Envelope[DeliveryLogSchema]"
+      },
       "Envelope_DemandTimelineResponseData_": {
         "properties": {
           "data": {
@@ -14470,6 +18434,54 @@
           "data"
         ],
         "title": "Envelope[ExecuteResponseData]"
+      },
+      "Envelope_FinanceSummaryData_": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/FinanceSummaryData"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Meta"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "Envelope[FinanceSummaryData]"
+      },
+      "Envelope_FoodCoverageResponseData_": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/FoodCoverageResponseData"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Meta"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "Envelope[FoodCoverageResponseData]"
       },
       "Envelope_ImportBatchItem_": {
         "properties": {
@@ -14575,6 +18587,86 @@
           "data"
         ],
         "title": "Envelope[List[Dict[str, Any]]]"
+      },
+      "Envelope_List_MealSlotSchema__": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/MealSlotSchema"
+            },
+            "type": "array",
+            "title": "Data"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Meta"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "Envelope[List[MealSlotSchema]]"
+      },
+      "Envelope_List_TemplateSchema__": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/TemplateSchema"
+            },
+            "type": "array",
+            "title": "Data"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Meta"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "Envelope[List[TemplateSchema]]"
+      },
+      "Envelope_NotificationDraftSchema_": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/NotificationDraftSchema"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Meta"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "Envelope[NotificationDraftSchema]"
       },
       "Envelope_Page_Dict_str__Any___": {
         "properties": {
@@ -14719,6 +18811,78 @@
           "data"
         ],
         "title": "Envelope[ShortagesResponseData]"
+      },
+      "Envelope_SyncBatchResponseData_": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/SyncBatchResponseData"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Meta"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "Envelope[SyncBatchResponseData]"
+      },
+      "Envelope_VendorDetailSchema_": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/VendorDetailSchema"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Meta"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "Envelope[VendorDetailSchema]"
+      },
+      "Envelope_VendorShutdownAnalysisResult_": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/VendorShutdownAnalysisResult"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Meta"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "Envelope[VendorShutdownAnalysisResult]"
       },
       "Envelope_WhyNotResponseData_": {
         "properties": {
@@ -14911,6 +19075,198 @@
           "message"
         ],
         "title": "ExecuteResponseData"
+      },
+      "FinanceSummaryData": {
+        "properties": {
+          "external_budget_inr": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "External Budget Inr"
+          },
+          "external_budget_ceiling_inr": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "External Budget Ceiling Inr"
+          },
+          "budget_status": {
+            "type": "string",
+            "title": "Budget Status"
+          },
+          "budget_explanation": {
+            "type": "string",
+            "title": "Budget Explanation"
+          },
+          "total_spend_committed_inr": {
+            "type": "number",
+            "title": "Total Spend Committed Inr"
+          },
+          "total_spend_projected_inr": {
+            "type": "number",
+            "title": "Total Spend Projected Inr"
+          },
+          "cost_variance_inr": {
+            "type": "number",
+            "title": "Cost Variance Inr"
+          },
+          "variance_inr": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Variance Inr"
+          },
+          "budget_utilization_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Budget Utilization Pct"
+          },
+          "breakdown": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Breakdown"
+          }
+        },
+        "type": "object",
+        "required": [
+          "budget_status",
+          "budget_explanation",
+          "total_spend_committed_inr",
+          "total_spend_projected_inr",
+          "cost_variance_inr",
+          "breakdown"
+        ],
+        "title": "FinanceSummaryData"
+      },
+      "FoodCoverageResponseData": {
+        "properties": {
+          "date": {
+            "type": "string",
+            "title": "Date"
+          },
+          "categories": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Categories"
+          },
+          "meal_slots": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Meal Slots"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/DietaryCoverageSummary"
+          },
+          "matrix": {
+            "items": {
+              "$ref": "#/components/schemas/DietaryMatrixCell"
+            },
+            "type": "array",
+            "title": "Matrix"
+          },
+          "critical_alerts": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Critical Alerts"
+          }
+        },
+        "type": "object",
+        "required": [
+          "date",
+          "categories",
+          "meal_slots",
+          "summary",
+          "matrix"
+        ],
+        "title": "FoodCoverageResponseData"
+      },
+      "FreezePlanRequest": {
+        "properties": {
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason",
+            "default": "Freeze live plan allocations"
+          }
+        },
+        "type": "object",
+        "title": "FreezePlanRequest"
+      },
+      "GenerateDraftsRequest": {
+        "properties": {
+          "event_type": {
+            "type": "string",
+            "title": "Event Type"
+          },
+          "change_set_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Change Set Id"
+          },
+          "incident_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Incident Id"
+          },
+          "context": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "event_type"
+        ],
+        "title": "GenerateDraftsRequest"
       },
       "GeneratePlanParams": {
         "properties": {
@@ -15221,6 +19577,37 @@
         "type": "object",
         "title": "ImportPromoteRequest"
       },
+      "IncrementalAllocateRequest": {
+        "properties": {
+          "participant_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Participant Ids"
+          },
+          "contingent_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contingent Id"
+          }
+        },
+        "type": "object",
+        "title": "IncrementalAllocateRequest"
+      },
       "IssueItemBody": {
         "properties": {
           "participant_id": {
@@ -15374,6 +19761,105 @@
         ],
         "title": "LoginRequest"
       },
+      "ManualAssignRequest": {
+        "properties": {
+          "participant_id": {
+            "type": "string",
+            "title": "Participant Id"
+          },
+          "target_bed_key": {
+            "type": "string",
+            "title": "Target Bed Key"
+          },
+          "target_room_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Room Id"
+          },
+          "target_property_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Property Id"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "override_hard_constraint": {
+            "type": "boolean",
+            "title": "Override Hard Constraint",
+            "default": false
+          },
+          "expected_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Version"
+          }
+        },
+        "type": "object",
+        "required": [
+          "participant_id",
+          "target_bed_key",
+          "reason"
+        ],
+        "title": "ManualAssignRequest"
+      },
+      "MealSlotSchema": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "date": {
+            "type": "string",
+            "title": "Date"
+          },
+          "start_time": {
+            "type": "string",
+            "title": "Start Time"
+          },
+          "end_time": {
+            "type": "string",
+            "title": "End Time"
+          },
+          "assigned_vendors_count": {
+            "type": "integer",
+            "title": "Assigned Vendors Count",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "date",
+          "start_time",
+          "end_time"
+        ],
+        "title": "MealSlotSchema"
+      },
       "MergeRequestBody": {
         "properties": {
           "expected_version": {
@@ -15414,6 +19900,179 @@
           "payload"
         ],
         "title": "MergeRequestBody"
+      },
+      "NotificationDraftSchema": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "audience": {
+            "type": "string",
+            "title": "Audience"
+          },
+          "channel": {
+            "type": "string",
+            "title": "Channel"
+          },
+          "recipient": {
+            "type": "string",
+            "title": "Recipient"
+          },
+          "subject": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subject"
+          },
+          "body": {
+            "type": "string",
+            "title": "Body"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "requires_approval": {
+            "type": "boolean",
+            "title": "Requires Approval"
+          },
+          "template_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Template Key"
+          },
+          "related_change_set_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Related Change Set Id"
+          },
+          "related_incident_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Related Incident Id"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "audience",
+          "channel",
+          "recipient",
+          "body",
+          "status",
+          "requires_approval",
+          "created_at"
+        ],
+        "title": "NotificationDraftSchema"
+      },
+      "OfflineOperation": {
+        "properties": {
+          "client_op_id": {
+            "type": "string",
+            "title": "Client Op Id"
+          },
+          "op_type": {
+            "type": "string",
+            "title": "Op Type"
+          },
+          "participant_id": {
+            "type": "string",
+            "title": "Participant Id"
+          },
+          "timestamp": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timestamp"
+          },
+          "payload": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Payload"
+          }
+        },
+        "type": "object",
+        "required": [
+          "client_op_id",
+          "op_type",
+          "participant_id"
+        ],
+        "title": "OfflineOperation"
+      },
+      "OpenDisputeRequest": {
+        "properties": {
+          "amount_inr": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Amount Inr"
+          },
+          "disputed_amount_inr": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Disputed Amount Inr"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reason"
+        ],
+        "title": "OpenDisputeRequest"
       },
       "Page_Dict_str__Any__": {
         "properties": {
@@ -15739,6 +20398,133 @@
         ],
         "title": "PlansResponseData"
       },
+      "PropertyUpdateRequest": {
+        "properties": {
+          "expected_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Version"
+          },
+          "beds": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Beds"
+          },
+          "cost_per_bed_night": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cost Per Bed Night"
+          },
+          "transport_availability": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Transport Availability"
+          },
+          "transport_limited": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Transport Limited"
+          },
+          "transport_windows": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Transport Windows"
+          },
+          "safety_info": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Safety Info"
+          },
+          "accessibility_verified": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Accessibility Verified"
+          },
+          "gender_suitability_verified": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gender Suitability Verified"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "title": "PropertyUpdateRequest"
+      },
       "QuarantineIssueItem": {
         "properties": {
           "id": {
@@ -15784,6 +20570,69 @@
         ],
         "title": "QuarantineIssueItem"
       },
+      "RankedReplacement": {
+        "properties": {
+          "vendor_id": {
+            "type": "string",
+            "title": "Vendor Id"
+          },
+          "vendor_name": {
+            "type": "string",
+            "title": "Vendor Name"
+          },
+          "spare_capacity": {
+            "type": "integer",
+            "title": "Spare Capacity"
+          },
+          "dietary_match": {
+            "type": "string",
+            "title": "Dietary Match"
+          },
+          "compliance_status": {
+            "type": "string",
+            "title": "Compliance Status"
+          },
+          "operating_hours": {
+            "type": "string",
+            "title": "Operating Hours"
+          },
+          "can_absorb_load": {
+            "type": "boolean",
+            "title": "Can Absorb Load"
+          },
+          "rate_per_meal_inr": {
+            "type": "number",
+            "title": "Rate Per Meal Inr"
+          },
+          "cost_delta_inr": {
+            "type": "number",
+            "title": "Cost Delta Inr"
+          },
+          "rank": {
+            "type": "integer",
+            "title": "Rank"
+          },
+          "rationale": {
+            "type": "string",
+            "title": "Rationale"
+          }
+        },
+        "type": "object",
+        "required": [
+          "vendor_id",
+          "vendor_name",
+          "spare_capacity",
+          "dietary_match",
+          "compliance_status",
+          "operating_hours",
+          "can_absorb_load",
+          "rate_per_meal_inr",
+          "cost_delta_inr",
+          "rank",
+          "rationale"
+        ],
+        "title": "RankedReplacement"
+      },
       "RecordMovementBody": {
         "properties": {
           "expected_version": {
@@ -15825,6 +20674,63 @@
         ],
         "title": "RecordMovementBody"
       },
+      "RecordPaymentRequest": {
+        "properties": {
+          "amount_inr": {
+            "type": "number",
+            "title": "Amount Inr"
+          },
+          "payment_reference": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Payment Reference"
+          },
+          "payment_method": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Payment Method"
+          },
+          "reference_number": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reference Number"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "amount_inr"
+        ],
+        "title": "RecordPaymentRequest"
+      },
       "RefreshRequest": {
         "properties": {
           "refresh_token": {
@@ -15837,6 +20743,64 @@
           "refresh_token"
         ],
         "title": "RefreshRequest"
+      },
+      "RepairPlanRequest": {
+        "properties": {
+          "plan_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Id"
+          },
+          "closed_block": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Closed Block"
+          },
+          "closed_room_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Closed Room Ids"
+          },
+          "closed_property_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Closed Property Id"
+          },
+          "strategy": {
+            "type": "string",
+            "title": "Strategy",
+            "default": "MINIMAL_CHANGE"
+          }
+        },
+        "type": "object",
+        "title": "RepairPlanRequest"
       },
       "ReplaceShiftBody": {
         "properties": {
@@ -15878,6 +20842,193 @@
           "payload"
         ],
         "title": "ReplaceShiftBody"
+      },
+      "RoomUpdateRequest": {
+        "properties": {
+          "expected_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Version"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          },
+          "cleaning_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cleaning Status"
+          },
+          "accessible": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Accessible"
+          },
+          "gender_class": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gender Class"
+          },
+          "capacity": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Capacity"
+          },
+          "floor": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Floor"
+          },
+          "block": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Block"
+          },
+          "safety_info": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Safety Info"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "title": "RoomUpdateRequest"
+      },
+      "RunDisruptionBody": {
+        "properties": {
+          "disruption_type": {
+            "type": "string",
+            "title": "Disruption Type"
+          },
+          "target_entity_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Entity Id"
+          },
+          "parameters": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parameters"
+          }
+        },
+        "type": "object",
+        "required": [
+          "disruption_type"
+        ],
+        "title": "RunDisruptionBody"
+      },
+      "RunMultiDisruptionsBody": {
+        "properties": {
+          "seed": {
+            "type": "integer",
+            "title": "Seed",
+            "default": 42
+          },
+          "disruption_count": {
+            "type": "integer",
+            "title": "Disruption Count",
+            "default": 3
+          },
+          "intensity": {
+            "type": "string",
+            "title": "Intensity",
+            "default": "HIGH"
+          },
+          "disruption_types": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Disruption Types"
+          }
+        },
+        "type": "object",
+        "title": "RunMultiDisruptionsBody"
       },
       "ScanQrBody": {
         "properties": {
@@ -16086,6 +21237,24 @@
         ],
         "title": "SessionMoveBody"
       },
+      "SetBudgetRequest": {
+        "properties": {
+          "budget_inr": {
+            "type": "number",
+            "title": "Budget Inr"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "budget_inr",
+          "reason"
+        ],
+        "title": "SetBudgetRequest"
+      },
       "Severity": {
         "type": "integer",
         "enum": [
@@ -16286,6 +21455,79 @@
         ],
         "title": "StructuredCommand"
       },
+      "SyncBatchRequest": {
+        "properties": {
+          "device_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Device Id"
+          },
+          "sync_batch_id": {
+            "type": "string",
+            "title": "Sync Batch Id"
+          },
+          "operations": {
+            "items": {
+              "$ref": "#/components/schemas/OfflineOperation"
+            },
+            "type": "array",
+            "title": "Operations"
+          }
+        },
+        "type": "object",
+        "required": [
+          "sync_batch_id",
+          "operations"
+        ],
+        "title": "SyncBatchRequest"
+      },
+      "SyncBatchResponseData": {
+        "properties": {
+          "batch_id": {
+            "type": "string",
+            "title": "Batch Id"
+          },
+          "processed_count": {
+            "type": "integer",
+            "title": "Processed Count"
+          },
+          "applied_count": {
+            "type": "integer",
+            "title": "Applied Count"
+          },
+          "duplicate_count": {
+            "type": "integer",
+            "title": "Duplicate Count"
+          },
+          "conflict_count": {
+            "type": "integer",
+            "title": "Conflict Count"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/SyncOperationResult"
+            },
+            "type": "array",
+            "title": "Results"
+          }
+        },
+        "type": "object",
+        "required": [
+          "batch_id",
+          "processed_count",
+          "applied_count",
+          "duplicate_count",
+          "conflict_count",
+          "results"
+        ],
+        "title": "SyncBatchResponseData"
+      },
       "SyncOfflineBody": {
         "properties": {
           "operations": {
@@ -16302,6 +21544,62 @@
           "operations"
         ],
         "title": "SyncOfflineBody"
+      },
+      "SyncOperationResult": {
+        "properties": {
+          "client_op_id": {
+            "type": "string",
+            "title": "Client Op Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "client_op_id",
+          "status",
+          "message"
+        ],
+        "title": "SyncOperationResult"
+      },
+      "TemplateSchema": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "audience": {
+            "type": "string",
+            "title": "Audience"
+          },
+          "channel": {
+            "type": "string",
+            "title": "Channel"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "body_template": {
+            "type": "string",
+            "title": "Body Template"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "audience",
+          "channel",
+          "title",
+          "body_template"
+        ],
+        "title": "TemplateSchema"
       },
       "TimelinePointSchema": {
         "properties": {
@@ -16560,6 +21858,307 @@
           "type"
         ],
         "title": "ValidationError"
+      },
+      "VendorDetailSchema": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "menu_description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Menu Description"
+          },
+          "dietary_options": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dietary Options"
+          },
+          "declared_categories": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Declared Categories"
+          },
+          "unverified_categories": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Unverified Categories"
+          },
+          "hours": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hours"
+          },
+          "capacity": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Capacity"
+          },
+          "hygiene_certificate_expiry": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hygiene Certificate Expiry"
+          },
+          "compliance_status": {
+            "type": "string",
+            "title": "Compliance Status"
+          },
+          "payment_terms": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Payment Terms"
+          },
+          "base_rate_per_meal_inr": {
+            "type": "number",
+            "title": "Base Rate Per Meal Inr",
+            "default": 180.0
+          },
+          "contact_phone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contact Phone"
+          },
+          "assignments": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Assignments"
+          },
+          "compliance_flags": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Compliance Flags"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "status",
+          "compliance_status"
+        ],
+        "title": "VendorDetailSchema"
+      },
+      "VendorShutdownAnalysisRequest": {
+        "properties": {
+          "from_time": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "From Time"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "title": "VendorShutdownAnalysisRequest"
+      },
+      "VendorShutdownAnalysisResult": {
+        "properties": {
+          "vendor_id": {
+            "type": "string",
+            "title": "Vendor Id"
+          },
+          "vendor_name": {
+            "type": "string",
+            "title": "Vendor Name"
+          },
+          "from_time": {
+            "type": "string",
+            "title": "From Time"
+          },
+          "affected_locations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Affected Locations"
+          },
+          "affected_meal_slots": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Affected Meal Slots"
+          },
+          "lost_capacity": {
+            "type": "integer",
+            "title": "Lost Capacity"
+          },
+          "dietary_gaps": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Dietary Gaps"
+          },
+          "ranked_replacements": {
+            "items": {
+              "$ref": "#/components/schemas/RankedReplacement"
+            },
+            "type": "array",
+            "title": "Ranked Replacements"
+          },
+          "replacement_candidates": {
+            "items": {
+              "$ref": "#/components/schemas/RankedReplacement"
+            },
+            "type": "array",
+            "title": "Replacement Candidates"
+          },
+          "backup_capacity_check": {
+            "$ref": "#/components/schemas/BackupCapacityCheck"
+          },
+          "cost_change_inr": {
+            "type": "number",
+            "title": "Cost Change Inr"
+          },
+          "recommendation": {
+            "type": "string",
+            "title": "Recommendation"
+          },
+          "notification_drafts": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Notification Drafts"
+          }
+        },
+        "type": "object",
+        "required": [
+          "vendor_id",
+          "vendor_name",
+          "from_time",
+          "affected_locations",
+          "affected_meal_slots",
+          "lost_capacity",
+          "dietary_gaps",
+          "ranked_replacements",
+          "backup_capacity_check",
+          "cost_change_inr",
+          "recommendation",
+          "notification_drafts"
+        ],
+        "title": "VendorShutdownAnalysisResult"
+      },
+      "VendorShutdownExecuteRequest": {
+        "properties": {
+          "from_time": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "From Time"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "replacement_vendor_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Replacement Vendor Id"
+          },
+          "dispatch_notifications": {
+            "type": "boolean",
+            "title": "Dispatch Notifications",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "reason"
+        ],
+        "title": "VendorShutdownExecuteRequest"
       },
       "VenueMutationBody": {
         "properties": {

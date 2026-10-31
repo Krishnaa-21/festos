@@ -65,9 +65,9 @@ def generate_candidate_plans(
 ):
     """Generate candidate accommodation plans (A, B, C) using pure staged allocation engine."""
     # Handle both request formats
-    kinds = body.kinds
-    if body.kind and body.kind not in kinds:
-        kinds = [body.kind]
+    # `kind` is the legacy single-plan request. It must override the schema
+    # default for `kinds`, otherwise {"kind": "A"} creates A/B/C.
+    kinds = [body.kind] if body.kind else body.kinds
 
     params: Dict[str, Any] = {}
     if body.params:
@@ -182,42 +182,6 @@ def compare_candidate_plans(
     plan_ids_list = [i.strip() for i in ids.split(",") if i.strip()] if ids else None
     result = compare_plans(session=session, plan_ids=plan_ids_list)
     return Envelope(data=result)
-
-
-@router.get("/plans/{id}", response_model=Envelope[Dict[str, Any]])
-def get_plan_detail(
-    id: str,
-    actor: Actor = Depends(require_permission("accommodation:read")),
-    session: Session = Depends(get_session),
-):
-    """Retrieve details, metrics, and parameters of a specific plan."""
-    plan = get_plan_by_id(session, id)
-    if not plan:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Plan '{id}' not found.")
-
-    return Envelope(
-        data={
-            "plan_id": plan.plan_id,
-            "kind": plan.kind,
-            "status": plan.status,
-            "name": plan.name,
-            "metrics": {
-                "on_campus_placed": plan.on_campus_placed,
-                "external_placed": plan.external_placed,
-                "unplaced_count": plan.unplaced_count,
-                "contingent_splits": plan.contingent_splits,
-                "total_cost_inr": plan.total_cost_inr,
-                "safety_flags_count": plan.safety_flags_count,
-                "accessibility_issues_count": plan.accessibility_issues_count,
-                "relaxed_constraints_count": plan.relaxed_constraints_count,
-                "minors_external_count": plan.minors_external_count,
-            },
-            "plan_hash": plan.plan_hash,
-            "sacrifices_summary": plan.sacrifices_summary,
-            "parameters_applied": json.loads(plan.parameters_applied) if plan.parameters_applied else {},
-            "created_at": plan.created_at.isoformat() if plan.created_at else "",
-        }
-    )
 
 
 # -----------------------------------------------------------------------------
@@ -456,6 +420,29 @@ def get_live_plan_endpoint(
             "contingent_splits": live.contingent_splits,
         }
     )
+
+
+@router.get("/plans/{id}", response_model=Envelope[Dict[str, Any]])
+def get_plan_detail(
+    id: str,
+    actor: Actor = Depends(require_permission("accommodation:read")),
+    session: Session = Depends(get_session),
+):
+    """Retrieve details, metrics, and parameters of a specific candidate plan."""
+    plan = get_plan_by_id(session, id)
+    if not plan:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Plan '{id}' not found.")
+    return Envelope(data={
+        "plan_id": plan.plan_id, "kind": plan.kind, "status": plan.status,
+        "name": plan.name,
+        "metrics": {key: getattr(plan, key) for key in (
+            "on_campus_placed", "external_placed", "unplaced_count", "contingent_splits",
+            "total_cost_inr", "safety_flags_count", "accessibility_issues_count",
+            "relaxed_constraints_count", "minors_external_count")},
+        "plan_hash": plan.plan_hash, "sacrifices_summary": plan.sacrifices_summary,
+        "parameters_applied": json.loads(plan.parameters_applied) if plan.parameters_applied else {},
+        "created_at": plan.created_at.isoformat() if plan.created_at else "",
+    })
 
 
 @router.post("/plans/live/freeze", response_model=Envelope[Dict[str, Any]])

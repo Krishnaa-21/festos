@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { api } from "../../api/client";
+import { offlineDb } from "../../pwa/offlineDb";
 
 export interface UserProfile {
   id: string;
@@ -90,6 +91,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.removeItem("festos_user");
     setToken(null);
     setUser(null);
+    offlineDb.wipeOnLogout().catch(() => {});
   };
 
   const hasPermission = useCallback(

@@ -16,6 +16,7 @@ import {
 import { Badge } from "../../components/ui/Badge";
 import { Button } from "../../components/ui/Button";
 import { useToast } from "../../components/ui/Toast";
+import { offlineDb } from "../../pwa/offlineDb";
 import {
   MerchandiseItem,
   MerchandisePolicy,
@@ -191,10 +192,39 @@ export const MerchandiseWorkspace: React.FC = () => {
     };
   }, []);
 
-  const handleManualScan = (e: React.FormEvent) => {
+  const handleManualScan = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!manualIdInput.trim()) return;
     const cleanId = manualIdInput.trim().toUpperCase();
+
+    if (typeof navigator !== "undefined" && !navigator.onLine) {
+      try {
+        const queuedOp = await offlineDb.enqueueSafeOp("MERCHANDISE_ISSUE", {
+          participant_id: cleanId,
+          item_id: selectedIssueItem,
+          counter_id: counterId,
+          reason: "Counter handover scan (offline queue)",
+        });
+        setCounterResult({
+          type: "ISSUED",
+          data: {
+            claim_id: queuedOp.client_op_id,
+            canonical_participant_id: cleanId,
+            item_id: selectedIssueItem,
+            item_name: "Merchandise Kit (Queued Offline)",
+            status: "ISSUED",
+            issued_at: new Date().toISOString(),
+            counter_id: counterId,
+            issued_by: "Volunteer Offline Kiosk",
+          },
+        });
+        showToast("Kit issuance queued offline in IndexedDB!", "info");
+      } catch (err: any) {
+        showToast(err?.message || "Failed to buffer offline", "error");
+      }
+      return;
+    }
+
     scanMutation.mutate(cleanId);
     issueMutation.mutate({ participantId: cleanId, itemId: selectedIssueItem });
   };

@@ -35,10 +35,23 @@ async def upload_import_file(
     actor: Actor = Depends(get_actor),
     idempotency_key: Optional[str] = Header(None, alias="Idempotency-Key"),
 ):
-    """Uploads and ingests a raw CSV file into raw_record, staging, and quarantine."""
+    filename = file.filename or "uploaded.csv"
+    if not filename.lower().endswith((".csv", ".tsv", ".txt")):
+        raise FestOSError(
+            message=f"Unsupported file type for '{filename}'. Only CSV, TSV, or plain text tables are permitted.",
+            code="UNSUPPORTED_MEDIA_TYPE",
+            status_code=415,
+        )
+
     try:
         content = await file.read()
-        filename = file.filename or "uploaded.csv"
+        max_bytes = 15 * 1024 * 1024  # 15 MB
+        if len(content) > max_bytes:
+            raise FestOSError(
+                message=f"File '{filename}' ({len(content)} bytes) exceeds the 15 MB maximum upload limit.",
+                code="PAYLOAD_TOO_LARGE",
+                status_code=413,
+            )
         result = import_file(
             session=session,
             file_content=content,
@@ -66,6 +79,8 @@ async def upload_import_file(
             status_code=422,
             details={"missing_columns": e.missing_columns, "sheet_name": e.sheet_name},
         )
+    except FestOSError:
+        raise
     except Exception as e:
         raise FestOSError(message=f"Failed to process import: {e}", code="IMPORT_ERROR", status_code=500)
 

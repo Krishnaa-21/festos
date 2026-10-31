@@ -1,0 +1,9 @@
+metric,count,category,explanation
+Raw Roster Records,2841,Input,Total rows imported across raw contingent rosters
+Contingent Declared Total,2842,Input,Total participants declared by college leaders in headers
+Narrative Planning Target,2400,Target,Original festival narrative planning figure (IIM Indore)
+Exact Duplicate Clusters,1,Data Quality,Identified duplicate participant submissions
+Invalid Records Quarantined,3,Data Quality,Incomplete or malformed roster records
+Withdrawn or Cancelled,0,Operations,Participants marked cancelled or no-show prior to arrival
+Active Canonical Participants,2837,Reconciled,Unique reconciled participants qualified for festival participation
+Raw vs Narrative Surplus Gap,441,Variance,Raw participant excess over narrative (reconciled honestly without forced truncation)

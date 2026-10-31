@@ -34,7 +34,7 @@ class Settings(BaseSettings):
     ENABLE_FORECASTING: bool = True
 
     CORS_ORIGINS: List[str] = Field(
-        default_factory=lambda: ["http://localhost:5173", "http://127.0.0.1:5173"]
+        default_factory=lambda: ["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:80", "http://127.0.0.1:80"]
     )
 
     @field_validator("CORS_ORIGINS", mode="before")

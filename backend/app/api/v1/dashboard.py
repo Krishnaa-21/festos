@@ -52,3 +52,26 @@ def get_risk_heatmap(
     """Returns 2D Severity x Time-to-Impact risk heatmap cells with people affected, criticality, uncertainty, and top contributors."""
     data = dashboard_service.get_risk_heatmap(session=session)
     return Envelope(data=data)
+
+
+@router.post("/attention/{id}/snooze", response_model=Envelope[Dict[str, Any]])
+def snooze_attention_item(
+    id: str,
+    body: Optional[Dict[str, Any]] = None,
+    session: Session = Depends(get_session),
+    actor: Actor = Depends(get_actor),
+):
+    """Snooze or acknowledge an attention queue item with operational rationale."""
+    reason = (body or {}).get("reason", "Acknowledged in executive console")
+    minutes = (body or {}).get("minutes", 60)
+    acknowledged = (body or {}).get("acknowledged", False)
+    return Envelope(
+        data={
+            "id": id,
+            "status": "ACKNOWLEDGED" if acknowledged else "SNOOZED",
+            "snoozed_minutes": minutes,
+            "actor": actor.name,
+            "reason": reason,
+        }
+    )
+

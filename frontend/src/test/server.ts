@@ -584,32 +584,36 @@ export const handlers = [
   http.post("*/api/v1/accommodation/generate-plan", async ({ request }) => {
     const body = (await request.json()) as any;
     const kind = body.kind || "C";
+    const planObj = {
+      plan_id: `plan_${kind}_generated_${Date.now()}`,
+      kind,
+      status: "CANDIDATE",
+      name: kind === "A" ? "Plan A: Cohesion-First" : kind === "B" ? "Plan B: Cost-First" : "Plan C: Balanced (Custom)",
+      on_campus_placed: 710,
+      external_placed: 1310,
+      unplaced_count: 124,
+      contingent_splits: kind === "A" ? 4 : kind === "B" ? 18 : 7,
+      total_cost_inr: kind === "A" ? 3350000 : kind === "B" ? 2450000 : 2890000,
+      safety_flags_count: 14,
+      accessibility_issues_count: 1,
+      relaxed_constraints_count: 10,
+      parameters_applied: {
+        cleaning_buffer_minutes: body.cleaning_buffer_minutes ?? 180,
+        max_distance_km: body.max_distance_km ?? 15,
+        allow_split_contingents: body.allow_split_contingents ?? true,
+      },
+      sacrifices_summary:
+        kind === "A"
+          ? "Prioritizes contingent cohesion at maximum budget cost."
+          : kind === "B"
+          ? "Minimizes hotel costs by fragmenting large contingents across distant properties."
+          : "Optimized balance between hotel cost and contingent integrity.",
+      created_at: new Date().toISOString(),
+    };
     return HttpResponse.json({
       data: {
-        plan_id: `plan_${kind}_generated_${Date.now()}`,
-        kind,
-        status: "CANDIDATE",
-        name: kind === "A" ? "Plan A: Cohesion-First" : kind === "B" ? "Plan B: Cost-First" : "Plan C: Balanced (Custom)",
-        on_campus_placed: 710,
-        external_placed: 1310,
-        unplaced_count: 124,
-        contingent_splits: kind === "A" ? 4 : kind === "B" ? 18 : 7,
-        total_cost_inr: kind === "A" ? 3350000 : kind === "B" ? 2450000 : 2890000,
-        safety_flags_count: 14,
-        accessibility_issues_count: 1,
-        relaxed_constraints_count: 10,
-        parameters_applied: {
-          cleaning_buffer_minutes: body.cleaning_buffer_minutes ?? 180,
-          max_distance_km: body.max_distance_km ?? 15,
-          allow_split_contingents: body.allow_split_contingents ?? true,
-        },
-        sacrifices_summary:
-          kind === "A"
-            ? "Prioritizes contingent cohesion at maximum budget cost."
-            : kind === "B"
-            ? "Minimizes hotel costs by fragmenting large contingents across distant properties."
-            : "Optimized balance between hotel cost and contingent integrity.",
-        created_at: new Date().toISOString(),
+        ...planObj,
+        plans: [planObj],
       },
       meta: {},
       warnings: ["Generated using unverified external property constraints."],
@@ -1059,6 +1063,22 @@ export const handlers = [
     });
   }),
 
+  http.post("*/api/v1/accommodation/plans/:id/commit", async ({ params, request }) => {
+    const body = (await request.json()) as any;
+    const planId = (params.id as string) || "plan_C_balanced";
+    return HttpResponse.json({
+      data: {
+        plan_id: planId,
+        status: "LIVE",
+        committed_at: new Date().toISOString(),
+        committed_by: "FESTIVAL_DIRECTOR",
+        reason: body.reason,
+      },
+      meta: {},
+      warnings: [],
+    });
+  }),
+
   http.post("*/api/v1/accommodation/commit-live", async ({ request }) => {
     const body = (await request.json()) as any;
     return HttpResponse.json({
@@ -1196,6 +1216,31 @@ export const handlers = [
       },
       meta: {},
       warnings: [],
+    });
+  }),
+
+  // PWA Check-in Offline Batch Sync endpoint
+  http.post("*/api/v1/checkin/sync", async ({ request }) => {
+    const body = (await request.json()) as any;
+    const ops = body?.operations || [];
+    const results = ops.map((op: any, index: number) => {
+      // If op is second or matches duplicate pattern, mark DUPLICATE_IGNORED
+      if (index === 1 || op.participant_id === "P0103_DUP") {
+        return {
+          client_op_id: op.client_op_id,
+          status: "DUPLICATE_IGNORED",
+          message: `Duplicate check-in ignored for participant ${op.participant_id || "P0103"} (already verified on server).`,
+        };
+      }
+      return {
+        client_op_id: op.client_op_id,
+        status: "APPLIED",
+        message: `Check-in verified cleanly for participant ${op.participant_id || "P0102"}.`,
+      };
+    });
+    return HttpResponse.json({
+      device_id: body.device_id,
+      results,
     });
   }),
 
@@ -2272,6 +2317,52 @@ export const handlers = [
     });
   }),
 
+  // PWA Merchandise Offline Batch Sync endpoint
+  http.post("*/api/v1/merchandise/sync", async ({ request }) => {
+    const body = (await request.json()) as any;
+    const ops = body?.operations || [];
+    const results = ops.map((op: any, index: number) => {
+      if (op.participant_id === "P0042_CONFLICT" || index === 99) {
+        return {
+          client_op_id: op.client_op_id,
+          status: "CONFLICT",
+          message: `Item ${op.item_name} already claimed at Counter South at 10:15 AM.`,
+          conflict_details: {
+            server_claim_id: "clm_south_991",
+            claimed_at: "2026-10-31T10:15:00Z",
+            counter: "Counter South",
+          },
+        };
+      }
+      return {
+        client_op_id: op.client_op_id,
+        status: "APPLIED",
+        message: `Merchandise ${op.item_name || "T-shirt"} issued to ${op.participant_id}.`,
+      };
+    });
+    return HttpResponse.json({
+      device_id: body.device_id,
+      results,
+    });
+  }),
+
+  // AI Command Center Execution Endpoint
+  http.post("*/api/v1/commands/execute", async ({ request }) => {
+    const body = (await request.json()) as any;
+    const isMutating = body?.command?.is_mutating;
+    return HttpResponse.json({
+      result: {
+        success: true,
+        summary: isMutating
+          ? `Change proposal submitted for approval: ${body?.command?.raw_text || "AI Proposal"}`
+          : `Analysis executed for: ${body?.command?.raw_text || "Query"}`,
+        items_affected: 42,
+        action_route: "/approvals",
+        proposal_id: `prop_${Math.random().toString(36).slice(2, 8)}`,
+      },
+    });
+  }),
+
   // --- VENDORS & FOOD ---
   http.get("*/api/v1/food/coverage", () => {
     return HttpResponse.json({
@@ -2660,6 +2751,9 @@ export const handlers = [
   }),
 ];
 
-export const server = setupServer(...handlers);
+import { incidentHandlers } from "./incidents_msw";
+import { insightHandlers } from "./insight_msw";
+
+export const server = setupServer(...handlers, ...incidentHandlers, ...insightHandlers);
 
 
