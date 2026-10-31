@@ -49,12 +49,39 @@ class Incident(SQLModel, table=True):
     title: str = Field(index=True)
     severity: int = Field(default=2)  # 1-4
     category: str = Field(default="GENERAL")  # LOGISTICS|ACCOMMODATION|MEDICAL|EVENT
-    description: str
-    status: str = Field(default="OPEN", index=True)  # OPEN|IN_PROGRESS|RESOLVED|ESCALATED
+    description: str = Field(default="")
+    status: str = Field(default="OPEN", index=True)  # OPEN | ANALYSING | PLAN_PROPOSED | APPROVED | EXECUTING | VERIFIED | CLOSED
+    scenario_type: Optional[str] = Field(default=None, index=True)
+    entity_type: Optional[str] = Field(default=None, index=True)
+    entity_id: Optional[str] = Field(default=None, index=True)
+    parameters: Dict[str, Any] = Field(default_factory=dict, sa_column=Column(JSON))
+    timeline: List[Dict[str, Any]] = Field(default_factory=list, sa_column=Column(JSON))
+    impact_summary: Dict[str, Any] = Field(default_factory=dict, sa_column=Column(JSON))
+    impact_tree: Dict[str, Any] = Field(default_factory=dict, sa_column=Column(JSON))
+    plans: List[Dict[str, Any]] = Field(default_factory=list, sa_column=Column(JSON))
+    approved_plan_id: Optional[str] = Field(default=None)
+    approved_by: Optional[str] = Field(default=None)
+    approved_at: Optional[datetime] = Field(default=None)
+    change_set_id: Optional[str] = Field(default=None)
+    decision_card_id: Optional[str] = Field(default=None)
+    verified_at: Optional[datetime] = Field(default=None)
+    verification_data: Dict[str, Any] = Field(default_factory=dict, sa_column=Column(JSON))
+    people_affected: int = Field(default=0)
+    concurrent_conflicts: List[Dict[str, Any]] = Field(default_factory=list, sa_column=Column(JSON))
     reported_by: str = Field(default="SYSTEM")
     assigned_to: Optional[str] = Field(default=None)
     reported_at: datetime = Field(default_factory=now)
     resolved_at: Optional[datetime] = Field(default=None)
+
+    @property
+    def affected_people(self) -> int:
+        return self.people_affected
+
+    @property
+    def resolution_notes(self) -> str:
+        if self.verification_data:
+            return "Resolved and verified"
+        return self.description or "Under active coordination"
 
 class NotificationDraft(SQLModel, table=True):
     __tablename__ = "notification_draft"

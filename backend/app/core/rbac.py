@@ -21,6 +21,9 @@ ROLE_PERMISSIONS: Dict[str, List[str]] = {
         "venues:read",
         "reports:read",
         "assumptions:read",
+        "incidents:read",
+        "incidents:write",
+        "impact:read",
     ],
     Role.EVENT_LEAD.value: [
         "events:read",
@@ -37,6 +40,9 @@ ROLE_PERMISSIONS: Dict[str, List[str]] = {
         "participants:read",
         "reports:read",
         "assumptions:read",
+        "incidents:read",
+        "incidents:write",
+        "impact:read",
     ],
     Role.LOGISTICS_MANAGER.value: [
         "logistics:read",
@@ -50,6 +56,9 @@ ROLE_PERMISSIONS: Dict[str, List[str]] = {
         "transport:read",
         "reports:read",
         "assumptions:read",
+        "incidents:read",
+        "incidents:write",
+        "impact:read",
     ],
     Role.MERCHANDISE_MANAGER.value: [
         "merchandise:read",
@@ -59,6 +68,9 @@ ROLE_PERMISSIONS: Dict[str, List[str]] = {
         "contingents:read",
         "reports:read",
         "assumptions:read",
+        "incidents:read",
+        "incidents:write",
+        "impact:read",
     ],
     Role.FOOD_OPS_MANAGER.value: [
         "food:read",
@@ -71,6 +83,9 @@ ROLE_PERMISSIONS: Dict[str, List[str]] = {
         "notifications:write",
         "reports:read",
         "assumptions:read",
+        "incidents:read",
+        "incidents:write",
+        "impact:read",
     ],
     Role.FINANCE_MANAGER.value: [
         "finance:read",
@@ -83,6 +98,8 @@ ROLE_PERMISSIONS: Dict[str, List[str]] = {
         "reports:read",
         "reports:export",
         "assumptions:read",
+        "incidents:read",
+        "impact:read",
     ],
     Role.VOLUNTEER.value: [
         "checkin:read",
