@@ -60,3 +60,7 @@ class Assumption(SQLModel, table=True):
     reason: str = Field(default="Default fest operating baseline")
     impact_if_changed: str = Field(default="Recalculates dependent metrics and schedules")
     updated_at: datetime = Field(default_factory=now)
+
+    @property
+    def impact(self) -> str:
+        return self.impact_if_changed

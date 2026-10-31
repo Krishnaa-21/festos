@@ -525,6 +525,30 @@ Format:
   - `backend/tests/impact/test_impact_engine.py`: 6 tests verifying multi-chain traversal, cycle termination, blast radius calculation, API endpoints, and public contract.
   - Total: **20/20 PASSED (100%)**.
 
+### 2026-10-31: P2/23-submission (Competition Deliverables, Verification Harnesses & Ground-Truth Documentation)
+- **Author**: P2 Lead
+- **Branch**: `p2/23-submission`
+- **Deliverables & Core Documentation Added / Hardened**:
+  - `README.md`: Complete executive rewrite featuring system purpose, Mermaid architecture flowchart, 32-module directory across 7 domains, local/Docker setup guide, all 9 role test credentials table, instant demo reset instructions, verification commands, and repository folder tree.
+  - `docs/ASSUMPTIONS.md`: Authoritative 43-key assumptions register directly exported from the live SQLite database `assumption` table, detailing live values, sources, owners, rationales, and impact-if-changed.
+  - `docs/LIMITATIONS.md`: Engineering limitations disclosure covering heuristic greedy allocation, assumed travel/shuttle parameters, mocked broadcast/payment integrations, unverified accessibility data, synthetic benchmark fidelity, SQLite write-concurrency limits, missing schedule primitives (judges, times, venues, team IDs), and the 2,836 vs 2,842 vs 2,400 Golden Headcount Waterfall.
+  - `docs/AI_DISCLOSURE.md`: Ethical AI boundary specification featuring the dedicated 3-column matrix for the pitch slide (What AI Did, What Team Decided, How Outputs Were Checked) and human-in-the-loop verification protocol.
+  - `docs/PRIVACY_AND_SECURITY.md`: Comprehensive security architecture documenting the 9-role access matrix, Volunteer Mobile View isolation, serializer-level field masking, emergency break-glass elevation protocol with 15-minute TTL, append-only SQLite audit ledger with SHA-256 hash chaining, SQLite tamper triggers, and intentional non-protected operational data disclosures.
+  - `docs/API.md`: Complete REST API index generated directly from OpenAPI (215 paths, 240 operations across 32 modules) with conventions, standard envelopes, and operation IDs.
+  - `submission/sample_plans/`: Generated Deliverable 02 artifacts (`accommodation_plan_A.csv`, `accommodation_plan_B.csv`, `accommodation_plan_C.csv`, `schedule_plan.csv`, `inventory_plan.csv`, `reconciliation_report.csv`, `data_quality_report.csv`, and documentation `README.md` with commit hash `a10fb16fbca6f8ce887137107d6b7b301c9d626e`).
+- **Harnesses & Scripts**:
+  - `scripts/verify_claims.py`: Continuous verification script querying live database counts and asserting all 19 documented numbers and citations across `README.md`, `LIMITATIONS.md`, `PITCH.md`, and `FESTOS_CONTEXT.md` match live reality (100% PASS).
+  - `scripts/generate_sample_plans.py`: CLI tool generating all 7 submission plans and reports.
+  - `scripts/export_assumptions_doc.py`: CLI tool exporting live SQLite assumptions to markdown.
+  - `scripts/generate_api_md.py`: CLI tool generating API markdown index from OpenAPI spec.
+  - `Makefile`: Added `verify-claims` target.
+- **Verification Results**:
+  - `scripts/verify_claims.py`: **100% PASS (19/19 claims verified)**.
+  - `scripts/pre_demo_check.py`: **100% PASS (all 9 roles, 32 modules, 7 live disruption scenarios < 200ms)**.
+  - `scripts/check_cross_module_consistency.py`: **100% PASS**.
+  - `scripts/smoke_all.py`: **100% PASS**.
+
+
 
 
 
