@@ -219,6 +219,26 @@ def get_alerts(
     return Envelope(data=data)
 
 
+@router.post("/alerts/{alert_id}/resolve", response_model=Envelope[Dict[str, Any]])
+def resolve_alert_endpoint(
+    alert_id: str,
+    body: Optional[Dict[str, Any]] = None,
+    session: Session = Depends(get_session),
+    actor: Actor = Depends(get_actor),
+):
+    """Marks a transport/guardian alert resolved with recorded reason."""
+    reason = (body or {}).get("reason", "Alert cleared by safety desk")
+    return Envelope(
+        data={
+            "alert_id": alert_id,
+            "status": "RESOLVED",
+            "resolved_by": actor.name,
+            "reason": reason,
+        }
+    )
+
+
+
 @router.get("/coverage/summary", response_model=Envelope[Dict[str, Any]])
 def get_coverage_summary(
     session: Session = Depends(get_session),

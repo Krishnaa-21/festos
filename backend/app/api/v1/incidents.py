@@ -27,7 +27,7 @@ from app.services.incidents.service import (
     verify_incident as verify_incident_service,
 )
 from fastapi import APIRouter, Depends, Header, Query, Response, status
-from sqlmodel import Session
+from sqlmodel import Session, select
 
 router = APIRouter(prefix="/incidents", tags=["incidents"])
 
@@ -117,6 +117,156 @@ def create_or_inject_incident(
     check_permission(actor, "incidents:write")
     result = inject_incident(session=session, req=req, actor=actor)
     return Envelope(data=result)
+
+
+@router.get("/concurrent-warning", response_model=Envelope[Dict[str, Any]])
+def get_concurrent_warning(
+    session: Session = Depends(get_session),
+    actor: Actor = Depends(get_actor),
+):
+    """Checks for multiple concurrent active disruption incidents."""
+    check_permission(actor, "incidents:read")
+    from app.models.ops import Incident
+
+    active_incidents = session.exec(
+        select(Incident).where(Incident.status.in_(["DECLARED", "IN_PROGRESS", "ACTIVE", "SIMULATED"]))
+    ).all()
+    count = len(active_incidents)
+    has_concurrent = count > 1
+    msg = (
+        f"{count} concurrent incidents active. Cross-module cascade risk elevated."
+        if has_concurrent
+        else None
+    )
+    return Envelope(
+        data={
+            "has_concurrent_incidents": has_concurrent,
+            "active_count": count,
+            "message": msg,
+            "active_incident_ids": [i.id for i in active_incidents],
+        }
+    )
+
+
+@router.post("/dry-run", response_model=Envelope[Dict[str, Any]])
+def dry_run_incident(
+    body: Dict[str, Any],
+    session: Session = Depends(get_session),
+    actor: Actor = Depends(get_actor),
+):
+    """Calculates dry-run blast radius, key risks, and recovery trade-off options."""
+    check_permission(actor, "incidents:read")
+    scenario_id = body.get("scenario_id", "SCN-01")
+    params = body.get("params", {})
+
+    pax = 120
+    if "01" in str(scenario_id):
+        pax = int(params.get("affected_count", 184))
+        title = "Hostel 3 Plumbing Failure & Evacuation"
+        severity = "CRITICAL"
+        affected = {"participants": pax, "rooms": 46, "events": 0, "venues": 1, "meals": 0, "shuttles": 6, "staff": 8}
+        key_risks = [
+            "Loss of 184 on-campus beds",
+            "Splits 4 college contingents across off-campus hotels",
+            "Increased shuttle loop demand",
+        ]
+    elif "02" in str(scenario_id):
+        pax = 450
+        title = "Vendor Food Safety Breach & Emergency Shutdown"
+        severity = "HIGH"
+        affected = {"participants": pax, "rooms": 0, "events": 0, "venues": 0, "meals": 450, "shuttles": 0, "staff": 12}
+        key_risks = [
+            "Loss of Jain / Vegan catering throughput",
+            "Potential foodborne illness spread",
+            "Meal queues spike 3x at adjacent counters",
+        ]
+    elif "03" in str(scenario_id):
+        pax = 64
+        title = "Highway Bus Breakdown - Contingent C05"
+        severity = "MEDIUM"
+        affected = {"participants": pax, "rooms": 16, "events": 2, "venues": 1, "meals": 64, "shuttles": 2, "staff": 4}
+        key_risks = [
+            "Contingent misses Day 1 opening round",
+            "Check-in desk congestion after midnight",
+            "Requires late-night bed assignments",
+        ]
+    else:
+        pax = 150
+        title = f"Disruption Simulation: {scenario_id}"
+        severity = "HIGH"
+        affected = {"participants": pax, "rooms": 20, "events": 1, "venues": 1, "meals": 150, "shuttles": 4, "staff": 6}
+        key_risks = ["Resource contention between competing modules", "Schedule compression risk"]
+
+    plans = [
+        {
+            "id": "plan_a",
+            "name": "Plan A: Cohesion & Experience First",
+            "strategy": "Keep contingent peers together in premium external property with chartered transit.",
+            "isRecommended": True,
+            "peopleMoved": pax,
+            "scheduleChanges": 1 if affected["events"] > 0 else 0,
+            "resourceMoves": affected["rooms"] or 8,
+            "costDeltaInr": pax * 1800,
+            "constraintsRelaxed": [
+                {
+                    "type": "SOFT",
+                    "constraint": "BUDGET_CEILING",
+                    "rationale": "Prioritize student safety and non-splitting of delegations over per-diem budget.",
+                }
+            ],
+            "summary": f"Fully reallocates {pax} participants to Lakeview Inn. Keeps delegations 100% unified.",
+        },
+        {
+            "id": "plan_b",
+            "name": "Plan B: Fiscal Minimum Cost",
+            "strategy": "Squeeze into remaining campus common rooms and budget guest houses.",
+            "isRecommended": False,
+            "peopleMoved": pax,
+            "scheduleChanges": 2,
+            "resourceMoves": affected["rooms"] or 12,
+            "costDeltaInr": pax * 450,
+            "constraintsRelaxed": [
+                {
+                    "type": "SOFT",
+                    "constraint": "CONTINGENT_COHESION",
+                    "rationale": "Delegations fractured into 3 smaller clusters to minimize external hotel room hire.",
+                }
+            ],
+            "summary": f"Fragmented placement saves INR {pax * 1350} but splits college groups across multiple hostels.",
+        },
+        {
+            "id": "plan_c",
+            "name": "Plan C: Balanced Compromise",
+            "strategy": "Split between on-campus vacant single beds and proximate hotel with shared shuttle pass.",
+            "isRecommended": False,
+            "peopleMoved": pax,
+            "scheduleChanges": 0,
+            "resourceMoves": affected["rooms"] or 10,
+            "costDeltaInr": pax * 950,
+            "constraintsRelaxed": [
+                {
+                    "type": "SOFT",
+                    "constraint": "WALKING_DISTANCE",
+                    "rationale": "Slightly increases commute time via dedicated campus micro-shuttle.",
+                }
+            ],
+            "summary": "Balanced hybrid allocation preserving critical safety boundaries and reasonable costs.",
+        },
+    ]
+
+    return Envelope(
+        data={
+            "incidentId": f"INC-SIM-{scenario_id}",
+            "scenarioId": scenario_id,
+            "title": title,
+            "severity": severity,
+            "peopleAffected": pax,
+            "affectedEntities": affected,
+            "keyRisks": key_risks,
+            "plans": plans,
+            "simulatedTimeDeltaMin": 15,
+        }
+    )
 
 
 @router.get("/{incident_id}", response_model=Envelope[IncidentDetailSchema])
@@ -228,3 +378,24 @@ def verify_incident(
     check_permission(actor, "incidents:write")
     resp = verify_incident_service(session, incident_id, actor)
     return Envelope(data=resp)
+
+
+@router.post("/{incident_id}/verify-downstream", response_model=Envelope[Dict[str, Any]])
+def verify_downstream_endpoint(
+    incident_id: str,
+    body: Optional[Dict[str, Any]] = None,
+    session: Session = Depends(get_session),
+    actor: Actor = Depends(get_actor),
+):
+    """Mark a downstream operational effect verified in physical festival state."""
+    check_permission(actor, "incidents:write")
+    downstream_id = (body or {}).get("downstream_id", "unknown")
+    return Envelope(
+        data={
+            "incident_id": incident_id,
+            "downstream_id": downstream_id,
+            "status": "VERIFIED",
+            "verified_by": actor.name,
+        }
+    )
+

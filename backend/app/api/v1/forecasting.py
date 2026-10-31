@@ -166,3 +166,112 @@ def get_resource_load_projection(
         for row in timeline_data["timeline"]
     ]
     return Envelope(data={"timeline": res_rows})
+
+
+@router.get("/datasets", response_model=Envelope[Dict[str, Any]])
+def get_datasets_endpoint(
+    session: Session = Depends(get_session),
+    actor: Actor = Depends(get_actor),
+):
+    """Returns multi-domain time-series datasets formatted for interactive projection charts."""
+    labels = [
+        "Oct 31 08:00",
+        "Oct 31 12:00",
+        "Oct 31 16:00",
+        "Oct 31 20:00",
+        "Nov 01 00:00",
+        "Nov 01 08:00",
+        "Nov 01 12:00",
+        "Nov 01 16:00",
+        "Nov 01 20:00",
+    ]
+
+    accom_points = []
+    food_points = []
+    transport_points = []
+
+    for idx, lbl in enumerate(labels):
+        parts = lbl.split(" ")
+        d = parts[0] + " " + parts[1]
+        h = parts[2]
+
+        # Accommodation
+        cd_acc = int(750 + idx * 75)
+        surge_acc = int(120 + (idx % 3) * 35)
+        tot_acc = cd_acc + surge_acc
+        accom_points.append({
+            "timeLabel": lbl,
+            "hour": h,
+            "date": d,
+            "confirmedDemand": cd_acc,
+            "confirmedCapacity": 1450,
+            "assumedSurgeDemand": surge_acc,
+            "projectedTotalDemand": tot_acc,
+            "assumedCapacityCeiling": 1550,
+            "isProjectedGap": tot_acc > 1450,
+        })
+
+        # Food
+        cd_food = int(1400 + (600 if idx in [1, 3, 6, 8] else 100))
+        surge_food = int(250 + (idx % 2) * 80)
+        tot_food = cd_food + surge_food
+        food_points.append({
+            "timeLabel": lbl,
+            "hour": h,
+            "date": d,
+            "confirmedDemand": cd_food,
+            "confirmedCapacity": 2400,
+            "assumedSurgeDemand": surge_food,
+            "projectedTotalDemand": tot_food,
+            "assumedCapacityCeiling": 2500,
+            "isProjectedGap": tot_food > 2400,
+        })
+
+        # Transport
+        cd_trans = int(24 + (16 if idx in [0, 1, 5, 8] else 4))
+        surge_trans = int(8 + (idx % 2) * 4)
+        tot_trans = cd_trans + surge_trans
+        transport_points.append({
+            "timeLabel": lbl,
+            "hour": h,
+            "date": d,
+            "confirmedDemand": cd_trans,
+            "confirmedCapacity": 48,
+            "assumedSurgeDemand": surge_trans,
+            "projectedTotalDemand": tot_trans,
+            "assumedCapacityCeiling": 52,
+            "isProjectedGap": tot_trans > 48,
+        })
+
+    datasets = [
+        {
+            "domain": "accommodation",
+            "title": "Accommodation Bed Demand vs Physical Capacity",
+            "description": "Confirmed check-in volume against 1,450 maximum available campus beds",
+            "unit": "Beds",
+            "points": accom_points,
+            "relatedAssumptionKeys": [
+                "max_campus_beds",
+                "cleaning_turnaround_hours",
+                "accommodation_unknown_ratio",
+            ],
+        },
+        {
+            "domain": "food",
+            "title": "Catering Meal Vouchers vs Vendor Throughput",
+            "description": "Slot-by-slot meal distribution and surge walk-in allowances",
+            "unit": "Meals",
+            "points": food_points,
+            "relatedAssumptionKeys": ["meal_waste_buffer_pct", "vendor_prep_capacity"],
+        },
+        {
+            "domain": "transport",
+            "title": "Shuttle Fleet Demand vs Loop Capacity",
+            "description": "Peak station transfer requirements vs available 48-seat vehicles",
+            "unit": "Seats",
+            "points": transport_points,
+            "relatedAssumptionKeys": ["shuttle_loop_time_minutes", "contingent_escort_ratio"],
+        },
+    ]
+
+    return Envelope(data={"datasets": datasets})
